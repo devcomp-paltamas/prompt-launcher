@@ -1,7 +1,6 @@
-import { CAT_ICON_BG } from '../data/prompts.js'
 import ToolTag from './ToolTag.jsx'
 
-export default function PromptCard({ prompt, onOpen, onQuickCopy, copiedId }) {
+export default function PromptCard({ prompt, catIconBg = {}, onOpen, onQuickCopy, onEdit, onDelete, copiedId }) {
   const isCopied = copiedId === prompt.id
 
   return (
@@ -13,13 +12,29 @@ export default function PromptCard({ prompt, onOpen, onQuickCopy, copiedId }) {
         <div style={{
           width: 36, height: 36, borderRadius: 8, flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 16, background: CAT_ICON_BG[prompt.cat],
+          fontSize: 16, background: catIconBg[prompt.cat] || 'rgba(99,102,241,0.25)',
         }}>
           {prompt.icon}
         </div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3 }}>{prompt.title}</div>
           <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 3 }}>{prompt.sub}</div>
+        </div>
+        <div className="card-actions">
+          <button
+            onClick={e => { e.stopPropagation(); onEdit(prompt) }}
+            className="card-action-btn"
+            title="Szerkesztés"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={e => { e.stopPropagation(); onDelete(prompt.id) }}
+            className="card-action-btn delete"
+            title="Törlés"
+          >
+            🗑️
+          </button>
         </div>
       </div>
 
