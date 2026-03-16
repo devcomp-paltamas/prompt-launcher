@@ -1,14 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
 
-export default function PromptModal({ prompt, onClose }) {
+const TRANSLATE_PROMPT = `Translate the following prompt to English. Keep the same structure, formatting, and any [VARIABLE] placeholders exactly as they are. Only translate the text content:\n\n`
+
+export default function PromptModal({ prompt, onClose, onSave }) {
   const [varValues, setVarValues] = useState({})
-  const [copied, setCopied]       = useState(false)
+  const [editedPrompt, setEditedPrompt] = useState('')
+  const [translateToEnglish, setTranslateToEnglish] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
 
   useEffect(() => {
     if (!prompt) return
     const init = {}
     prompt.vars.forEach(v => (init[v] = ''))
     setVarValues(init)
+    setEditedPrompt(prompt.prompt)
     setCopied(false)
   }, [prompt])
 
@@ -18,33 +24,54 @@ export default function PromptModal({ prompt, onClose }) {
     return () => document.removeEventListener('keydown', handler)
   }, [onClose])
 
-  const getFilledPrompt = useCallback(() => {
-    if (!prompt) return ''
+  // Update edited prompt when variables change
+  useEffect(() => {
+    if (!prompt) return
     let text = prompt.prompt
     Object.entries(varValues).forEach(([k, v]) => {
       text = text.split(`[${k}]`).join(v.trim() || `[${k}]`)
     })
-    return text
+    setEditedPrompt(text)
   }, [prompt, varValues])
 
-  const renderPreview = () => {
-    if (!prompt) return ''
-    let text = prompt.prompt
-    Object.entries(varValues).forEach(([k, v]) => {
-      if (v.trim()) {
-        text = text.split(`[${k}]`).join(
-          `<span style="color:#fbbf24;font-weight:700">${v.trim()}</span>`
-        )
-      }
-    })
-    return text
-  }
-
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(getFilledPrompt())
+    let textToCopy = editedPrompt
+
+    if (translateToEnglish) {
+      setIsTranslating(true)
+      // Add translation instruction as prefix
+      textToCopy = TRANSLATE_PROMPT + editedPrompt
+      setIsTranslating(false)
+    }
+
+    await navigator.clipboard.writeText(textToCopy)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  const handleSave = () => {
+    if (!onSave) return
+    // Extract variables from the edited prompt
+    const varRegex = /\[([A-Z_]+)\]/g
+    const foundVars = []
+    let match
+    while ((match = varRegex.exec(editedPrompt)) !== null) {
+      if (!foundVars.includes(match[1])) {
+        foundVars.push(match[1])
+      }
+    }
+
+    const updatedPrompt = {
+      ...prompt,
+      prompt: editedPrompt,
+      vars: foundVars
+    }
+
+    onSave(updatedPrompt)
+    onClose()
+  }
+
+  const hasChanges = editedPrompt !== prompt?.prompt
 
   if (!prompt) return null
 
@@ -96,13 +123,35 @@ export default function PromptModal({ prompt, onClose }) {
             </div>
           )}
 
-          {/* Preview */}
-          <div style={{ fontSize: 12, color: 'var(--text-dim)', marginBottom: 8, fontWeight: 600 }}>
-            ELŐNÉZET
+          {/* Editable Preview */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 8
+          }}>
+            <div style={{ fontSize: 12, color: 'var(--text-dim)', fontWeight: 600 }}>
+              ELŐNÉZET (SZERKESZTHETŐ)
+            </div>
+            <button
+              className="btn-reset-preview"
+              onClick={() => {
+                let text = prompt.prompt
+                Object.entries(varValues).forEach(([k, v]) => {
+                  text = text.split(`[${k}]`).join(v.trim() || `[${k}]`)
+                })
+                setEditedPrompt(text)
+              }}
+              title="Eredeti visszaállítása"
+            >
+              ↺ Visszaállítás
+            </button>
           </div>
-          <div
-            className="prompt-preview"
-            dangerouslySetInnerHTML={{ __html: renderPreview() }}
+          <textarea
+            className="prompt-preview editable"
+            value={editedPrompt}
+            onChange={e => setEditedPrompt(e.target.value)}
+            rows={12}
           />
         </div>
 
@@ -110,15 +159,40 @@ export default function PromptModal({ prompt, onClose }) {
         <div style={{
           padding: '16px 24px',
           borderTop: '1px solid var(--border)',
-          display: 'flex', gap: 10, justifyContent: 'flex-end',
+          display: 'flex', alignItems: 'center', gap: 16,
         }}>
+          {/* Translate checkbox */}
+          <label className="translate-checkbox">
+            <input
+              type="checkbox"
+              checked={translateToEnglish}
+              onChange={e => setTranslateToEnglish(e.target.checked)}
+            />
+            <span className="checkbox-icon">🌐</span>
+            <span>Fordítás angolra</span>
+          </label>
+
+          <div style={{ flex: 1 }} />
+
           <button onClick={onClose} className="btn-secondary">Mégse</button>
+          {onSave && (
+            <button
+              onClick={handleSave}
+              className="btn-primary"
+              style={{ background: hasChanges ? 'var(--sap-gold)' : '#4b5563' }}
+              disabled={!hasChanges}
+              title={hasChanges ? 'Módosítások mentése' : 'Nincs változás'}
+            >
+              💾 Mentés
+            </button>
+          )}
           <button
             onClick={handleCopy}
             className="btn-primary"
             style={{ background: copied ? 'var(--sap-green)' : 'var(--sap-blue)' }}
+            disabled={isTranslating}
           >
-            {copied ? '✅ Másolva!' : '📋 Másolás vágólapra'}
+            {isTranslating ? '⏳ Fordítás...' : copied ? '✅ Másolva!' : '📋 Másolás vágólapra'}
           </button>
         </div>
       </div>

@@ -4,7 +4,7 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
   const [isOpen, setIsOpen] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const [editingCat, setEditingCat] = useState(null)
-  const [form, setForm] = useState({ label: '', icon: '📁', color: '#6366f1' })
+  const [form, setForm] = useState({ label: '', icon: '📁', color: '#0a6ed1' })
   const dropdownRef = useRef(null)
 
   const activeCategory = categories.find(c => c.id === activeCat) || categories[0]
@@ -27,7 +27,7 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
   }
 
   const startAdding = () => {
-    setForm({ label: '', icon: '📁', color: '#6366f1' })
+    setForm({ label: '', icon: '📁', color: '#0a6ed1' })
     setIsAdding(true)
     setEditingCat(null)
   }
@@ -57,7 +57,7 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
       onAddCategory(newCat)
       setIsAdding(false)
     }
-    setForm({ label: '', icon: '📁', color: '#6366f1' })
+    setForm({ label: '', icon: '📁', color: '#0a6ed1' })
   }
 
   const handleDelete = (cat, e) => {
@@ -72,7 +72,7 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
   }
 
   const PRESET_COLORS = [
-    '#1d4ed8', '#065f46', '#7c3aed', '#b91c1c', '#92400e', '#6366f1', '#0891b2', '#be185d'
+    '#0a6ed1', '#107e3e', '#bb0000', '#e9730c', '#7c3aed', '#0891b2', '#be185d', '#6a6d70'
   ]
 
   return (
@@ -82,7 +82,14 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
         onClick={() => setIsOpen(!isOpen)}
         style={{ borderColor: activeCategory.color }}
       >
-        <span>{activeCategory.label}</span>
+        <span style={{
+          width: 8,
+          height: 8,
+          borderRadius: 2,
+          background: activeCategory.color,
+          flexShrink: 0
+        }} />
+        <span style={{ flex: 1, textAlign: 'left' }}>{activeCategory.label}</span>
         <span className="dropdown-arrow">{isOpen ? '▲' : '▼'}</span>
       </button>
 
@@ -96,10 +103,14 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
             >
               <span className="dropdown-item-color" style={{ background: cat.color }} />
               <span className="dropdown-item-label">{cat.label}</span>
-              {cat.id !== 'all' && (
+              {cat.id !== 'all' && cat.id !== 'favorites' && !cat.isSystem && (
                 <div className="dropdown-item-actions">
-                  <button onClick={(e) => startEditing(cat, e)} title="Szerkesztés">✏️</button>
-                  <button onClick={(e) => handleDelete(cat, e)} title="Törlés">🗑️</button>
+                  <button onClick={(e) => startEditing(cat, e)} title="Szerkesztés">
+                    ✏️
+                  </button>
+                  <button onClick={(e) => handleDelete(cat, e)} title="Törlés">
+                    🗑️
+                  </button>
                 </div>
               )}
             </div>
@@ -130,6 +141,7 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
                 {PRESET_COLORS.map(c => (
                   <button
                     key={c}
+                    type="button"
                     className={`color-btn${form.color === c ? ' active' : ''}`}
                     style={{ background: c }}
                     onClick={() => setForm(f => ({ ...f, color: c }))}
@@ -137,17 +149,25 @@ export default function CategoryDropdown({ categories, activeCat, onSelect, onAd
                 ))}
               </div>
               <div className="dropdown-form-actions">
-                <button className="btn-cancel" onClick={() => { setIsAdding(false); setEditingCat(null) }}>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => { setIsAdding(false); setEditingCat(null) }}
+                >
                   Mégse
                 </button>
-                <button className="btn-save" onClick={handleSave}>
+                <button
+                  type="button"
+                  className="btn-save"
+                  onClick={handleSave}
+                >
                   {editingCat ? 'Mentés' : 'Hozzáadás'}
                 </button>
               </div>
             </div>
           ) : (
             <button className="dropdown-add" onClick={startAdding}>
-              ➕ Új kategória
+              + Új kategória
             </button>
           )}
         </div>

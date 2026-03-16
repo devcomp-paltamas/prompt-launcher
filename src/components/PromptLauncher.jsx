@@ -1,94 +1,31 @@
 import { useState, useEffect, useRef } from 'react'
-import { PROMPTS as DEFAULT_PROMPTS, CATEGORIES as DEFAULT_CATEGORIES, CAT_ICON_BG as DEFAULT_CAT_ICON_BG } from '../data/prompts.js'
+import initialData from '../data/prompts.json'
 import PromptCard from './PromptCard.jsx'
 import PromptModal from './PromptModal.jsx'
-import EditPromptModal from './EditPromptModal.jsx'
-import CategoryDropdown from './CategoryDropdown.jsx'
 import MainMenu from './MainMenu.jsx'
+import CategoryDropdown from './CategoryDropdown.jsx'
+import EditPromptModal from './EditPromptModal.jsx'
+import HelpModal from './HelpModal.jsx'
 
-const STORAGE_KEY = 'prompt-launcher-data'
-
-const DEFAULT_COLLECTIONS = [
-  {
-    id: 'sap-mcp',
-    name: 'SAP ABAP MCP',
-    icon: '🔧',
-    color: '#0070f3',
-    categories: DEFAULT_CATEGORIES,
-    prompts: DEFAULT_PROMPTS,
-  },
-  {
-    id: 'general',
-    name: 'Általános',
-    icon: '📝',
-    color: '#00b894',
-    categories: [
-      { id: 'all', label: '🗂️ Mind', color: '#374151' },
-      { id: 'writing', label: '✍️ Írás', color: '#8b5cf6' },
-      { id: 'analysis', label: '🔍 Elemzés', color: '#0891b2' },
-      { id: 'creative', label: '🎨 Kreatív', color: '#ec4899' },
-    ],
-    prompts: [
-      {
-        id: 'gen-summarize', cat: 'analysis', icon: '📋',
-        title: 'Szöveg összefoglalás', sub: 'Rövid kivonat készítése',
-        desc: 'Hosszú szöveg tömör összefoglalása a lényeges pontokkal.',
-        tools: [], vars: ['SZÖVEG'],
-        prompt: `Foglald össze az alábbi szöveget tömören, a lényeges pontokat kiemelve:
-
-[SZÖVEG]
-
-Az összefoglaló legyen:
-- Maximum 3-5 mondat
-- A fő gondolatokat tartalmazza
-- Objektív és semleges hangvételű`,
-      },
-      {
-        id: 'gen-email', cat: 'writing', icon: '📧',
-        title: 'Email írás', sub: 'Professzionális levél',
-        desc: 'Professzionális email megfogalmazása a megadott témában.',
-        tools: [], vars: ['TÉMA', 'HANGNEM', 'CÍMZETT'],
-        prompt: `Írj egy professzionális emailt:
-
-Téma: [TÉMA]
-Hangnem: [HANGNEM]
-Címzett: [CÍMZETT]
-
-Az email legyen:
-- Udvarias és professzionális
-- Tömör de informatív
-- Egyértelmű cselekvésre ösztönzés (ha releváns)`,
-      },
-      {
-        id: 'gen-brainstorm', cat: 'creative', icon: '💡',
-        title: 'Ötletelés', sub: 'Brainstorming session',
-        desc: 'Kreatív ötletek generálása adott témában.',
-        tools: [], vars: ['TÉMA', 'DARABSZÁM'],
-        prompt: `Generálj [DARABSZÁM] kreatív ötletet a következő témában:
-
-[TÉMA]
-
-Minden ötlethez adj:
-- Rövid leírást (1-2 mondat)
-- Előnyök
-- Esetleges kihívások`,
-      },
-    ],
-  },
-]
+const STORAGE_KEY = 'prompt-launcher-data-v2'
+const EXPORT_VERSION = '2.0'
 
 function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
-      return JSON.parse(saved)
+      const data = JSON.parse(saved)
+      return {
+        collections: data.collections || initialData.collections,
+        activeCollectionId: data.activeCollectionId || initialData.collections[0]?.id,
+      }
     }
   } catch (e) {
     console.error('Failed to load data:', e)
   }
   return {
-    collections: DEFAULT_COLLECTIONS,
-    activeCollectionId: 'sap-mcp',
+    collections: initialData.collections,
+    activeCollectionId: initialData.collections[0]?.id,
   }
 }
 
@@ -100,124 +37,59 @@ function saveData(data) {
   }
 }
 
-function downloadJson(data, filename) {
-  const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function generateCatIconBg(categories) {
-  const bg = { ...DEFAULT_CAT_ICON_BG }
-  categories.forEach(cat => {
-    if (cat.id !== 'all' && cat.color) {
-      const hex = cat.color.replace('#', '')
-      const r = parseInt(hex.substring(0, 2), 16)
-      const g = parseInt(hex.substring(2, 4), 16)
-      const b = parseInt(hex.substring(4, 6), 16)
-      bg[cat.id] = `rgba(${r},${g},${b},0.25)`
-    }
-  })
-  return bg
-}
-
 export default function PromptLauncher() {
-  const [data, setData] = useState(loadData)
-  const [activeCat, setActiveCat] = useState('all')
+  const [collections, setCollections] = useState(() => loadData().collections)
+  const [activeCollectionId, setActiveCollectionId] = useState(() => loadData().activeCollectionId)
+  const [activeCat, setActiveCat] = useState(() => {
+    // Default to favorites if there are any, otherwise show all
+    const data = loadData()
+    const collection = data.collections.find(c => c.id === data.activeCollectionId) || data.collections[0]
+    const hasFavorites = collection?.prompts?.some(p => p.favorite)
+    return hasFavorites ? 'favorites' : 'all'
+  })
   const [selectedPrompt, setSelectedPrompt] = useState(null)
-  const [editingPrompt, setEditingPrompt] = useState(null)
-  const [isCreating, setIsCreating] = useState(false)
   const [copiedId, setCopiedId] = useState(null)
+  const [showHelp, setShowHelp] = useState(false)
+  const [editingPrompt, setEditingPrompt] = useState(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [importStatus, setImportStatus] = useState(null)
   const fileInputRef = useRef(null)
 
-  const { collections, activeCollectionId } = data
+  // Get active collection
   const activeCollection = collections.find(c => c.id === activeCollectionId) || collections[0]
-  const { categories, prompts } = activeCollection
 
+  // Get categories for active collection (with favorites)
+  const favoriteCount = (activeCollection?.prompts || []).filter(p => p.favorite).length
+  const categories = [
+    ...(activeCollection?.categories || []).slice(0, 1), // "Mind" first
+    { id: 'favorites', label: `⭐ Kedvencek (${favoriteCount})`, color: '#f59e0b', isSystem: true },
+    ...(activeCollection?.categories || []).slice(1), // Rest of categories
+  ]
+
+  // Get prompts for active collection
+  const prompts = activeCollection?.prompts || []
+
+  // Save data when state changes
   useEffect(() => {
-    saveData(data)
-  }, [data])
+    saveData({ collections, activeCollectionId })
+  }, [collections, activeCollectionId])
 
+  // Auto-switch to favorites or all based on collection content
   useEffect(() => {
-    setActiveCat('all')
-  }, [activeCollectionId])
-
-  const catIconBg = generateCatIconBg(categories)
-
-  const updateCollection = (updates) => {
-    setData(prev => ({
-      ...prev,
-      collections: prev.collections.map(c =>
-        c.id === activeCollectionId ? { ...c, ...updates } : c
-      ),
-    }))
-  }
-
-  const handleExport = () => {
-    const timestamp = new Date().toISOString().slice(0, 10)
-    downloadJson(activeCollection, `${activeCollection.name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.json`)
-  }
-
-  const handleExportAll = () => {
-    const timestamp = new Date().toISOString().slice(0, 10)
-    downloadJson(data, `prompt-launcher-backup-${timestamp}.json`)
-  }
-
-  const handleImport = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result)
-
-        // Full backup import
-        if (imported.collections && Array.isArray(imported.collections)) {
-          if (window.confirm('Teljes backup importálása? Minden adat felülíródik.')) {
-            setData(imported)
-          }
-        }
-        // Single collection import
-        else if (imported.prompts && imported.categories) {
-          if (window.confirm(`"${imported.name || 'Importált'}" gyűjtemény hozzáadása?`)) {
-            const newCollection = {
-              ...imported,
-              id: `imported-${Date.now()}`,
-              name: imported.name || 'Importált gyűjtemény',
-              icon: imported.icon || '📁',
-              color: imported.color || '#6366f1',
-            }
-            setData(prev => ({
-              ...prev,
-              collections: [...prev.collections, newCollection],
-              activeCollectionId: newCollection.id,
-            }))
-          }
-        }
-        // Legacy format (just prompts array)
-        else if (Array.isArray(imported)) {
-          if (window.confirm(`${imported.length} prompt importálása a jelenlegi gyűjteménybe?`)) {
-            updateCollection({ prompts: imported })
-          }
-        } else {
-          alert('Érvénytelen fájlformátum!')
-        }
-      } catch (err) {
-        alert('Hiba a fájl olvasásakor: ' + err.message)
-      }
+    const hasFavorites = prompts.some(p => p.favorite)
+    if (activeCat === 'favorites' && !hasFavorites) {
+      setActiveCat('all')
+    } else if (activeCat === 'all' && hasFavorites) {
+      setActiveCat('favorites')
     }
-    reader.readAsText(file)
-    e.target.value = ''
-  }
+  }, [activeCollectionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Filter prompts by category
   const filtered = activeCat === 'all'
     ? prompts
-    : prompts.filter(p => p.cat === activeCat)
+    : activeCat === 'favorites'
+      ? prompts.filter(p => p.favorite)
+      : prompts.filter(p => p.cat === activeCat)
 
   const handleQuickCopy = async prompt => {
     await navigator.clipboard.writeText(prompt.prompt)
@@ -225,94 +97,236 @@ export default function PromptLauncher() {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
-  const handleSave = (updatedPrompt) => {
-    const exists = prompts.find(p => p.id === updatedPrompt.id)
-    const newPrompts = exists
-      ? prompts.map(p => p.id === updatedPrompt.id ? updatedPrompt : p)
-      : [...prompts, updatedPrompt]
-    updateCollection({ prompts: newPrompts })
-    setEditingPrompt(null)
-    setIsCreating(false)
-  }
-
-  const handleDelete = (promptId) => {
-    if (window.confirm('Biztosan törölni szeretnéd ezt a jegyzetet?')) {
-      updateCollection({ prompts: prompts.filter(p => p.id !== promptId) })
+  // Collection handlers
+  const handleAddCollection = (col) => {
+    const newCollection = {
+      ...col,
+      categories: [
+        { id: 'all', label: '🗂️ Mind', color: '#374151' },
+        { id: 'general', label: '📝 Általános', color: '#6b7280' },
+      ],
+      prompts: []
     }
+    setCollections(prev => [...prev, newCollection])
+    setActiveCollectionId(col.id)
   }
 
-  const handleEdit = (prompt) => {
-    setEditingPrompt(prompt)
+  const handleEditCollection = (col) => {
+    setCollections(prev => prev.map(c =>
+      c.id === col.id
+        ? { ...c, name: col.name, icon: col.icon, color: col.color }
+        : c
+    ))
   }
 
-  const handleCreate = () => {
-    setIsCreating(true)
-  }
-
-  const handleResetToDefaults = () => {
-    if (window.confirm('Biztosan visszaállítod az alapértelmezett adatokat? Minden egyéni adat elvész.')) {
-      setData({
-        collections: DEFAULT_COLLECTIONS,
-        activeCollectionId: 'sap-mcp',
-      })
-      setActiveCat('all')
+  const handleDeleteCollection = (colId) => {
+    if (collections.length <= 1) {
+      setImportStatus({ type: 'error', message: 'Legalább egy gyűjteménynek maradnia kell!' })
+      setTimeout(() => setImportStatus(null), 3000)
+      return
+    }
+    setCollections(prev => prev.filter(c => c.id !== colId))
+    if (activeCollectionId === colId) {
+      setActiveCollectionId(collections[0]?.id)
     }
   }
 
   // Category handlers
-  const handleAddCategory = (newCat) => {
-    updateCollection({ categories: [...categories, newCat] })
+  const handleAddCategory = (cat) => {
+    setCollections(prev => prev.map(c =>
+      c.id === activeCollectionId
+        ? { ...c, categories: [...c.categories, cat] }
+        : c
+    ))
   }
 
-  const handleEditCategory = (updatedCat) => {
-    updateCollection({
-      categories: categories.map(c => c.id === updatedCat.id ? updatedCat : c)
-    })
+  const handleEditCategory = (cat) => {
+    // Can't edit "all" category
+    if (cat.id === 'all') return
+
+    setCollections(prev => prev.map(c =>
+      c.id === activeCollectionId
+        ? { ...c, categories: c.categories.map(ct => ct.id === cat.id ? cat : ct) }
+        : c
+    ))
   }
 
   const handleDeleteCategory = (catId) => {
-    updateCollection({ categories: categories.filter(c => c.id !== catId) })
-    if (activeCat === catId) setActiveCat('all')
-  }
+    // Can't delete "all" category
+    if (catId === 'all') return
 
-  // Collection handlers
-  const handleSelectCollection = (id) => {
-    setData(prev => ({ ...prev, activeCollectionId: id }))
-  }
-
-  const handleAddCollection = (newCol) => {
-    const collection = {
-      ...newCol,
-      categories: [
-        { id: 'all', label: '🗂️ Mind', color: '#374151' },
-      ],
-      prompts: [],
+    setCollections(prev => prev.map(c =>
+      c.id === activeCollectionId
+        ? { ...c, categories: c.categories.filter(ct => ct.id !== catId) }
+        : c
+    ))
+    if (activeCat === catId) {
+      setActiveCat('favorites')
     }
-    setData(prev => ({
-      ...prev,
-      collections: [...prev.collections, collection],
-      activeCollectionId: collection.id,
-    }))
   }
 
-  const handleEditCollection = (updated) => {
-    setData(prev => ({
-      ...prev,
-      collections: prev.collections.map(c =>
-        c.id === updated.id ? { ...c, name: updated.name, icon: updated.icon, color: updated.color } : c
-      ),
-    }))
+  // Prompt handlers
+  const handleNewPrompt = () => {
+    setEditingPrompt(null)
+    setShowEditModal(true)
   }
 
-  const handleDeleteCollection = (id) => {
-    setData(prev => {
-      const newCollections = prev.collections.filter(c => c.id !== id)
-      return {
-        ...prev,
-        collections: newCollections,
-        activeCollectionId: newCollections[0]?.id || 'sap-mcp',
+  const handleEditPrompt = (prompt) => {
+    setEditingPrompt(prompt)
+    setShowEditModal(true)
+  }
+
+  const handleSavePrompt = async (prompt) => {
+    // Calculate updated collections
+    const updatedCollections = collections.map(c => {
+      if (c.id !== activeCollectionId) return c
+
+      const existingIndex = c.prompts.findIndex(p => p.id === prompt.id)
+      if (existingIndex >= 0) {
+        const updatedPrompts = [...c.prompts]
+        updatedPrompts[existingIndex] = prompt
+        return { ...c, prompts: updatedPrompts }
       }
+      return { ...c, prompts: [...c.prompts, prompt] }
     })
+
+    setCollections(updatedCollections)
+    setShowEditModal(false)
+    setEditingPrompt(null)
+
+    // Save to prompts.json via API (dev server only)
+    try {
+      const response = await fetch('/api/save-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ collections: updatedCollections })
+      })
+      if (response.ok) {
+        setImportStatus({ type: 'success', message: 'Mentve a prompts.json fájlba!' })
+      } else {
+        setImportStatus({ type: 'error', message: 'Mentés sikertelen (csak dev módban működik)' })
+      }
+    } catch {
+      // Production mode - no API available, just use localStorage
+      setImportStatus({ type: 'success', message: 'Mentve (localStorage)' })
+    }
+    setTimeout(() => setImportStatus(null), 2000)
+  }
+
+  const handleDeletePrompt = (promptId) => {
+    setCollections(prev => prev.map(c =>
+      c.id === activeCollectionId
+        ? { ...c, prompts: c.prompts.filter(p => p.id !== promptId) }
+        : c
+    ))
+  }
+
+  const handleToggleFavorite = async (promptId) => {
+    const updatedCollections = collections.map(c =>
+      c.id === activeCollectionId
+        ? {
+            ...c,
+            prompts: c.prompts.map(p =>
+              p.id === promptId ? { ...p, favorite: !p.favorite } : p
+            )
+          }
+        : c
+    )
+
+    setCollections(updatedCollections)
+
+    // Save to prompts.json via API
+    try {
+      await fetch('/api/save-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ collections: updatedCollections })
+      })
+    } catch {
+      // Silent fail in production
+    }
+  }
+
+  // Export data - exports the full prompts.json structure
+  const handleExport = () => {
+    const exportData = {
+      version: EXPORT_VERSION,
+      exportDate: new Date().toISOString(),
+      collections,
+    }
+
+    const totalPrompts = collections.reduce((sum, c) => sum + (c.prompts?.length || 0), 0)
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `prompt-launcher-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    setImportStatus({ type: 'success', message: `Exportálás sikeres! (${totalPrompts} prompt)` })
+    setTimeout(() => setImportStatus(null), 3000)
+  }
+
+  // Import data
+  const handleImport = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result)
+
+        // Validate structure
+        if (!data.collections || !Array.isArray(data.collections)) {
+          throw new Error('Érvénytelen fájlformátum: hiányzó collections tömb')
+        }
+
+        // Show confirmation dialog
+        const collectionCount = data.collections.length
+        const promptCount = data.collections.reduce((sum, c) => sum + (c.prompts?.length || 0), 0)
+        const categoryCount = data.collections.reduce((sum, c) => sum + (c.categories?.length || 0), 0)
+
+        const confirmMsg = `Importálás:\n• ${collectionCount} gyűjtemény\n• ${promptCount} prompt\n• ${categoryCount} kategória\n\nA meglévő adatok FELÜLÍRÓDNAK. Folytatod?`
+
+        if (window.confirm(confirmMsg)) {
+          setCollections(data.collections)
+
+          // Reset to first collection if active one doesn't exist
+          if (!data.collections.some(c => c.id === activeCollectionId)) {
+            setActiveCollectionId(data.collections[0]?.id)
+          }
+          setActiveCat('favorites')
+
+          setImportStatus({ type: 'success', message: `Importálás sikeres! (${promptCount} prompt)` })
+        }
+      } catch (err) {
+        console.error('Import error:', err)
+        setImportStatus({ type: 'error', message: `Hiba: ${err.message}` })
+      }
+
+      // Reset file input
+      e.target.value = ''
+      setTimeout(() => setImportStatus(null), 4000)
+    }
+
+    reader.readAsText(file)
+  }
+
+  // Reset to initial data
+  const handleReset = () => {
+    if (window.confirm('Visszaállítod az eredeti adatokat?\n\nMinden módosítás elvész!')) {
+      setCollections(initialData.collections)
+      setActiveCollectionId(initialData.collections[0]?.id)
+      setActiveCat('favorites')
+      localStorage.removeItem(STORAGE_KEY)
+      setImportStatus({ type: 'success', message: 'Visszaállítás sikeres!' })
+      setTimeout(() => setImportStatus(null), 3000)
+    }
   }
 
   return (
@@ -323,19 +337,61 @@ export default function PromptLauncher() {
         <MainMenu
           collections={collections}
           activeCollection={activeCollectionId}
-          onSelect={handleSelectCollection}
+          onSelect={setActiveCollectionId}
           onAdd={handleAddCollection}
           onEdit={handleEditCollection}
           onDelete={handleDeleteCollection}
         />
         <div style={{ flex: 1 }}>
-          <h1>Prompt Launcher</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 2 }}>
-            {activeCollection.name} · {prompts.length} prompt
-          </p>
+          <h1>{activeCollection?.name || 'Prompt Launcher'}</h1>
+          <p>Claude AI prompt gyűjtemény</p>
         </div>
-        <div className="badge">v3.0</div>
+        <div className="header-actions">
+          <button
+            className="btn-icon"
+            onClick={handleExport}
+            title="Exportálás JSON fájlba"
+          >
+            📤 Export
+          </button>
+          <button
+            className="btn-icon"
+            onClick={() => fileInputRef.current?.click()}
+            title="Importálás JSON fájlból"
+          >
+            📥 Import
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            style={{ display: 'none' }}
+          />
+          <button
+            className="btn-icon"
+            onClick={handleReset}
+            title="Visszaállítás alapértelmezettre"
+          >
+            🔄 Reset
+          </button>
+          <button
+            className="btn-icon"
+            onClick={() => setShowHelp(true)}
+            title="Súgó"
+          >
+            ❓ Súgó
+          </button>
+        </div>
+        <div className="badge">v2.0</div>
       </header>
+
+      {/* Import status toast */}
+      {importStatus && (
+        <div className={`toast toast-${importStatus.type}`}>
+          {importStatus.type === 'success' ? '✅' : '❌'} {importStatus.message}
+        </div>
+      )}
 
       {/* Main */}
       <div className="container">
@@ -350,50 +406,35 @@ export default function PromptLauncher() {
             onEditCategory={handleEditCategory}
             onDeleteCategory={handleDeleteCategory}
           />
-          <div className="toolbar-actions">
-            <button onClick={handleCreate} className="btn-add">
-              ➕ Új jegyzet
-            </button>
-            <button onClick={handleExport} className="btn-file" title="Gyűjtemény exportálása">
-              📥 Export
-            </button>
-            <button onClick={() => fileInputRef.current?.click()} className="btn-file" title="Importálás">
-              📤 Import
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              style={{ display: 'none' }}
-            />
-            <button onClick={handleResetToDefaults} className="btn-reset" title="Alapértelmezett visszaállítása">
-              🔄
-            </button>
-          </div>
+          <button className="btn-primary add-prompt-btn" onClick={handleNewPrompt}>
+            + Új prompt
+          </button>
         </div>
 
         {/* Cards */}
         <div className="grid">
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">📭</div>
-              <div className="empty-text">Nincs még prompt ebben a kategóriában</div>
-              <button onClick={handleCreate} className="btn-add">
-                ➕ Új jegyzet létrehozása
-              </button>
+              <div className="empty-icon">📝</div>
+              <div className="empty-title">Nincs prompt ebben a nézetben</div>
+              <div className="empty-desc">
+                {activeCat !== 'all'
+                  ? 'Válassz másik kategóriát vagy adj hozzá új promptot.'
+                  : 'Kattints az "Új prompt" gombra a létrehozáshoz.'}
+              </div>
             </div>
           ) : (
             filtered.map(p => (
               <PromptCard
                 key={p.id}
                 prompt={p}
-                catIconBg={catIconBg}
                 onOpen={setSelectedPrompt}
                 onQuickCopy={handleQuickCopy}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
                 copiedId={copiedId}
+                onEdit={handleEditPrompt}
+                onDelete={handleDeletePrompt}
+                onToggleFavorite={handleToggleFavorite}
+                isCustom={true}
               />
             ))
           )}
@@ -403,42 +444,41 @@ export default function PromptLauncher() {
       {/* Status bar */}
       <div className="status-bar">
         <div className="status-item">
-          <span style={{ color: activeCollection.color }}>{activeCollection.icon}</span>
-          <span>{activeCollection.name}</span>
+          <span>📚 {collections.length} gyűjtemény</span>
         </div>
         <div className="status-item">
-          <span>{prompts.length} prompt</span>
-        </div>
-        <div className="status-item">
-          <span>{categories.length - 1} kategória</span>
+          <span>📝 {prompts.length} prompt</span>
         </div>
         <div style={{ marginLeft: 'auto', color: '#60a5fa' }}>
-          <button
-            onClick={handleExportAll}
-            className="btn-export-all"
-            title="Összes gyűjtemény mentése"
-          >
-            💾 Teljes backup
-          </button>
+          Tipp: Kattints egy kártyára, töltsd ki a változókat, másold Claude-ba!
         </div>
       </div>
 
-      {/* View Modal */}
+      {/* Prompt Modal */}
       {selectedPrompt && (
         <PromptModal
           prompt={selectedPrompt}
           onClose={() => setSelectedPrompt(null)}
+          onSave={handleSavePrompt}
         />
       )}
 
       {/* Edit Modal */}
-      {(editingPrompt || isCreating) && (
+      {showEditModal && (
         <EditPromptModal
           prompt={editingPrompt}
-          categories={categories}
-          onSave={handleSave}
-          onClose={() => { setEditingPrompt(null); setIsCreating(false) }}
+          categories={categories.filter(c => c.id !== 'all')}
+          onSave={handleSavePrompt}
+          onClose={() => {
+            setShowEditModal(false)
+            setEditingPrompt(null)
+          }}
         />
+      )}
+
+      {/* Help Modal */}
+      {showHelp && (
+        <HelpModal onClose={() => setShowHelp(false)} />
       )}
     </div>
   )

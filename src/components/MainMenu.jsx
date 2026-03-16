@@ -4,7 +4,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
   const [isOpen, setIsOpen] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState(null)
-  const [form, setForm] = useState({ name: '', icon: '📁', color: '#6366f1' })
+  const [form, setForm] = useState({ name: '', icon: '📁', color: '#0a6ed1' })
   const menuRef = useRef(null)
 
   const active = collections.find(c => c.id === activeCollection) || collections[0]
@@ -27,7 +27,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
   }
 
   const startAdding = () => {
-    setForm({ name: '', icon: '📁', color: '#6366f1' })
+    setForm({ name: '', icon: '📁', color: '#0a6ed1' })
     setIsAdding(true)
     setEditingId(null)
   }
@@ -54,7 +54,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
       })
       setIsAdding(false)
     }
-    setForm({ name: '', icon: '📁', color: '#6366f1' })
+    setForm({ name: '', icon: '📁', color: '#0a6ed1' })
   }
 
   const handleDelete = (col, e) => {
@@ -69,7 +69,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
   }
 
   const PRESET_COLORS = [
-    '#0070f3', '#00b894', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'
+    '#0a6ed1', '#107e3e', '#bb0000', '#e9730c', '#7c3aed', '#0891b2', '#be185d', '#6a6d70'
   ]
 
   return (
@@ -77,7 +77,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
       <button
         className="main-menu-trigger"
         onClick={() => setIsOpen(!isOpen)}
-        style={{ borderColor: active.color, background: `${active.color}15` }}
+        style={{ borderColor: active.color }}
       >
         <span className="main-menu-icon">{active.icon}</span>
         <span className="main-menu-name">{active.name}</span>
@@ -94,13 +94,20 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
               className={`main-menu-item${activeCollection === col.id ? ' active' : ''}`}
               onClick={() => handleSelect(col.id)}
             >
-              <span className="main-menu-item-icon" style={{ background: `${col.color}30` }}>
+              <span
+                className="main-menu-item-icon"
+                style={{ background: `${col.color}20` }}
+              >
                 {col.icon}
               </span>
               <span className="main-menu-item-name">{col.name}</span>
               <div className="main-menu-item-actions">
-                <button onClick={(e) => startEditing(col, e)} title="Szerkesztés">✏️</button>
-                <button onClick={(e) => handleDelete(col, e)} title="Törlés">🗑️</button>
+                <button onClick={(e) => startEditing(col, e)} title="Szerkesztés">
+                  ✏️
+                </button>
+                <button onClick={(e) => handleDelete(col, e)} title="Törlés">
+                  🗑️
+                </button>
               </div>
             </div>
           ))}
@@ -130,6 +137,7 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
                 {PRESET_COLORS.map(c => (
                   <button
                     key={c}
+                    type="button"
                     className={`color-btn${form.color === c ? ' active' : ''}`}
                     style={{ background: c }}
                     onClick={() => setForm(f => ({ ...f, color: c }))}
@@ -137,17 +145,27 @@ export default function MainMenu({ collections, activeCollection, onSelect, onAd
                 ))}
               </div>
               <div className="main-menu-form-actions">
-                <button className="btn-cancel" onClick={() => { setIsAdding(false); setEditingId(null) }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: 13 }}
+                  onClick={() => { setIsAdding(false); setEditingId(null) }}
+                >
                   Mégse
                 </button>
-                <button className="btn-save" onClick={handleSave}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ padding: '6px 12px', fontSize: 13 }}
+                  onClick={handleSave}
+                >
                   {editingId ? 'Mentés' : 'Létrehozás'}
                 </button>
               </div>
             </div>
           ) : (
             <button className="main-menu-add" onClick={startAdding}>
-              ➕ Új gyűjtemény
+              + Új gyűjtemény
             </button>
           )}
         </div>

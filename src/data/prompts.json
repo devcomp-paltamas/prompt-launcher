@@ -1,0 +1,2457 @@
+{
+  "collections": [
+    {
+      "id": "sap-mcp",
+      "name": "SAP ABAP MCP",
+      "icon": "🔧",
+      "color": "#0070f3",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "review",
+          "label": "🔍 Kódolvasás",
+          "color": "#1d4ed8"
+        },
+        {
+          "id": "code",
+          "label": "✍️ Kódírás",
+          "color": "#065f46"
+        },
+        {
+          "id": "test",
+          "label": "🧪 Unit teszt",
+          "color": "#7c3aed"
+        },
+        {
+          "id": "debug",
+          "label": "🐛 Hibakeresés",
+          "color": "#b91c1c"
+        },
+        {
+          "id": "workflow",
+          "label": "⚡ Workflow",
+          "color": "#92400e"
+        },
+        {
+          "id": "transport",
+          "label": "🚚 Transzportok",
+          "color": "#0891b2"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "review-full",
+          "cat": "review",
+          "icon": "📖",
+          "title": "Osztály teljes áttekintése",
+          "sub": "Kód review + javaslatok",
+          "desc": "Lekéri az osztály forráskódját és átfogó elemzést ad: cél, metódusok, kódszagok, SOLID elvek.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [],
+          "prompt": "Módosított prompt szöveg a mentéshez 1773686816428",
+          "favorite": true
+        },
+        {
+          "id": "review-method",
+          "cat": "review",
+          "icon": "🔬",
+          "title": "Metódus részletes magyarázat",
+          "sub": "Egy metódus mélyebb elemzése",
+          "desc": "Adott metódus algoritmusának, paramétereinek, kivételkezelésének és edge case-jeinek magyarázata.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "METÓDUSNÉV"
+          ],
+          "prompt": "Olvasd be a(z) [OSZTÁLYNÉV] ABAP osztályt az abap-adt szerverrel.\n\nMagyarázd el részletesen a [METÓDUSNÉV] metódus működését:\n- Bemeneti paraméterek és típusaik szerepe\n- Az algoritmus lépései\n- Kimeneti értékek / táblák\n- Kivételkezelés: milyen hibát dob és mikor\n- Edge case-ek: mit csinál üres inputnál?\n- Van-e mellékhatás (globális adat, DB write)?"
+        },
+        {
+          "id": "review-security",
+          "cat": "review",
+          "icon": "🔐",
+          "title": "Biztonsági audit",
+          "sub": "SQL injection, jogosultság ellenőrzés",
+          "desc": "Biztonsági szempontú kód review: SQL injection, hiányzó AUTHORITY-CHECK, hardkódolt credentials.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Végezz biztonsági kód review-t a(z) [OSZTÁLYNÉV] osztályon (abap-adt).\n\nEllenőrzési pontok:\n☐ Dinamikus WHERE clause – SQL injection kockázat?\n☐ AUTHORITY-CHECK hiányok – jogosulatlan hozzáférés?\n☐ Érzékeny adatok (jelszó, token) naplózása?\n☐ Hardkódolt credentials vagy URL-ek?\n☐ Nem ellenőrzött bemeneti paraméterek?\n☐ RFC/HTTP hívások hitelesítése megfelelő?\n\nVisszajelzés formátuma:\n  [MAGAS]    leírás + érintett sor + javítási javaslat\n  [KÖZEPES]  leírás + érintett sor + javítási javaslat\n  [ALACSONY] leírás"
+        },
+        {
+          "id": "code-new-class",
+          "cat": "code",
+          "icon": "🏗️",
+          "title": "Új ABAP osztály generálás",
+          "sub": "Skeleton + visszaírás + aktiválás",
+          "desc": "Teljes ABAP osztály létrehozása specifikáció alapján, majd visszaírás és aktiválás az SAP rendszerbe.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "CÉL_LEÍRÁS",
+            "PUBLIKUS_METÓDUSOK"
+          ],
+          "prompt": "Hozz létre egy új ABAP osztályt az alábbi specifikáció szerint,\nmajd írd vissza az SAP rendszerbe az abap-adt szerverrel és aktiváld:\n\nOsztálynév: [OSZTÁLYNÉV]\nCél: [CÉL_LEÍRÁS]\nPublikus metódusok: [PUBLIKUS_METÓDUSOK]\n\nKövetelmények:\n- ABAP 7.54+ szintaxis (DATA(...), NEW, method chaining)\n- Kivételkezelés: egyéni ZCX_ kivétel\n- Inline dokumentáció minden publikus metódushoz\n- Névkonvenció: Z prefix, snake_case, iv_/ev_/rv_ prefix\n\nWorkflow: searchObject → (ha nincs) createObject → setObjectSource → syntaxCheckCode → activate"
+        },
+        {
+          "id": "code-extend",
+          "cat": "code",
+          "icon": "🔄",
+          "title": "Meglévő osztály bővítése",
+          "sub": "Új metódus hozzáadása",
+          "desc": "Meglévő osztályhoz új metódus hozzáadása a jelenlegi kódstílus megtartásával.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "ÚJ_METÓDUSNÉV",
+            "LOGIKA_LEÍRÁS"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] jelenlegi forráskódját az abap-adt szerverrel.\n\nAdd hozzá az alábbi új metódust:\n  Metódusnév: [ÚJ_METÓDUSNÉV]\n  Logika: [LOGIKA_LEÍRÁS]\n\nKövetelmények:\n- Illeszkedjen a meglévő kódstílushoz\n- Bővítsd a CLASS-DEFINITION részt is\n- Végezz szintaxis ellenőrzést\n- Aktiváld az osztályt",
+          "favorite": true
+        },
+        {
+          "id": "code-oauth",
+          "cat": "code",
+          "icon": "🔑",
+          "title": "OAuth/JWT módosítás",
+          "sub": "ZCL_OAUTH_JWT_CLIENT / CIAM",
+          "desc": "Célzott módosítás a JWT/CIAM osztályokon, RFC 7523 kompatibilitás megtartásával.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "MÓDOSÍTÁS_LEÍRÁSA"
+          ],
+          "prompt": "Kérd le a ZCL_OAUTH_JWT_CLIENT és ZCL_BSP_CIAM_OAUTH_CONNECTOR osztályokat az abap-adt szerverrel.\n\nImplementáld az alábbi változtatást:\n[MÓDOSÍTÁS_LEÍRÁSA]\n\nKövetelmények:\n- RFC 7523 kompatibilis maradjon\n- A meglévő unit tesztek ne törjenek el\n- Adj hozzá ABAP Doc kommentet az új logikához\n- Szintaxis check + aktiválás minden módosított osztályon"
+        },
+        {
+          "id": "code-modify",
+          "cat": "code",
+          "icon": "🛠️",
+          "title": "Osztály módosítása",
+          "sub": "Tetszőleges osztály + módosítás",
+          "desc": "Bármely ABAP osztály módosítása a megadott leírás alapján, aktiválással.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "MÓDOSÍTÁS_LEÍRÁSA"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] ABAP osztály teljes forráskódját az abap-adt szerverrel.\n\nImplementáld az alábbi változtatást:\n[MÓDOSÍTÁS_LEÍRÁSA]\n\nKövetelmények:\n- Illeszkedjen a meglévő kódstílushoz és konvenciókhoz\n- A meglévő funkcionalitás ne sérüljön\n- Adj hozzá ABAP Doc kommentet az új/módosított logikához\n- Végezz szintaxis ellenőrzést\n- Aktiváld az osztályt\n\nHa a módosítás más osztályokat is érint, jelezd előre!"
+        },
+        {
+          "id": "test-full",
+          "cat": "test",
+          "icon": "🧪",
+          "title": "Teljes unit teszt suite",
+          "sub": "Minden publikus metódushoz",
+          "desc": "Happy path + edge case + hibás bemenet tesztek, test double-okkal, visszaírva az SAP rendszerbe.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] ABAP osztály forráskódját az abap-adt szerverrel.\n\nGenerálj egy teljes ABAP Unit teszt local class-t:\nTeszt osztály neve: LTCL_[OSZTÁLYNÉV rövid]_TEST\n\nKötelező elemek:\n  ☐ CLASS … DEFINITION FOR TESTING RISK LEVEL HARMLESS DURATION SHORT\n  ☐ setup() – CUT példányosítás\n  ☐ teardown() – cleanup\n\nMinden publikus metódushoz:\n  ☐ Happy path\n  ☐ Edge case (üres string, 0, boundary)\n  ☐ Hibás bemenet (várható kivétel)\n\nAssertions: cl_abap_unit_assert=>assert_equals / assert_true / assert_false\nÍrd vissza a forráskódba és aktiváld!"
+        },
+        {
+          "id": "test-mock",
+          "cat": "test",
+          "icon": "🎭",
+          "title": "Test Double / Mock generálás",
+          "sub": "Konfigurálható interfész mock",
+          "desc": "ABAP interfészhez teljes test double: return value konfig, call count logging, reset.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "INTERFÉSZ_NEVE"
+          ],
+          "prompt": "Kérd le a(z) [INTERFÉSZ_NEVE] ABAP interfész forráskódját az abap-adt szerverrel.\n\nGenerálj egy teljes test double osztályt:\n\nKépességek:\n  - set_return_value( iv_method TYPE string  iv_value TYPE string )\n  - get_call_count( iv_method TYPE string ) RETURNING VALUE(rv_count) TYPE i\n  - assert_called_once( iv_method TYPE string )\n  - reset() – számlálók törlése\n\nMinden interfész metódus:\n  - Naplózza a hívást (metódus + paraméterek)\n  - Konfigurált return value-t ad vissza\n  - Alapértelmezetten initial értéket ad"
+        },
+        {
+          "id": "test-missing",
+          "cat": "test",
+          "icon": "🔬",
+          "title": "Hiányzó tesztek pótlása",
+          "sub": "Coverage gap azonosítás",
+          "desc": "Elemzi a meglévő unit teszteket és csak a leteszteletlen ágakhoz generál újakat.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] teljes forráskódját az abap-adt szerverrel.\n\nElemezd a meglévő unit teszteket (LTCL_* osztályok).\nAzonosítsd:\n  1. Leteszteletlen publikus metódusokat\n  2. Leteszteletlen IF/CASE ágakat\n  3. CATCH blokkokat tesztek nélkül\n\nGenerálj CSAK a hiányzó teszteket!\nA meglévőket ne módosítsd.\nÍrd hozzá a meglévő teszt osztályhoz és aktiváld."
+        },
+        {
+          "id": "debug-dump",
+          "cat": "debug",
+          "icon": "💥",
+          "title": "Dump elemzés + javítás",
+          "sub": "ST22 dump kivizsgálása",
+          "desc": "Forráskód + dump szöveg alapján azonosítja a hiba okát és konkrét javítást ad.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "DUMP_SZÖVEG"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját az abap-adt szerverrel.\n\nAz alábbi ABAP dump keletkezett:\n--- DUMP ---\n[DUMP_SZÖVEG]\n------------\n\nElemzés:\n1. Azonosítsd a hibát okozó sort a forráskódban\n2. Magyarázd el a hiba PONTOS okát (nem csak a típust)\n3. Adj ABAP kódrészletet a javításhoz\n4. Javasolj defensive programming megközelítést\n\nMagyar nyelven!"
+        },
+        {
+          "id": "debug-performance",
+          "cat": "debug",
+          "icon": "⚡",
+          "title": "Teljesítmény elemzés",
+          "sub": "SELECT N+1, bottleneck keresés",
+          "desc": "Lassú futás esetén azonosítja a N+1 SELECT, felesleges ciklusok és memória problémákat.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját az abap-adt szerverrel.\n\nKeress teljesítmény problémákat:\n\nADATBÁZIS:\n  ☐ SELECT cikluson belül (N+1)\n  ☐ SELECT * felesleges mezőkkel\n  ☐ Hiányzó WHERE feltétel\n\nLOGIKA:\n  ☐ LOOP AT … WHERE helyett SELECT\n  ☐ SORT + BINARY SEARCH lehetőség\n  ☐ String concat cikluson belül\n\nMinden problémához: ELŐTTE / UTÁNA kódrészlet + becsült javulás!"
+        },
+        {
+          "id": "debug-oauth",
+          "cat": "debug",
+          "icon": "🔐",
+          "title": "OAuth/CIAM hibakeresés",
+          "sub": "Token, STRUST, SM59 problémák",
+          "desc": "Célzott OAuth/CIAM hiba diagnosztika: JWT struktúra, token cache, STRUST, HTTP config.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "HIBAÜZENET"
+          ],
+          "prompt": "Kérd le az alábbi osztályok forráskódját az abap-adt szerverrel:\n  - ZCL_OAUTH_JWT_CLIENT\n  - ZCL_BSP_CIAM_OAUTH_CONNECTOR\n\nAz alábbi hibát tapasztaljuk:\n[HIBAÜZENET]\n\nElemzési checklist:\n  ☐ JWT assertion helyes struktúra?\n  ☐ Token endpoint URL helyes?\n  ☐ STRUST tanúsítvány érvényes?\n  ☐ Token cache lejárat logika helyes?\n  ☐ Content-Type: application/x-www-form-urlencoded?\n\nAdj konkrét debugging lépéseket (SM59, STRUST, ICF)!"
+        },
+        {
+          "id": "workflow-full-cycle",
+          "cat": "workflow",
+          "icon": "🔁",
+          "title": "Teljes fejlesztési ciklus",
+          "sub": "Review → Módosítás → Teszt → Aktiválás",
+          "desc": "Komplex workflow: forráskód lekérés, review, módosítás implementálás, szintaxis check, aktiválás.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "MÓDOSÍTÁS_LEÍRÁSA"
+          ],
+          "prompt": "Teljes fejlesztési ciklust szeretnék:\n\n1. Kérd le a(z) [OSZTÁLYNÉV] jelenlegi forráskódját (abap-adt)\n2. Végezz gyors kod review-t (főbb problémák azonosítása)\n3. Implementáld az alábbi változtatást: [MÓDOSÍTÁS_LEÍRÁSA]\n4. Végezz szintaxis ellenőrzést\n5. Aktiváld az osztályt\n6. Összefoglalóban írd le mit változtattál és miért"
+        },
+        {
+          "id": "workflow-multi-class",
+          "cat": "workflow",
+          "icon": "🗂️",
+          "title": "Párhuzamos osztály módosítás",
+          "sub": "Több osztály egyszerre",
+          "desc": "Kapcsolódó osztályok koordinált módosítása: pl. új paraméter hozzáadása minden érintett osztályhoz.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYOK_LISTÁJA",
+            "MÓDOSÍTÁS",
+            "TRANSZPORT_SZÁM"
+          ],
+          "prompt": "Koordinált módosítást kell elvégezni több osztályon:\n\nÉrintett osztályok: [OSZTÁLYOK_LISTÁJA]\nMódosítás: [MÓDOSÍTÁS]\nTranszport: [TRANSZPORT_SZÁM]\n\nMinden osztályhoz:\n  1. Kérd le a jelenlegi forráskódot\n  2. Hajtsd végre a módosítást\n  3. Szintaxis check\n  4. Aktiválás\n\nTartsd meg a visszafelé kompatibilitást (default értékek)!\nAz összes osztály módosítása után adj összefoglalót."
+        },
+        {
+          "id": "workflow-docs",
+          "cat": "workflow",
+          "icon": "📚",
+          "title": "Technikai dokumentáció generálás",
+          "sub": "Wiki / Confluence stílusú leírás",
+          "desc": "Meglévő osztályokhoz teljes technikai dokumentáció: API leírás, architektúra, használati minták.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV_1",
+            "OSZTÁLYNÉV_2"
+          ],
+          "prompt": "Kérd le a következő osztályok forráskódját az abap-adt szerverrel:\n  - [OSZTÁLYNÉV_1]\n  - [OSZTÁLYNÉV_2]\n\nGenerálj technikai dokumentációt (Confluence stílusban):\n\n  # Áttekintés\n  # Architektúra diagram (ASCII art)\n  # Konfiguráció és előfeltételek\n  # Publikus API leírás (minden metódus, paraméterekkel)\n  # Hibaesetek és hibakódok\n  # Tipikus használati szcenáriók kóddal\n  # Ismert korlátok és TODO-k\n\nMagyar és angol szakszavak vegyesen, ABAP Doc stílusban."
+        },
+        {
+          "id": "review-dependencies",
+          "cat": "review",
+          "icon": "🔗",
+          "title": "Függőség térkép",
+          "sub": "Ki mit hív, ki mitől függ",
+          "desc": "Osztály függőségeinek vizualizálása: interfészek, injektált osztályok, hívási lánc.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nKészíts függőségi térképet:\n1. Interfészek, amiket implementál\n2. Konstruktorban injektált függőségek\n3. Hardkódolt függőségek (CREATE OBJECT, NEW)\n4. Külső hívások (RFC, HTTP, DB)\n\nASCII diagram formátumban:\n[OSZTÁLYNÉV]\n  ├── IF_INTERFACE_1\n  ├── → ZCL_DEPENDENCY (injected)\n  └── → BAPI_XXX (RFC call)"
+        },
+        {
+          "id": "code-interface",
+          "cat": "code",
+          "icon": "📐",
+          "title": "Interfész + implementáció",
+          "sub": "Clean architecture minta",
+          "desc": "Interfész definíció és alapértelmezett implementáció generálása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "INTERFÉSZ_NÉV",
+            "METÓDUSOK_LEÍRÁSA"
+          ],
+          "prompt": "Hozz létre egy ABAP interfészt és implementációt:\n\nInterfész: [INTERFÉSZ_NÉV]\nMetódusok: [METÓDUSOK_LEÍRÁSA]\n\nGeneráld:\n1. ZIF_* interfész definíció ABAP Doc-kal\n2. ZCL_* alapértelmezett implementáció\n3. Minden metódushoz raising CX_* kivétel\n\nÍrd vissza és aktiváld mindkettőt (abap-adt)."
+        },
+        {
+          "id": "code-badi",
+          "cat": "code",
+          "icon": "🔌",
+          "title": "BAdI implementáció",
+          "sub": "Enhancement spot kitöltése",
+          "desc": "BAdI definícióból implementáció generálása a megfelelő filterekkel.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "BADI_NÉV",
+            "FILTER_ÉRTÉKEK",
+            "LOGIKA"
+          ],
+          "prompt": "Keresd meg a [BADI_NÉV] BAdI definíciót (abap-adt).\n\nGenerálj implementációt:\n- Filter értékek: [FILTER_ÉRTÉKEK]\n- Üzleti logika: [LOGIKA]\n\nEllenőrizd a BAdI interfész metódusait és paramétereit!\nHozd létre az enhancement implementation-t és aktiváld."
+        },
+        {
+          "id": "code-alv-report",
+          "cat": "code",
+          "icon": "📊",
+          "title": "ALV Report generálás",
+          "sub": "SALV vagy CL_GUI_ALV_GRID",
+          "desc": "Teljes ALV report szelekciós képernyővel, SALV osztállyal.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "REPORT_NÉV",
+            "TÁBLA_VAGY_CDS",
+            "SZELEKCIÓS_MEZŐK"
+          ],
+          "prompt": "Generálj egy SALV alapú ABAP reportot:\n\nReport: [REPORT_NÉV]\nAdatforrás: [TÁBLA_VAGY_CDS]\nSzelekció: [SZELEKCIÓS_MEZŐK]\n\nKövetelmények:\n- SELECT-OPTIONS / PARAMETERS\n- CL_SALV_TABLE használata\n- Oszlop feliratok TEXT elemekből\n- Toolbar: Excel export, szűrés\n- Hotspot az első oszlopon (navigáció)\n\nÍrd vissza és aktiváld!"
+        },
+        {
+          "id": "test-sql-double",
+          "cat": "test",
+          "icon": "🗃️",
+          "title": "SQL Test Double",
+          "sub": "CDS/OSQL mock adatokkal",
+          "desc": "Adatbázis függőség izolálása test double-lal unit teszthez.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "TÁBLA_NEVEK"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nAzonosítsd az adatbázis hozzáféréseket és generálj SQL test double-t:\nTáblák: [TÁBLA_NEVEK]\n\nHasználd:\n- CL_OSQL_TEST_ENVIRONMENT (ABAP Cloud)\n- vagy CL_CDS_TEST_ENVIRONMENT\n\nPélda test adatokkal töltsd fel a mock táblákat.\nIntegráld a meglévő LTCL_* teszt osztályba."
+        },
+        {
+          "id": "debug-data-flow",
+          "cat": "debug",
+          "icon": "🔀",
+          "title": "Adatfolyam nyomkövetés",
+          "sub": "Változó értékek követése",
+          "desc": "Adott változó értékének követése a kódon keresztül, hol módosul.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "VÁLTOZÓ_NÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nKövesd nyomon a(z) [VÁLTOZÓ_NÉV] változót:\n1. Hol kap értéket először?\n2. Mely metódusok módosítják?\n3. Hol olvasódik ki?\n4. Van-e CLEAR/REFRESH?\n\nKészíts folyamatábrát a változó életciklusáról."
+        },
+        {
+          "id": "debug-idoc",
+          "cat": "debug",
+          "icon": "📨",
+          "title": "IDoc hibakeresés",
+          "sub": "WE02/WE05 státusz elemzés",
+          "desc": "IDoc feldolgozási hiba elemzése és javítási javaslat.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "IDOC_TÍPUS",
+            "HIBAÜZENET"
+          ],
+          "prompt": "IDoc feldolgozási hiba lépett fel:\nIDoc típus: [IDOC_TÍPUS]\nHibaüzenet: [HIBAÜZENET]\n\nElemezd:\n1. Melyik FM dolgozza fel ezt az IDoc típust?\n2. Keresd meg a hibát okozó logikát\n3. Adj javítási javaslatot\n4. Milyen WE19 teszt adatokkal reprodukálható?"
+        },
+        {
+          "id": "workflow-refactor",
+          "cat": "workflow",
+          "icon": "♻️",
+          "title": "Refaktorálási terv",
+          "sub": "Legacy kód modernizálás",
+          "desc": "Lépésről lépésre refaktorálási terv meglévő kódhoz.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nKészíts refaktorálási tervet:\n1. Azonosítsd a problémás részeket (God class, hosszú metódusok)\n2. Javasolj SOLID elvek szerinti átstrukturálást\n3. Lépésenkénti terv, ahol minden lépés után működik a kód\n4. Becsüld meg a kockázatokat\n\nNe implementálj, csak tervezz!"
+        },
+        {
+          "id": "workflow-migration",
+          "cat": "workflow",
+          "icon": "☁️",
+          "title": "ABAP Cloud migráció",
+          "sub": "On-premise → BTP előkészítés",
+          "desc": "Kód elemzése ABAP Cloud kompatibilitás szempontjából.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nElemezd ABAP Cloud / Steampunk kompatibilitás szempontjából:\n☐ Tiltott statement-ek (CALL TRANSACTION, SUBMIT)\n☐ Nem released API-k használata\n☐ Közvetlen DB hozzáférés CDS helyett\n☐ Kernel hívások\n\nMinden problémához:\n- Cloud-kompatibilis alternatíva\n- Released API javaslat (docs szerver)"
+        },
+        {
+          "id": "review-naming",
+          "cat": "review",
+          "icon": "🏷️",
+          "title": "Névkonvenció ellenőrzés",
+          "sub": "SAP/Clean ABAP szabályok",
+          "desc": "Változók, metódusok, osztályok elnevezéseinek ellenőrzése a Clean ABAP irányelvek szerint.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nEllenőrizd a névkonvenciókat Clean ABAP szerint:\n☐ Változók: lv_, lt_, ls_, lo_, lr_ prefixek\n☐ Paraméterek: iv_, it_, is_, io_, ev_, et_, es_, rv_, rt_\n☐ Attribútumok: mv_, mt_, ms_, mo_\n☐ Konstansok: mc_, gc_\n☐ Metódusok: igék használata (get_, set_, calculate_, validate_)\n☐ Boolean változók: is_, has_, can_ prefix\n\nListázd a nem megfelelő elnevezéseket és adj javaslatot!"
+        },
+        {
+          "id": "review-clean-code",
+          "cat": "review",
+          "icon": "✨",
+          "title": "Clean ABAP audit",
+          "sub": "Olvashatóság és karbantarthatóság",
+          "desc": "Teljes Clean ABAP ellenőrzés: metódus hossz, paraméter szám, kommentek, stb.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nVégezz Clean ABAP auditot:\n\nMETÓDUSOK:\n☐ Max 20 sor / metódus?\n☐ Max 3-4 paraméter?\n☐ Egy felelősség (SRP)?\n☐ Nincs flag paraméter?\n\nVÁLTOZÓK:\n☐ Beszédes nevek?\n☐ Inline deklaráció használata?\n☐ FIELD-SYMBOLS vs DATA REF?\n\nSTRUKTÚRA:\n☐ Early return pattern?\n☐ Guard clause-ok?\n☐ Kerüli a mély egymásba ágyazást?\n\nAdj prioritizált javítási listát!"
+        },
+        {
+          "id": "code-cds-view",
+          "cat": "code",
+          "icon": "📊",
+          "title": "CDS View generálás",
+          "sub": "Annotation-ökkel",
+          "desc": "CDS view létrehozása a megadott táblákból, megfelelő annotációkkal.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "VIEW_NÉV",
+            "ALAP_TÁBLA",
+            "MEZŐK",
+            "SZŰRÉS"
+          ],
+          "prompt": "Generálj CDS View-t az alábbi specifikáció szerint:\n\nView neve: [VIEW_NÉV]\nAlap tábla: [ALAP_TÁBLA]\nMezők: [MEZŐK]\nSzűrés: [SZŰRÉS]\n\nKövetelmények:\n- @AbapCatalog.sqlViewName annotation\n- @AccessControl.authorizationCheck: #CHECK\n- @EndUserText.label megfelelő szöveggel\n- Association-ök a kapcsolódó táblákhoz\n- Calculated field-ek ahol releváns\n- Key mezők megjelölése\n\nÍrd vissza és aktiváld (abap-adt)!"
+        },
+        {
+          "id": "code-rap-bo",
+          "cat": "code",
+          "icon": "🏛️",
+          "title": "RAP Business Object",
+          "sub": "Managed / Unmanaged BO",
+          "desc": "Teljes RAP Business Object generálása: CDS, behavior, projection.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "ENTITÁS_NÉV",
+            "ALAP_TÁBLA",
+            "MŰVELETEK"
+          ],
+          "prompt": "Generálj RAP Business Object-et:\n\nEntitás: [ENTITÁS_NÉV]\nAlap tábla: [ALAP_TÁBLA]\nMűveletek: [MŰVELETEK]\n\nHozd létre:\n1. Root CDS View (R_*)\n2. Projection View (C_*)\n3. Behavior Definition (managed)\n4. Behavior Implementation osztály\n5. Service Definition és Binding (OData V4)\n\nMinden CRUD művelet + validációk + determinations.\nAktiváld az összes objektumot!"
+        },
+        {
+          "id": "code-exception",
+          "cat": "code",
+          "icon": "⚠️",
+          "title": "Kivétel osztály generálás",
+          "sub": "CX_ osztály hierarchia",
+          "desc": "ABAP kivétel osztály létrehozása üzenet osztállyal és szövegekkel.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "KIVÉTEL_NÉV",
+            "ÜZENET_TÍPUSOK"
+          ],
+          "prompt": "Generálj kivétel osztályt:\n\nOsztálynév: ZCX_[KIVÉTEL_NÉV]\nÜzenet típusok: [ÜZENET_TÍPUSOK]\n\nKövetelmények:\n- Öröklés: CX_STATIC_CHECK vagy CX_DYNAMIC_CHECK\n- IF_T100_MESSAGE implementálás\n- Üzenet osztály (message class) létrehozása\n- Konstansok minden hibakódhoz\n- CONSTRUCTOR megfelelő paraméterekkel\n- ABAP Doc dokumentáció\n\nÍrd vissza és aktiváld!"
+        },
+        {
+          "id": "code-factory",
+          "cat": "code",
+          "icon": "🏭",
+          "title": "Factory pattern implementáció",
+          "sub": "Dependency Injection előkészítés",
+          "desc": "Factory osztály és interfész generálása a loose coupling érdekében.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nRefaktoráld Factory pattern-re:\n1. Extrahálj interfészt (ZIF_*)\n2. Hozz létre factory osztályt (ZCL_*_FACTORY)\n3. A factory legyen singleton\n4. Támogasson test double injektálást\n\nFactory metódusok:\n- get_instance( ) → interfész\n- set_mock( io_mock TYPE REF TO zif_* ) → teszteléshez\n- reset( ) → mock törlése\n\nAktiváld az összes új objektumot!"
+        },
+        {
+          "id": "test-integration",
+          "cat": "test",
+          "icon": "🔗",
+          "title": "Integrációs teszt",
+          "sub": "Több osztály együttműködése",
+          "desc": "Integrációs teszt több osztály együttműködésének tesztelésére.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLY_1",
+            "OSZTÁLY_2",
+            "SZCENÁRIÓ"
+          ],
+          "prompt": "Kérd le a következő osztályokat (abap-adt):\n- [OSZTÁLY_1]\n- [OSZTÁLY_2]\n\nGenerálj integrációs tesztet:\nSzcenárió: [SZCENÁRIÓ]\n\nKövetelmények:\n- Test fixture setup (valós objektumok, nem mock)\n- Test data builder pattern\n- Cleanup teardown\n- Assertion-ök a végállapotra\n- Risk level: CRITICAL vagy DANGEROUS ha DB-t módosít\n\nNe mock-olj mindent - a cél az integráció tesztelése!"
+        },
+        {
+          "id": "test-exception",
+          "cat": "test",
+          "icon": "💣",
+          "title": "Kivétel tesztek",
+          "sub": "Negatív test case-ek",
+          "desc": "Negatív tesztek generálása: hibás input, kivételek, boundary értékek.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nGenerálj negatív teszteket minden publikus metódushoz:\n\nTesztelendő esetek:\n☐ NULL / initial értékek\n☐ Üres string, üres tábla\n☐ Boundary értékek (MAX_INT, túl hosszú string)\n☐ Érvénytelen típus konverzió\n☐ Hiányzó kötelező paraméterek\n☐ Várt kivételek (TRY-CATCH)\n\nHasználj: cl_abap_unit_assert=>fail( ) ha nem dob kivételt!\nIntegráld a meglévő teszt osztályba."
+        },
+        {
+          "id": "debug-memory",
+          "cat": "debug",
+          "icon": "🧠",
+          "title": "Memória analízis",
+          "sub": "Internal table méret, referenciák",
+          "desc": "Memória használat elemzése: nagy táblák, memory leak gyanús helyek.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nElemezd a memória használatot:\n\nINTERNAL TABLE-ÖK:\n☐ Típus megfelelő? (STANDARD vs HASHED vs SORTED)\n☐ Van-e felesleges másolás (MOVE)?\n☐ FREE/CLEAR használat ciklusok után?\n☐ ASSIGNING vs INTO?\n\nREFERENCIÁK:\n☐ Körkörös referencia veszély?\n☐ Singleton-ok memóriában maradnak?\n☐ Static attribútumok mérete?\n\nAdj memory profiling tippeket (ST05, SAT)!"
+        },
+        {
+          "id": "debug-lock",
+          "cat": "debug",
+          "icon": "🔒",
+          "title": "Lock konfliktus elemzés",
+          "sub": "Enqueue / Dequeue problémák",
+          "desc": "Zárolási problémák azonosítása és megoldási javaslatok.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "LOCK_OBJEKTUM"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nElemezd a zárolási logikát:\nLock objektum: [LOCK_OBJEKTUM]\n\nEllenőrizd:\n☐ ENQUEUE hívás helye (túl korán?)\n☐ DEQUEUE mindig meghívódik? (CATCH ágakban is?)\n☐ _SCOPE paraméter helyes?\n☐ _WAIT paraméter timeout-tal?\n☐ Holtpont (deadlock) kockázat?\n\nJavasolj:\n- Optimális lock stratégiát\n- Error handling-et lock failure esetén\n- SM12 / SM21 debugging lépéseket"
+        },
+        {
+          "id": "debug-auth",
+          "cat": "debug",
+          "icon": "👮",
+          "title": "Jogosultság hibakeresés",
+          "sub": "AUTHORITY-CHECK problémák",
+          "desc": "Jogosultsági problémák diagnosztizálása: SU53, auth trace.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "AUTH_OBJEKTUM"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nElemezd a jogosultság ellenőrzést:\nAuth objektum: [AUTH_OBJEKTUM]\n\nEllenőrizd:\n☐ AUTHORITY-CHECK szintaxis helyes?\n☐ Minden mező ellenőrzött?\n☐ DUMMY használat indokolt?\n☐ sy-subrc kezelés megfelelő?\n☐ Van-e megkerülhető ág?\n\nAdj SU53 / ST01 / STAUTHTRACE debugging lépéseket!\nHa hiányzik ellenőrzés, adj kódrészletet."
+        },
+        {
+          "id": "workflow-code-review-pr",
+          "cat": "workflow",
+          "icon": "👀",
+          "title": "Pull Request Review",
+          "sub": "Változások elemzése",
+          "desc": "Két verzió összehasonlítása és review jegyzőkönyv készítése.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "VÁLTOZTATÁS_LEÍRÁS"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nKészíts Code Review jegyzőkönyvet:\nVáltoztatás: [VÁLTOZTATÁS_LEÍRÁS]\n\nReview checklist:\n☐ Funkcionális helyesség\n☐ Edge case-ek kezelése\n☐ Error handling\n☐ Teljesítmény hatás\n☐ Visszafelé kompatibilitás\n☐ Unit teszt lefedettség\n☐ Dokumentáció frissítve?\n\nFormátum:\n✅ APPROVE / ⚠️ REQUEST CHANGES / ❌ REJECT\nKommentek soronként ahol szükséges."
+        },
+        {
+          "id": "workflow-transport",
+          "cat": "transport",
+          "icon": "📦",
+          "title": "Transzport előkészítés",
+          "sub": "Objektum lista és függőségek",
+          "desc": "Transzporthoz szükséges objektumok és függőségeik azonosítása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "CÉLRENDSZER"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] és függőségeinek forráskódját (abap-adt).\n\nKészíts transzport checklistet:\nCélrendszer: [CÉLRENDSZER]\n\nAzonosítsd:\n1. Közvetlen függőségek (használt osztályok, interfészek)\n2. Data Dictionary objektumok (táblák, struktúrák, domain-ek)\n3. Message class-ok\n4. Number range objektumok\n5. Customizing táblák (van-e adat is?)\n\nSorrend javaslat (STMS):\n1. DDIC objektumok\n2. Interfészek\n3. Osztályok\n4. Konfigurációs adatok\n\nFigyelmeztetések ha van rendszer-függő hardkódolt érték!"
+        },
+        {
+          "id": "workflow-compare",
+          "cat": "workflow",
+          "icon": "⚖️",
+          "title": "Kód összehasonlítás",
+          "sub": "Két osztály diff elemzése",
+          "desc": "Két osztály vagy verzió közötti különbségek azonosítása és dokumentálása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLY_1",
+            "OSZTÁLY_2"
+          ],
+          "prompt": "Kérd le mindkét osztályt (abap-adt):\n- [OSZTÁLY_1]\n- [OSZTÁLY_2]\n\nKészíts összehasonlító elemzést:\n\nSTRUKTÚRA:\n- Metódus különbségek (új, törölt, módosított)\n- Attribútum változások\n- Interfész implementáció eltérések\n\nLOGIKA:\n- Algoritmus különbségek\n- Error handling eltérések\n- Teljesítmény különbségek\n\nOUTPUT:\nTáblázatos formátum + ajánlás melyik a jobb megoldás."
+        },
+        {
+          "id": "code-select",
+          "cat": "code",
+          "icon": "🔍",
+          "title": "Optimális SELECT írás",
+          "sub": "Teljesítmény-optimalizált lekérdezés",
+          "desc": "SELECT statement optimalizálása: index használat, JOIN vs FOR ALL ENTRIES.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "TÁBLÁK",
+            "FELTÉTELEK",
+            "MEZŐK"
+          ],
+          "prompt": "Írj optimalizált SELECT statement-et:\n\nTáblák: [TÁBLÁK]\nFeltételek: [FELTÉTELEK]\nSzükséges mezők: [MEZŐK]\n\nDöntsd el és indokold:\n- JOIN vs FOR ALL ENTRIES vs nested SELECT?\n- Melyik index használható?\n- UP TO n ROWS szükséges?\n- PACKAGE SIZE a memóriához?\n\nAdj ABAP kódot és magyarázd az index használatot!\nEmlítsd meg az ST05 trace lépéseket az ellenőrzéshez."
+        },
+        {
+          "id": "code-json",
+          "cat": "code",
+          "icon": "📋",
+          "title": "JSON / XML feldolgozás",
+          "sub": "Szerializáció és deszerializáció",
+          "desc": "JSON vagy XML adatstruktúra ABAP típusra konvertálása és vissza.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "FORMÁTUM",
+            "STRUKTÚRA_LEÍRÁS"
+          ],
+          "prompt": "Generálj [FORMÁTUM] feldolgozó kódot:\n\nStruktúra: [STRUKTÚRA_LEÍRÁS]\n\nHozd létre:\n1. ABAP struktúra/tábla típus (TYPES)\n2. Szerializáló metódus (ABAP → JSON/XML)\n3. Deszerializáló metódus (JSON/XML → ABAP)\n\nHasználd:\n- /UI2/CL_JSON (JSON esetén)\n- CL_SXML_* osztályok (XML esetén)\n- XSLT transformation alternatívaként\n\nError handling: mit csinálj hibás input esetén?"
+        },
+        {
+          "id": "code-http-client",
+          "cat": "code",
+          "icon": "🌐",
+          "title": "HTTP kliens implementáció",
+          "sub": "REST API hívás",
+          "desc": "HTTP kliens osztály létrehozása REST API hívásokhoz, error handling-gel.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "API_URL",
+            "AUTH_TÍPUS",
+            "MŰVELETEK"
+          ],
+          "prompt": "Generálj HTTP kliens osztályt:\n\nAPI URL: [API_URL]\nAutentikáció: [AUTH_TÍPUS]\nMűveletek: [MŰVELETEK]\n\nKövetelmények:\n- CL_HTTP_CLIENT vagy CL_REST_HTTP_CLIENT használata\n- SM59 destination kezelés\n- Request/Response logging\n- Timeout beállítás\n- Retry logika tranziáns hibákra\n- HTTP státusz kód kezelés (4xx, 5xx)\n- SSL/TLS certificate kezelés (STRUST)\n\nAdj ICF service debugging tippeket is!"
+        },
+        {
+          "id": "debug-trace",
+          "cat": "debug",
+          "icon": "📍",
+          "title": "Futási nyomkövetés",
+          "sub": "Logging és trace implementálás",
+          "desc": "Átmeneti trace logika hozzáadása hibakereséshez, majd eltávolítás.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OSZTÁLYNÉV",
+            "METÓDUS_LISTA"
+          ],
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] forráskódját (abap-adt).\n\nAdd hozzá ideiglenes trace-t ezekhez a metódusokhoz: [METÓDUS_LISTA]\n\nTrace típusok:\n1. Belépési pont (paraméterek)\n2. Döntési pontok (IF/CASE ágak)\n3. Kilépési pont (return érték)\n4. Kivétel dobás helyek\n\nHasználd:\n- APPLICATION_LOG (BAL_*) vagy\n- SLG1 kompatibilis logging\n\nFONTOS: Kommenteld meg a trace sorokat \"TODO: Remove trace\" megjegyzéssel!"
+        },
+        {
+          "id": "test-scenario",
+          "cat": "test",
+          "icon": "🎬",
+          "title": "Szcenárió alapú teszt",
+          "sub": "End-to-end user story teszt",
+          "desc": "Teljes user story lefedése tesztekkel, given-when-then formátumban.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "USER_STORY",
+            "ÉRINTETT_OSZTÁLYOK"
+          ],
+          "prompt": "User story: [USER_STORY]\nÉrintett osztályok: [ÉRINTETT_OSZTÁLYOK]\n\nKérd le az osztályokat (abap-adt) és generálj szcenárió teszteket.\n\nFormátum (Given-When-Then):\nGIVEN: Előfeltételek (test data setup)\nWHEN: Végrehajtott akció\nTHEN: Elvárt eredmény (assertion-ök)\n\nTesztelendő szcenáriók:\n☐ Happy path (sikeres eset)\n☐ Alternatív folyamat\n☐ Hibás input kezelése\n☐ Jogosultsági elutasítás\n☐ Concurrent access\n\nMinden szcenárióhoz külön teszt metódus!"
+        },
+        {
+          "id": "transport-conflict",
+          "cat": "transport",
+          "icon": "⚔️",
+          "title": "Transzport ütközés elemzés",
+          "sub": "Konfliktusok azonosítása",
+          "desc": "Két vagy több transzport közötti ütközések és átfedések felderítése.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "TRANSZPORT_1",
+            "TRANSZPORT_2"
+          ],
+          "prompt": "Elemezd a következő transzportokat ütközés szempontjából:\n- Transzport 1: [TRANSZPORT_1]\n- Transzport 2: [TRANSZPORT_2]\n\nEllenőrizd:\n☐ Ugyanazt az objektumot módosítják?\n☐ Van-e átfedő DDIC objektum?\n☐ Sorrendfüggőség van köztük?\n☐ Melyik írja felül a másikat?\n\nHa ütközés van:\n1. Azonosítsd az érintett objektumokat\n2. Javasolj import sorrendet\n3. Adj merge stratégiát ha szükséges\n4. Figyelmeztetés ha adatvesztés lehetséges\n\nSE09/SE10 és STMS lépések az ellenőrzéshez!"
+        },
+        {
+          "id": "transport-dependency",
+          "cat": "transport",
+          "icon": "🔗",
+          "title": "Függőség analízis",
+          "sub": "Előfeltétel transzportok",
+          "desc": "Transzport függőségeinek feltérképezése - mi kell előtte.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "TRANSZPORT_SZÁM"
+          ],
+          "prompt": "Elemezd a [TRANSZPORT_SZÁM] transzport függőségeit.\n\nKeresd meg (abap-adt):\n1. Transzportban lévő objektumok\n2. Minden objektum függőségei\n3. Ezek melyik transzportban vannak\n\nKészíts függőségi fát:\n[TRANSZPORT]\n  └── ZCL_OSZTÁLY\n      ├── ZIF_INTERFACE → TR másik\n      ├── ZTABLE → TR harmadik\n      └── ZCX_EXCEPTION → TR negyedik\n\nKRITIKUS: Jelöld ha függőség NINCS IMPORTÁLVA a célrendszerben!\nAdj STMS import queue sorrendet."
+        },
+        {
+          "id": "transport-object-lock",
+          "cat": "transport",
+          "icon": "🔐",
+          "title": "Objektum zárolás keresés",
+          "sub": "Ki módosítja / zárolj",
+          "desc": "Azonos objektumon dolgozó fejlesztők és transzportok azonosítása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OBJEKTUM_NÉV"
+          ],
+          "prompt": "Ellenőrizd a(z) [OBJEKTUM_NÉV] objektum zárolási állapotát.\n\nKeresendő információk:\n☐ Melyik transzportban van jelenleg?\n☐ Ki a transzport tulajdonosa?\n☐ Mikor volt utoljára módosítva?\n☐ Van-e más nyitott transzport ugyanerre?\n☐ Történt-e változás ami nincs release-elve?\n\nSE09/SE10 ellenőrzés:\n- E070: Transzport header\n- E071: Objektumok a transzportban\n- TADIR: Objektum - csomag hozzárendelés\n\nJavaslat ha ütközés van!"
+        },
+        {
+          "id": "transport-cross-system",
+          "cat": "transport",
+          "icon": "🔄",
+          "title": "Rendszerek közötti összehasonlítás",
+          "sub": "DEV vs QAS vs PRD diff",
+          "desc": "Objektum verzióinak összehasonlítása különböző rendszerekben.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OBJEKTUM_NÉV",
+            "RENDSZER_1",
+            "RENDSZER_2"
+          ],
+          "prompt": "Hasonlítsd össze a(z) [OBJEKTUM_NÉV] objektumot:\n- [RENDSZER_1] rendszerben\n- [RENDSZER_2] rendszerben\n\nEllenőrizd:\n☐ Verzió különbségek\n☐ Forráskód eltérések\n☐ Aktiválási dátumok\n☐ Utolsó módosító user\n\nHa eltérés van:\n1. Mi a különbség pontosan? (diff)\n2. Melyik verzió az \"igazi\"?\n3. Van-e transzport úton ami megoldja?\n4. Kell-e visszaszállítás (retrofit)?\n\nSE39 / SE95 program összehasonlítás lépések!"
+        },
+        {
+          "id": "transport-release-check",
+          "cat": "transport",
+          "icon": "✅",
+          "title": "Release előtti ellenőrzés",
+          "sub": "Go/No-Go checklist",
+          "desc": "Transzport release előtti teljes ellenőrzési lista.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "TRANSZPORT_SZÁM"
+          ],
+          "prompt": "Végezz release előtti ellenőrzést: [TRANSZPORT_SZÁM]\n\nSZINTAXIS ÉS AKTIVÁLÁS:\n☐ Minden objektum aktív?\n☐ Nincs szintaxis hiba?\n☐ DDIC objektumok aktiválva?\n☐ Generált objektumok renderelve?\n\nTESZTELÉS:\n☐ Unit tesztek lefutottak?\n☐ Integrációs teszt OK?\n☐ Regresszió teszt elvégezve?\n\nDOKUMENTÁCIÓ:\n☐ Transzport leírás kitöltve?\n☐ Change request hivatkozás?\n☐ Rollback terv készült?\n\nFÜGGŐSÉGEK:\n☐ Előfeltétel TR-ek release-elve?\n☐ Nincs körkörös függőség?\n\nRelease STMS lépések és SE09 útmutató!"
+        },
+        {
+          "id": "transport-hotfix",
+          "cat": "transport",
+          "icon": "🚨",
+          "title": "Sürgős hotfix transzport",
+          "sub": "Emergency change folyamat",
+          "desc": "Sürgős javítás transzportálása a megfelelő eljárással.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "HIBA_LEÍRÁS",
+            "ÉRINTETT_OBJEKTUMOK"
+          ],
+          "prompt": "Sürgős hotfix szükséges!\n\nHiba: [HIBA_LEÍRÁS]\nÉrintett objektumok: [ÉRINTETT_OBJEKTUMOK]\n\nHotfix folyamat:\n1. Új transzport létrehozása (emergency prefix)\n2. Minimális változtatás azonosítása\n3. Fejlesztés közvetlenül PROD-ban? (ha engedélyezett)\n\nEllenőrzőlista:\n☐ Csak a javításhoz szükséges objektumok\n☐ Nincs \"ráadás\" módosítás\n☐ Azonnali teszt PROD-ban\n☐ Retrofit terv DEV felé\n☐ Dokumentáció (incident szám)\n\nFIGYELEM:\n- Downgrade kockázat ha DEV-ben más verzió!\n- Retrofit KÖTELEZŐ a konzisztenciához!"
+        },
+        {
+          "id": "transport-retrofit",
+          "cat": "transport",
+          "icon": "⬅️",
+          "title": "Retrofit tervezés",
+          "sub": "PRD → DEV visszaszállítás",
+          "desc": "Termelési változások visszaszállítása fejlesztői rendszerbe.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "PROD_TRANSZPORT",
+            "DEV_VÁLTOZÁSOK"
+          ],
+          "prompt": "Retrofit szükséges:\nPROD transzport: [PROD_TRANSZPORT]\nDEV-ben történt változások: [DEV_VÁLTOZÁSOK]\n\nElemzés:\n1. Mi van PROD-ban ami nincs DEV-ben?\n2. Mi van DEV-ben ami nincs PROD-ban?\n3. Van-e konfliktus a kettő között?\n\nRetrofit stratégia:\n☐ Transport of Copies (ToC) használata\n☐ Manuális merge szükséges?\n☐ Melyik verzió a \"master\"?\n\nLépések:\n1. SE09 → Transport of Copies létrehozása\n2. Objektumok másolása PROD-ról\n3. Merge DEV változásokkal\n4. Teszt és aktiválás DEV-ben\n\nKRITIKUS: Dokumentáld mi lett merge-ölve!"
+        },
+        {
+          "id": "transport-queue",
+          "cat": "transport",
+          "icon": "📋",
+          "title": "Import queue rendezés",
+          "sub": "STMS sorrend optimalizálás",
+          "desc": "Import queue sorrendjének ellenőrzése és optimalizálása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "CÉLRENDSZER",
+            "TRANSZPORT_LISTA"
+          ],
+          "prompt": "Rendezd az import queue-t:\nCélrendszer: [CÉLRENDSZER]\nTranszportok: [TRANSZPORT_LISTA]\n\nElemzés minden transzportra:\n1. Tartalmazott objektumok\n2. Függőségek más TR-ekre\n3. DDIC változások (elsőbbség!)\n\nOptimális sorrend meghatározása:\n☐ DDIC objektumok először\n☐ Interfészek az implementáció előtt\n☐ Alap osztályok az örököltek előtt\n☐ Nincs körkörös függőség\n\nSTMS lépések:\n1. Import queue megnyitása\n2. Sorrend módosítása\n3. Előzetes import ellenőrzés\n4. Import indítása megfelelő opciókal\n\nImport opciók javaslat (Overwrite, Ignore)!"
+        },
+        {
+          "id": "transport-compare-versions",
+          "cat": "transport",
+          "icon": "📊",
+          "title": "Verzió történet elemzés",
+          "sub": "Objektum változási napló",
+          "desc": "Objektum teljes verzió történetének és változásainak elemzése.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "OBJEKTUM_NÉV"
+          ],
+          "prompt": "Elemezd a(z) [OBJEKTUM_NÉV] verzió történetét (abap-adt).\n\nGyűjtsd össze:\n☐ Összes verzió az VRSD táblából\n☐ Minden verzióhoz: dátum, user, transzport\n☐ Változások típusa (új/módosított/törölt sorok)\n\nKészíts idővonalat:\n| Dátum | User | Transzport | Változás típusa |\n|-------|------|------------|-----------------|\n| ...   | ...  | ...        | ...             |\n\nAzonosítsd:\n- Leggyakrabban módosító user\n- Legnagyobb változás mikor volt\n- Van-e gyanús módosítás (pl. hétvégén)\n\nSE39 verzió összehasonlítás lépések!"
+        },
+        {
+          "id": "transport-missing-objects",
+          "cat": "transport",
+          "icon": "❓",
+          "title": "Hiányzó objektumok keresése",
+          "sub": "Aktiválási hibák diagnosztika",
+          "desc": "Import utáni aktiválási hibák és hiányzó függőségek felderítése.",
+          "tools": [
+            "adt",
+            "docs"
+          ],
+          "vars": [
+            "HIBAÜZENET",
+            "TRANSZPORT_SZÁM"
+          ],
+          "prompt": "Import után aktiválási hiba:\nHibaüzenet: [HIBAÜZENET]\nTranszport: [TRANSZPORT_SZÁM]\n\nDiagnosztika:\n1. Mi az aktiválási hiba pontos oka?\n2. Melyik objektum hiányzik?\n3. Melyik transzportban kellene lennie?\n4. Importálva van-e a célrendszerben?\n\nEllenőrizd:\n☐ E070/E071 - Transzport tartalom\n☐ TADIR - Objektum létezik-e\n☐ SMODILOG - Módosítási napló\n☐ Aktiválási protokoll (SM21)\n\nMegoldási javaslatok:\n1. Hiányzó TR pót-importálása\n2. Objektum újragenerálása\n3. Kézi aktiválás sorrendje\n\nSE11 / SE80 hibakeresési lépések!"
+        },
+        {
+          "id": "transport-rollback",
+          "cat": "transport",
+          "icon": "⏪",
+          "title": "Rollback terv készítés",
+          "sub": "Visszaállítási stratégia",
+          "desc": "Transzport visszagörgetési terv készítése problémás import esetére.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "TRANSZPORT_SZÁM",
+            "ÉRINTETT_OBJEKTUMOK"
+          ],
+          "prompt": "Készíts rollback tervet:\nTranszport: [TRANSZPORT_SZÁM]\nObjektumok: [ÉRINTETT_OBJEKTUMOK]\n\nRollback előkészítés IMPORT ELŐTT:\n☐ Jelenlegi verziók mentése\n☐ Érintett táblák backup (ha van adatváltozás)\n☐ Customizing értékek dokumentálása\n\nRollback stratégiák:\n1. Transport of Copies a régi verzióról\n2. ABAP verziókezelésből visszaállítás (SE39)\n3. Teljes rendszer visszaállítás (utolsó lehetőség)\n\nRollback lépések:\n1. Probléma azonosítása\n2. Döntés a rollback típusról\n3. Végrehajtás\n4. Verifikáció\n5. Root cause elemzés\n\nFIGYELEM: DDIC változások rollback-je kritikus!"
+        }
+      ]
+    },
+    {
+      "id": "general",
+      "name": "Általános",
+      "icon": "📝",
+      "color": "#00b894",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "writing",
+          "label": "✍️ Írás",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "analysis",
+          "label": "🔍 Elemzés",
+          "color": "#0891b2"
+        },
+        {
+          "id": "creative",
+          "label": "🎨 Kreatív",
+          "color": "#ec4899"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "gen-summarize",
+          "cat": "analysis",
+          "icon": "📋",
+          "title": "Szöveg összefoglalás",
+          "sub": "Rövid kivonat készítése",
+          "desc": "Hosszú szöveg tömör összefoglalása a lényeges pontokkal.",
+          "tools": [],
+          "vars": [
+            "SZÖVEG"
+          ],
+          "prompt": "Foglald össze az alábbi szöveget tömören, a lényeges pontokat kiemelve:\n\n[SZÖVEG]\n\nAz összefoglaló legyen:\n- Maximum 3-5 mondat\n- A fő gondolatokat tartalmazza\n- Objektív és semleges hangvételű"
+        },
+        {
+          "id": "gen-email",
+          "cat": "writing",
+          "icon": "📧",
+          "title": "Email írás",
+          "sub": "Professzionális levél",
+          "desc": "Professzionális email megfogalmazása a megadott témában.",
+          "tools": [],
+          "vars": [
+            "TÉMA",
+            "HANGNEM",
+            "CÍMZETT"
+          ],
+          "prompt": "Írj egy professzionális emailt:\n\nTéma: [TÉMA]\nHangnem: [HANGNEM]\nCímzett: [CÍMZETT]\n\nAz email legyen:\n- Udvarias és professzionális\n- Tömör de informatív\n- Egyértelmű cselekvésre ösztönzés (ha releváns)"
+        },
+        {
+          "id": "gen-brainstorm",
+          "cat": "creative",
+          "icon": "💡",
+          "title": "Ötletelés",
+          "sub": "Brainstorming session",
+          "desc": "Kreatív ötletek generálása adott témában.",
+          "tools": [],
+          "vars": [
+            "TÉMA",
+            "DARABSZÁM"
+          ],
+          "prompt": "Generálj [DARABSZÁM] kreatív ötletet a következő témában:\n\n[TÉMA]\n\nMinden ötlethez adj:\n- Rövid leírást (1-2 mondat)\n- Előnyök\n- Esetleges kihívások"
+        }
+      ]
+    },
+    {
+      "id": "sap-fiori",
+      "name": "SAP Fiori/UI5",
+      "icon": "🎨",
+      "color": "#ed8936",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "view",
+          "label": "📄 View/Controller",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "odata",
+          "label": "🔌 OData/Model",
+          "color": "#10b981"
+        },
+        {
+          "id": "component",
+          "label": "🧩 Komponens",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "test",
+          "label": "🧪 Tesztelés",
+          "color": "#ec4899"
+        },
+        {
+          "id": "debug",
+          "label": "🐛 Debug/Perf",
+          "color": "#ef4444"
+        },
+        {
+          "id": "extend",
+          "label": "🔧 Extension",
+          "color": "#f59e0b"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "fiori-view-create",
+          "cat": "view",
+          "icon": "📄",
+          "title": "XML View létrehozása",
+          "sub": "Új nézet struktúra",
+          "desc": "Komplett XML View generálása a megadott elemekkel.",
+          "tools": [],
+          "vars": [
+            "VIEW_NÉV",
+            "ELEMEK_LEÍRÁSA"
+          ],
+          "prompt": "Generálj egy SAPUI5 XML View-t:\n\nView neve: [VIEW_NÉV]\nTartalmazott elemek: [ELEMEK_LEÍRÁSA]\n\nKövetelmények:\n- sap.m library használata\n- Megfelelő namespace deklarációk\n- i18n binding a szövegekhez\n- Semantic page struktúra (header, content, footer)\n- Responsív elrendezés (layoutData)\n\nAdj hozzá a megfelelő Controller skeleton-t is!"
+        },
+        {
+          "id": "fiori-controller",
+          "cat": "view",
+          "icon": "⚙️",
+          "title": "Controller implementáció",
+          "sub": "Event handler + lifecycle",
+          "desc": "Controller létrehozása vagy bővítése eseménykezelőkkel.",
+          "tools": [],
+          "vars": [
+            "CONTROLLER_NÉV",
+            "FUNKCIÓK"
+          ],
+          "prompt": "Generálj SAPUI5 Controller-t:\n\nController: [CONTROLLER_NÉV]\nSzükséges funkciók: [FUNKCIÓK]\n\nKövetelmények:\n- ES6+ szintaxis\n- Lifecycle metódusok (onInit, onExit, onBeforeRendering, onAfterRendering)\n- Proper error handling\n- JSDoc kommentek\n- Model binding best practices\n- this.getView(), this.getOwnerComponent() használata\n\nHasználj async/await-et ahol releváns!"
+        },
+        {
+          "id": "fiori-fragment",
+          "cat": "view",
+          "icon": "🧩",
+          "title": "Fragment létrehozása",
+          "sub": "Újrafelhasználható UI részlet",
+          "desc": "XML Fragment készítése dialog, popover vagy egyéb újrafelhasználható elemhez.",
+          "tools": [],
+          "vars": [
+            "FRAGMENT_NÉV",
+            "TÍPUS",
+            "TARTALOM"
+          ],
+          "prompt": "Generálj SAPUI5 XML Fragment-et:\n\nFragment neve: [FRAGMENT_NÉV]\nTípus: [TÍPUS] (Dialog / Popover / Form / List)\nTartalom: [TARTALOM]\n\nKövetelmények:\n- FragmentDefinition wrapper\n- i18n binding\n- Event handler-ek a controller-ben\n- ID prefix kezelés (this.createId)\n- Proper fragment loading (Fragment.load)\n\nAdj példát a Fragment betöltésére és megnyitására a controller-ben!"
+        },
+        {
+          "id": "fiori-table",
+          "cat": "view",
+          "icon": "📊",
+          "title": "Smart/Responsive Table",
+          "sub": "Táblázat OData binding-gel",
+          "desc": "Táblázat komponens létrehozása szűréssel, rendezéssel, exporttal.",
+          "tools": [],
+          "vars": [
+            "ENTITÁS_NÉV",
+            "OSZLOPOK",
+            "MŰVELETEK"
+          ],
+          "prompt": "Generálj SAPUI5 táblázatot:\n\nOData entitás: [ENTITÁS_NÉV]\nOszlopok: [OSZLOPOK]\nMűveletek: [MŰVELETEK]\n\nVálasztható komponens típusok:\n1. sap.m.Table (mobil-optimalizált)\n2. sap.ui.table.Table (desktop, nagy adatmennyiség)\n3. sap.ui.comp.smarttable.SmartTable (automatikus OData)\n\nTartalmazzon:\n- Column binding az OData mezőkhöz\n- Toolbar: keresés, szűrés, export\n- Growing/pagination nagy adathoz\n- Row selection kezelés\n- Responsive column hiding (popinDisplay)"
+        },
+        {
+          "id": "fiori-odata-crud",
+          "cat": "odata",
+          "icon": "🔄",
+          "title": "OData CRUD műveletek",
+          "sub": "Create, Read, Update, Delete",
+          "desc": "OData V2/V4 CRUD műveletek implementálása.",
+          "tools": [],
+          "vars": [
+            "MODELL_NÉV",
+            "ENTITÁS",
+            "VERZIÓ"
+          ],
+          "prompt": "Implementálj OData CRUD műveleteket:\n\nModel neve: [MODELL_NÉV]\nEntitás: [ENTITÁS]\nOData verzió: [VERZIÓ] (V2 vagy V4)\n\nGeneráld:\n1. CREATE - új entitás létrehozása\n2. READ - egyedi és lista lekérdezés\n3. UPDATE - meglévő módosítása\n4. DELETE - törlés\n\nMinden művelethez:\n- Promise-based async kezelés\n- Error handling MessageBox-szal\n- Busy indicator kezelés\n- Success/error callback\n- Batch request opció\n\nOData V4 esetén Context API használata!"
+        },
+        {
+          "id": "fiori-odata-filter",
+          "cat": "odata",
+          "icon": "🔍",
+          "title": "OData szűrés és rendezés",
+          "sub": "Filter, Sorter, $expand",
+          "desc": "Komplex OData lekérdezés filterekkel és rendezéssel.",
+          "tools": [],
+          "vars": [
+            "ENTITÁS",
+            "SZŰRÉSI_FELTÉTELEK"
+          ],
+          "prompt": "Implementálj OData szűrést és rendezést:\n\nEntitás: [ENTITÁS]\nSzűrési feltételek: [SZŰRÉSI_FELTÉTELEK]\n\nTartalmazzon:\n- sap.ui.model.Filter használata\n- FilterOperator-ok (EQ, Contains, BT, etc.)\n- Összetett filterek (AND/OR)\n- sap.ui.model.Sorter rendezéshez\n- $expand kapcsolt entitásokhoz\n- $select optimalizáláshoz\n\nPélda SearchField és FilterBar integrációra!"
+        },
+        {
+          "id": "fiori-json-model",
+          "cat": "odata",
+          "icon": "📋",
+          "title": "JSON Model kezelés",
+          "sub": "Lokális adat és state management",
+          "desc": "JSON Model használata lokális adatokhoz és UI state-hez.",
+          "tools": [],
+          "vars": [
+            "MODELL_NÉV",
+            "STRUKTÚRA"
+          ],
+          "prompt": "Készíts JSON Model kezelést:\n\nModel neve: [MODELL_NÉV]\nAdatstruktúra: [STRUKTÚRA]\n\nImplementáld:\n- Model inicializálás Component.js-ben\n- Two-way binding beállítás\n- setProperty / getProperty használata\n- Nested path kezelés\n- Array műveletek (push, splice binding-gel)\n- Model refresh stratégiák\n\nBest practices:\n- View model UI state-hez\n- Device model responsivitáshoz\n- i18n model szövegekhez"
+        },
+        {
+          "id": "fiori-custom-control",
+          "cat": "component",
+          "icon": "🎨",
+          "title": "Custom Control",
+          "sub": "Egyedi UI komponens",
+          "desc": "Saját SAPUI5 control létrehozása renderelővel.",
+          "tools": [],
+          "vars": [
+            "CONTROL_NÉV",
+            "TULAJDONSÁGOK",
+            "VISELKEDÉS"
+          ],
+          "prompt": "Generálj egyedi SAPUI5 Control-t:\n\nControl neve: [CONTROL_NÉV]\nTulajdonságok: [TULAJDONSÁGOK]\nViselkedés: [VISELKEDÉS]\n\nStruktúra:\n- metadata: properties, aggregations, events\n- init: inicializálás\n- renderer: HTML renderelés\n- Event handling\n\nKövetelmények:\n- Control.extend használata\n- Accessibility (ARIA attribútumok)\n- Theming támogatás (CSS variables)\n- Proper lifecycle kezelés\n- Rerender optimalizálás"
+        },
+        {
+          "id": "fiori-component",
+          "cat": "component",
+          "icon": "📦",
+          "title": "Component.js struktúra",
+          "sub": "App component konfiguráció",
+          "desc": "UIComponent létrehozása routing-gal és model konfigurációval.",
+          "tools": [],
+          "vars": [
+            "APP_NÉV",
+            "ROUTE_STRUKTÚRA"
+          ],
+          "prompt": "Generálj SAPUI5 Component.js-t:\n\nAlkalmazás neve: [APP_NÉV]\nRoute struktúra: [ROUTE_STRUKTÚRA]\n\nTartalmazzon:\n- UIComponent.extend\n- metadata: manifest.json reference\n- init: model és router inicializálás\n- Routing konfiguráció\n- Error handling (global)\n- Device model\n\nmanifest.json részletek:\n- sap.app szekció\n- sap.ui5 routing config\n- dataSources OData-hoz\n- dependencies"
+        },
+        {
+          "id": "fiori-formatter",
+          "cat": "component",
+          "icon": "🔧",
+          "title": "Formatter függvények",
+          "sub": "Adat formázás és konverzió",
+          "desc": "Formatter és type definíciók binding-hez.",
+          "tools": [],
+          "vars": [
+            "FORMÁZÁSI_IGÉNYEK"
+          ],
+          "prompt": "Készíts SAPUI5 formatter függvényeket:\n\nFormázási igények: [FORMÁZÁSI_IGÉNYEK]\n\nTípusok:\n1. Formatter függvények (model/formatter.js)\n2. Custom Type-ok (type/*.js)\n3. Expression binding\n\nGyakori formázások:\n- Dátum/idő lokalizált formátum\n- Pénznem formázás\n- Státusz → szín/ikon konverzió\n- Boolean → szöveg\n- Null kezelés\n\nBest practices:\n- Pure functions (no side effects)\n- Reusable across views\n- Unit tesztelhető"
+        },
+        {
+          "id": "fiori-qunit",
+          "cat": "test",
+          "icon": "🧪",
+          "title": "QUnit teszt",
+          "sub": "Unit tesztek SAPUI5-höz",
+          "desc": "QUnit alapú unit tesztek controller és formatter logikához.",
+          "tools": [],
+          "vars": [
+            "TESZTELENDŐ_MODUL",
+            "TESZT_ESETEK"
+          ],
+          "prompt": "Generálj QUnit teszteket:\n\nTesztelendő modul: [TESZTELENDŐ_MODUL]\nTeszt esetek: [TESZT_ESETEK]\n\nStruktúra:\n- QUnit.module setup/teardown\n- QUnit.test esetek\n- assert metódusok (ok, equal, deepEqual, throws)\n\nTartalmazzon:\n- Formatter tesztek\n- Controller logika tesztek\n- Mock adatok\n- Async teszt kezelés\n- Sinon stub/spy használata\n\nTeszt HTML és testsuite.qunit.js is!"
+        },
+        {
+          "id": "fiori-opa5",
+          "cat": "test",
+          "icon": "🎭",
+          "title": "OPA5 integrációs teszt",
+          "sub": "Journey és Page Object",
+          "desc": "OPA5 integrációs tesztek Page Object mintával.",
+          "tools": [],
+          "vars": [
+            "JOURNEY_NÉV",
+            "TESZTELENDŐ_FLOW"
+          ],
+          "prompt": "Generálj OPA5 integrációs tesztet:\n\nJourney neve: [JOURNEY_NÉV]\nTesztelendő flow: [TESZTELENDŐ_FLOW]\n\nStruktúra:\n1. Journey file (test/integration/*)\n2. Page Objects (test/integration/pages/*)\n3. arrangements, actions, assertions\n\nTartalmazzon:\n- Given/When/Then struktúra\n- waitFor szelektorok\n- Press, EnterText akciók\n- Assertion-ök\n- Navigation kezelés\n\nBest practices:\n- Stabil szelektorok (ID > CSS)\n- Reusable page objects\n- Proper timeout kezelés"
+        },
+        {
+          "id": "fiori-debug",
+          "cat": "debug",
+          "icon": "🐛",
+          "title": "Debug technikák",
+          "sub": "SAPUI5 debugging guide",
+          "desc": "SAPUI5 alkalmazás debug módszerek és eszközök.",
+          "tools": [],
+          "vars": [
+            "HIBA_LEÍRÁS"
+          ],
+          "prompt": "SAPUI5 debug útmutató a következő problémához:\n\nHiba: [HIBA_LEÍRÁS]\n\nDebug eszközök és technikák:\n\n1. URL paraméterek:\n   - sap-ui-debug=true\n   - sap-ui-inspector=true\n   - sap-ui-xx-debugModuleLoading=true\n\n2. Console API:\n   - sap.ui.getCore().byId()\n   - sap.ui.getCore().getModel()\n   - element.getBindingContext()\n   - element.getBinding(\"property\")\n\n3. UI5 Inspector Chrome Extension\n\n4. Support Assistant (sap-ui-support=true)\n\n5. Diagnostics window (Ctrl+Alt+Shift+S)\n\nAdj lépésről lépésre debug stratégiát!"
+        },
+        {
+          "id": "fiori-performance",
+          "cat": "debug",
+          "icon": "⚡",
+          "title": "Teljesítmény optimalizálás",
+          "sub": "Loading time és rendering",
+          "desc": "UI5 alkalmazás teljesítmény javítása.",
+          "tools": [],
+          "vars": [
+            "ALKALMAZÁS_LEÍRÁS"
+          ],
+          "prompt": "SAPUI5 teljesítmény optimalizálás:\n\nAlkalmazás: [ALKALMAZÁS_LEÍRÁS]\n\nEllenőrzési pontok:\n\nBETÖLTÉS:\n☐ Component preload (manifest bundling)\n☐ Async view loading\n☐ Lazy loading (routing targets)\n☐ Library preload konfiguráció\n\nRENDERING:\n☐ Growing/pagination nagy listákhoz\n☐ Virtualization (sap.ui.table)\n☐ Binding mode (OneWay vs TwoWay)\n☐ Expression binding vs formatter\n\nODATA:\n☐ $select, $expand optimalizálás\n☐ Batch request-ek\n☐ Client-side caching\n\nKÉPEK/ASSETS:\n☐ Icon font vs képek\n☐ Képméret optimalizálás\n\nAdj konkrét kód javaslatokat!"
+        },
+        {
+          "id": "fiori-extend-view",
+          "cat": "extend",
+          "icon": "🔧",
+          "title": "View Extension",
+          "sub": "Standard app bővítése",
+          "desc": "SAP Fiori standard alkalmazás bővítése view extension-nel.",
+          "tools": [],
+          "vars": [
+            "EREDETI_APP",
+            "BŐVÍTÉS_HELYE",
+            "ÚJ_TARTALOM"
+          ],
+          "prompt": "Készíts SAPUI5 View Extension-t:\n\nEredeti alkalmazás: [EREDETI_APP]\nBővítés helye: [BŐVÍTÉS_HELYE]\nÚj tartalom: [ÚJ_TARTALOM]\n\nTartalmazzon:\n1. manifest.json extends konfiguráció\n2. Extension view XML\n3. Controller extension (ha szükséges)\n\nMódszerek:\n- viewExtensions (ExtensionPoint)\n- controllerExtensions\n- viewReplacements\n\nBest practices:\n- Minimális invasive change\n- Upgrade-safe megoldások\n- Fragment használata ahol lehet"
+        },
+        {
+          "id": "fiori-controller-ext",
+          "cat": "extend",
+          "icon": "⚙️",
+          "title": "Controller Extension",
+          "sub": "Logika bővítése hook-okkal",
+          "desc": "Standard controller bővítése override és hook metódusokkal.",
+          "tools": [],
+          "vars": [
+            "EREDETI_CONTROLLER",
+            "MÓDOSÍTANDÓ_FUNKCIÓ"
+          ],
+          "prompt": "Készíts Controller Extension-t:\n\nEredeti controller: [EREDETI_CONTROLLER]\nMódosítandó funkció: [MÓDOSÍTANDÓ_FUNKCIÓ]\n\nImplementáld:\n1. ControllerExtension.extend\n2. override metódusok\n3. Lifecycle hook-ok\n\nElérhető hook-ok:\n- onInit (after original)\n- onBeforeRendering\n- onAfterRendering\n- onExit\n\nOverride szabályok:\n- Base metódus hívása (this.base.methodName())\n- Proper context kezelés\n- Error handling\n\nmanifest.json konfiguráció a bővítéshez!"
+        },
+        {
+          "id": "fiori-adaptation",
+          "cat": "extend",
+          "icon": "🎨",
+          "title": "UI Adaptation",
+          "sub": "Key user adaptations",
+          "desc": "Fiori alkalmazás UI Adaptation / Flexibility Services.",
+          "tools": [],
+          "vars": [
+            "APP_ID",
+            "ADAPTÁCIÓK"
+          ],
+          "prompt": "Készíts UI Adaptation projektet:\n\nAlkalmazás ID: [APP_ID]\nSzükséges adaptációk: [ADAPTÁCIÓK]\n\nTartalmazzon:\n1. Adaptation Project struktúra\n2. manifest.appdescr_variant\n3. Fragment changes\n4. i18n felülírások\n\nAdaptáció típusok:\n- Mező hozzáadás/elrejtés\n- Section átrendezés\n- Label változtatás\n- Variant management\n\nSAPUI5 Flexibility használata:\n- sap.ui.fl library\n- Change handler-ek\n- Layer kezelés (CUSTOMER, VENDOR)"
+        },
+        {
+          "id": "fiori-i18n",
+          "cat": "component",
+          "icon": "🌐",
+          "title": "i18n és lokalizáció",
+          "sub": "Többnyelvűség kezelése",
+          "desc": "Internationalization és language handling SAPUI5-ben.",
+          "tools": [],
+          "vars": [
+            "TÁMOGATOTT_NYELVEK",
+            "SZÖVEG_TÍPUSOK"
+          ],
+          "prompt": "Implementálj i18n támogatást:\n\nTámogatott nyelvek: [TÁMOGATOTT_NYELVEK]\nSzöveg típusok: [SZÖVEG_TÍPUSOK]\n\nFájlstruktúra:\n- i18n/i18n.properties (default)\n- i18n/i18n_hu.properties\n- i18n/i18n_en.properties\n\nTartalmazzon:\n- ResourceBundle konfiguráció\n- Binding szintaxis: {i18n>key}\n- Paraméterezett szövegek\n- Formatter használata\n- Dinamikus nyelv váltás\n\nBest practices:\n- Konzisztens key naming\n- Plural kezelés\n- RTL támogatás\n- Date/Number lokalizáció"
+        },
+        {
+          "id": "fiori-message",
+          "cat": "component",
+          "icon": "💬",
+          "title": "Message Handling",
+          "sub": "Hibaüzenetek és értesítések",
+          "desc": "Komplex message handling MessageManager-rel.",
+          "tools": [],
+          "vars": [
+            "ÜZENET_TÍPUSOK"
+          ],
+          "prompt": "Implementálj Message Handling-et:\n\nÜzenet típusok: [ÜZENET_TÍPUSOK]\n\nKomponensek:\n1. sap.ui.core.message.MessageManager\n2. MessageModel binding\n3. MessagePopover / MessageBox\n4. MessageToast\n\nTartalmazzon:\n- OData error message parsing\n- Validation message-ek\n- Message lifecycle kezelés\n- Grouped messages\n- MessageStrip inline üzenetekhez\n\nBest practices:\n- Központi error handling\n- User-friendly üzenetek\n- Technical details elrejtése\n- Clear message after action"
+        }
+      ]
+    },
+    {
+      "id": "documentation",
+      "name": "Dokumentáció",
+      "icon": "📚",
+      "color": "#6366f1",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "tech",
+          "label": "⚙️ Technikai",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "user",
+          "label": "👤 Felhasználói",
+          "color": "#10b981"
+        },
+        {
+          "id": "api",
+          "label": "🔌 API",
+          "color": "#f59e0b"
+        },
+        {
+          "id": "process",
+          "label": "📋 Folyamat",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "release",
+          "label": "🚀 Release",
+          "color": "#ec4899"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "doc-tech-spec",
+          "cat": "tech",
+          "icon": "📐",
+          "title": "Technikai specifikáció",
+          "sub": "Rendszer/modul spec dokumentum",
+          "desc": "Részletes technikai specifikáció architektúrával és komponensekkel.",
+          "tools": [],
+          "vars": [
+            "RENDSZER_NÉV",
+            "CÉL_LEÍRÁS",
+            "TECHNOLÓGIÁK"
+          ],
+          "prompt": "Készíts technikai specifikációt:\n\nRendszer/Modul: [RENDSZER_NÉV]\nCél: [CÉL_LEÍRÁS]\nHasznált technológiák: [TECHNOLÓGIÁK]\n\nDokumentum struktúra:\n\n1. ÁTTEKINTÉS\n   - Cél és hatókör\n   - Célközönség\n   - Kapcsolódó dokumentumok\n\n2. ARCHITEKTÚRA\n   - Magas szintű architektúra diagram (ASCII)\n   - Komponensek leírása\n   - Adatfolyam\n\n3. TECHNIKAI RÉSZLETEK\n   - Technológiai stack\n   - Interfészek és integrációk\n   - Adatmodell\n\n4. BIZTONSÁGI SZEMPONTOK\n   - Autentikáció/Autorizáció\n   - Adatvédelem\n\n5. TELJESÍTMÉNY\n   - Követelmények\n   - Skálázhatóság\n\n6. FÜGGŐSÉGEK ÉS ELŐFELTÉTELEK\n\n7. KOCKÁZATOK ÉS KORLÁTOZÁSOK"
+        },
+        {
+          "id": "doc-architecture",
+          "cat": "tech",
+          "icon": "🏗️",
+          "title": "Architektúra dokumentáció",
+          "sub": "Rendszer architektúra leírás",
+          "desc": "Szoftver architektúra dokumentáció diagramokkal.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "KOMPONENSEK"
+          ],
+          "prompt": "Készíts architektúra dokumentációt:\n\nProjekt: [PROJEKT_NÉV]\nFő komponensek: [KOMPONENSEK]\n\nTartalmazzon:\n\n1. ARCHITEKTÚRA ÁTTEKINTÉS\n   - C4 modell szintek (Context, Container, Component)\n   - ASCII diagramok minden szinthez\n\n2. KOMPONENS KATALÓGUS\n   | Komponens | Felelősség | Technológia | Kapcsolatok |\n   |-----------|------------|-------------|-------------|\n\n3. KOMMUNIKÁCIÓS MINTÁK\n   - Szinkron vs aszinkron\n   - Protokollok (REST, gRPC, messaging)\n   - Adatformátumok\n\n4. ADATTÁROLÁS\n   - Adatbázis séma\n   - Cache stratégia\n   - File storage\n\n5. CROSS-CUTTING CONCERNS\n   - Logging\n   - Monitoring\n   - Error handling\n   - Security\n\n6. DEPLOYMENT ARCHITEKTÚRA\n   - Környezetek\n   - Infrastruktúra diagram"
+        },
+        {
+          "id": "doc-database",
+          "cat": "tech",
+          "icon": "🗄️",
+          "title": "Adatbázis dokumentáció",
+          "sub": "Séma és kapcsolatok leírása",
+          "desc": "Adatbázis struktúra dokumentáció táblákkal és kapcsolatokkal.",
+          "tools": [],
+          "vars": [
+            "ADATBÁZIS_NÉV",
+            "TÁBLÁK_LISTÁJA"
+          ],
+          "prompt": "Készíts adatbázis dokumentációt:\n\nAdatbázis: [ADATBÁZIS_NÉV]\nFő táblák: [TÁBLÁK_LISTÁJA]\n\nTartalmazzon:\n\n1. ER DIAGRAM (ASCII art)\n\n2. TÁBLA DEFINÍCIÓK\n   Minden táblához:\n   | Mező | Típus | Null | Key | Default | Leírás |\n   |------|-------|------|-----|---------|--------|\n\n3. KAPCSOLATOK\n   - Foreign key-ek\n   - Kardinalitás (1:1, 1:N, N:M)\n\n4. INDEXEK\n   | Index név | Tábla | Mezők | Típus | Cél |\n   |-----------|-------|-------|-------|-----|\n\n5. NÉZETEK ÉS TÁROLT ELJÁRÁSOK\n\n6. ADATINTEGRITÁS\n   - Constraint-ek\n   - Trigger-ek\n\n7. MÉRETEZÉS ÉS PARTÍCIONÁLÁS\n\n8. BACKUP ÉS RECOVERY"
+        },
+        {
+          "id": "doc-code-review",
+          "cat": "tech",
+          "icon": "🔍",
+          "title": "Kód dokumentáció",
+          "sub": "Modul/osztály részletes leírás",
+          "desc": "Forráskód dokumentáció fejlesztőknek.",
+          "tools": [],
+          "vars": [
+            "MODUL_NÉV",
+            "FORRÁSKÓD"
+          ],
+          "prompt": "Készíts kód dokumentációt:\n\nModul/Osztály: [MODUL_NÉV]\nForráskód vagy leírás: [FORRÁSKÓD]\n\nTartalmazzon:\n\n1. ÁTTEKINTÉS\n   - Modul célja\n   - Felelősségi kör\n   - Tervezési döntések\n\n2. OSZTÁLY/FÜGGVÉNY REFERENCIA\n   Minden publikus elemhez:\n   - Név és szignatúra\n   - Paraméterek leírása\n   - Visszatérési érték\n   - Kivételek\n   - Használati példa\n\n3. BELSŐ MŰKÖDÉS\n   - Algoritmusok magyarázata\n   - Állapot diagram (ha van)\n   - Fontos implementációs részletek\n\n4. FÜGGŐSÉGEK\n   - Importok\n   - Külső szolgáltatások\n\n5. KONFIGURÁC IÓ\n   - Környezeti változók\n   - Beállítási opciók\n\n6. TESZTELÉS\n   - Teszt stratégia\n   - Mock-olási útmutató"
+        },
+        {
+          "id": "doc-user-guide",
+          "cat": "user",
+          "icon": "📖",
+          "title": "Felhasználói kézikönyv",
+          "sub": "Végfelhasználói útmutató",
+          "desc": "Részletes felhasználói dokumentáció lépésről lépésre.",
+          "tools": [],
+          "vars": [
+            "ALKALMAZÁS_NÉV",
+            "FŐ_FUNKCIÓK"
+          ],
+          "prompt": "Készíts felhasználói kézikönyvet:\n\nAlkalmazás: [ALKALMAZÁS_NÉV]\nFő funkciók: [FŐ_FUNKCIÓK]\n\nStruktúra:\n\n1. BEVEZETÉS\n   - Az alkalmazás célja\n   - Főbb képességek\n   - Rendszerkövetelmények\n\n2. ELSŐ LÉPÉSEK\n   - Bejelentkezés\n   - Kezdőképernyő áttekintése\n   - Alapvető navigáció\n\n3. FUNKCIÓK RÉSZLETESEN\n   Minden funkcióhoz:\n   - Cél és használati eset\n   - Lépésről lépésre útmutató\n   - Képernyőképek helye (placeholder)\n   - Tippek és trükkök\n\n4. GYAKORI MŰVELETEK\n   - Leggyakoribb use case-ek\n   - Gyorsbillentyűk\n\n5. HIBAELHÁRÍTÁS\n   | Hibaüzenet | Ok | Megoldás |\n   |------------|----| ---------|\n\n6. GYIK (FAQ)\n\n7. KAPCSOLAT ÉS TÁMOGATÁS"
+        },
+        {
+          "id": "doc-quick-start",
+          "cat": "user",
+          "icon": "🚀",
+          "title": "Quick Start Guide",
+          "sub": "Gyors kezdési útmutató",
+          "desc": "Rövid, lényegre törő kezdési útmutató.",
+          "tools": [],
+          "vars": [
+            "TERMÉK_NÉV",
+            "ALAPVETŐ_LÉPÉSEK"
+          ],
+          "prompt": "Készíts Quick Start Guide-ot:\n\nTermék: [TERMÉK_NÉV]\nAlapvető lépések: [ALAPVETŐ_LÉPÉSEK]\n\nKövetelmények:\n- Maximum 1-2 oldal\n- Vizuálisan könnyen áttekinthető\n- Számozott lépések\n- Csak a legfontosabb információk\n\nStruktúra:\n\n🎯 CÉL\nEgy mondatban: mit fog tudni a felhasználó\n\n📋 ELŐFELTÉTELEK\n- [ ] Követelmény 1\n- [ ] Követelmény 2\n\n🔧 TELEPÍTÉS (ha szükséges)\n```\nparancsok\n```\n\n▶️ ELSŐ HASZNÁLAT\n1. Lépés - [leírás]\n2. Lépés - [leírás]\n3. Lépés - [leírás]\n\n✅ ELLENŐRZÉS\nHogyan tudja a felhasználó, hogy sikerült?\n\n📚 TOVÁBBI INFORMÁCIÓ\n- Link a teljes dokumentációhoz"
+        },
+        {
+          "id": "doc-tutorial",
+          "cat": "user",
+          "icon": "🎓",
+          "title": "Tutorial/Oktatóanyag",
+          "sub": "Lépésről lépésre tananyag",
+          "desc": "Oktatási célú dokumentáció gyakorlati példákkal.",
+          "tools": [],
+          "vars": [
+            "TÉMA",
+            "CÉLKÖZÖNSÉG",
+            "ELŐISMERETEK"
+          ],
+          "prompt": "Készíts oktatóanyagot:\n\nTéma: [TÉMA]\nCélközönség: [CÉLKÖZÖNSÉG]\nSzükséges előismeretek: [ELŐISMERETEK]\n\nStruktúra:\n\n📚 BEVEZETÉS\n- Mit fogunk megtanulni\n- Miért hasznos ez\n- Becsült időtartam\n\n🎯 TANULÁSI CÉLOK\n1. Cél 1\n2. Cél 2\n3. Cél 3\n\n📝 LECKÉK\n\n## 1. lecke: [Cím]\n**Elméleti háttér:**\n[Magyarázat]\n\n**Gyakorlat:**\n```\n[Kód vagy lépések]\n```\n\n**Ellenőrző kérdések:**\n- Kérdés 1?\n- Kérdés 2?\n\n## 2. lecke: [Cím]\n[Ugyanez a struktúra]\n\n🏆 ÖSSZEFOGLALÁS\n- Kulcs tanulságok\n- Következő lépések\n- További források"
+        },
+        {
+          "id": "doc-faq",
+          "cat": "user",
+          "icon": "❓",
+          "title": "FAQ dokumentum",
+          "sub": "Gyakran ismételt kérdések",
+          "desc": "GYIK összeállítása kategorizálva.",
+          "tools": [],
+          "vars": [
+            "TERMÉK_NÉV",
+            "FŐ_TÉMAKÖRÖK"
+          ],
+          "prompt": "Készíts FAQ dokumentumot:\n\nTermék: [TERMÉK_NÉV]\nFő témakörök: [FŐ_TÉMAKÖRÖK]\n\nStruktúra minden témakörre:\n\n## [Témakör neve]\n\n<details>\n<summary><strong>Kérdés 1?</strong></summary>\n\nVálasz részletesen...\n- Pont 1\n- Pont 2\n\n</details>\n\n<details>\n<summary><strong>Kérdés 2?</strong></summary>\n\nVálasz...\n\n</details>\n\n---\n\nAjánlott kategóri��k:\n- 🚀 Kezdő lépések\n- ⚙️ Beállítások\n- 🔧 Hibaelhárítás\n- 💰 Számlázás/Licenc\n- 🔒 Biztonság\n- 📱 Mobil használat\n\nMinden válasz legyen:\n- Tömör de informatív\n- Tartalmazzon linkeket ahol releváns\n- Könnyen kereshető"
+        },
+        {
+          "id": "doc-api-reference",
+          "cat": "api",
+          "icon": "📡",
+          "title": "API Referencia",
+          "sub": "REST/GraphQL API dokumentáció",
+          "desc": "Teljes API referencia dokumentáció.",
+          "tools": [],
+          "vars": [
+            "API_NÉV",
+            "ENDPOINT_LISTA",
+            "AUTH_TÍPUS"
+          ],
+          "prompt": "Készíts API referencia dokumentációt:\n\nAPI: [API_NÉV]\nEndpointok: [ENDPOINT_LISTA]\nAutentikáció: [AUTH_TÍPUS]\n\nStruktúra:\n\n# API REFERENCIA\n\n## Áttekintés\n- Base URL\n- Verzió\n- Rate limiting\n\n## Autentikáció\n- Típus: [AUTH_TÍPUS]\n- Token beszerzése\n- Header formátum\n\n## Endpointok\n\n### [Endpoint név]\n\n```\n[METHOD] /api/v1/resource\n```\n\n**Leírás:** Mit csinál\n\n**Paraméterek:**\n| Név | Típus | Kötelező | Leírás |\n|-----|-------|----------|--------|\n\n**Request body:**\n```json\n{\n  \"field\": \"value\"\n}\n```\n\n**Response:**\n```json\n{\n  \"data\": {}\n}\n```\n\n**Státusz kódok:**\n| Kód | Jelentés |\n|-----|----------|\n| 200 | Sikeres |\n| 400 | Hibás kérés |\n\n**Példa:**\n```bash\ncurl -X GET ...\n```"
+        },
+        {
+          "id": "doc-api-changelog",
+          "cat": "api",
+          "icon": "📝",
+          "title": "API Changelog",
+          "sub": "API változások dokumentálása",
+          "desc": "API verzió változások és breaking change-ek.",
+          "tools": [],
+          "vars": [
+            "API_NÉV",
+            "VERZIÓ",
+            "VÁLTOZÁSOK"
+          ],
+          "prompt": "Készíts API Changelog-ot:\n\nAPI: [API_NÉV]\nVerzió: [VERZIÓ]\nVáltozások: [VÁLTOZÁSOK]\n\nFormátum:\n\n# Changelog\n\n## [Verzió] - [Dátum]\n\n### ⚠️ BREAKING CHANGES\n- **[Endpoint]**: [Változás leírása]\n  - Előtte: `régi viselkedés`\n  - Utána: `új viselkedés`\n  - Migráció: [lépések]\n\n### ✨ Új funkciók\n- **[Endpoint]**: [Új képesség leírása]\n\n### 🔧 Javítások\n- **[Endpoint]**: [Bug fix leírása]\n\n### 🗑️ Deprecated\n- **[Endpoint]**: Elavult, használd helyette: [alternatíva]\n  - Eltávolítás tervezett időpontja: [dátum]\n\n### 📚 Dokumentáció\n- [Dokumentáció változások]\n\n---\n\n## [Előző verzió] - [Dátum]\n..."
+        },
+        {
+          "id": "doc-integration",
+          "cat": "api",
+          "icon": "🔗",
+          "title": "Integrációs útmutató",
+          "sub": "Külső rendszer integráció",
+          "desc": "Részletes útmutató külső rendszer integrációhoz.",
+          "tools": [],
+          "vars": [
+            "FORRÁS_RENDSZER",
+            "CÉL_RENDSZER",
+            "INTEGRÁCIÓ_TÍPUS"
+          ],
+          "prompt": "Készíts integrációs útmutatót:\n\nForrás: [FORRÁS_RENDSZER]\nCél: [CÉL_RENDSZER]\nIntegráció típusa: [INTEGRÁCIÓ_TÍPUS]\n\nStruktúra:\n\n1. ÁTTEKINTÉS\n   - Integráció célja\n   - Adatfolyam diagram\n\n2. ELŐFELTÉTELEK\n   - Szükséges hozzáférések\n   - Credentials\n   - Hálózati követelmények\n\n3. KONFIGURÁCIÓ\n\n   ### Forrás rendszer beállítása\n   [Lépések]\n\n   ### Cél rendszer beállítása\n   [Lépések]\n\n4. ADATLEKÉPEZÉS\n   | Forrás mező | Cél mező | Transzformáció |\n   |-------------|----------|----------------|\n\n5. IMPLEMENTÁCIÓ\n   - Kód példák\n   - Kapcsolat felépítése\n   - Hívás minták\n\n6. HIBAKEZELÉS\n   | Hibakód | Jelentés | Teendő |\n   |---------|----------|--------|\n\n7. TESZTELÉS\n   - Test case-ek\n   - Ellenőrző lista\n\n8. MONITORING\n   - Naplózás\n   - Riasztások"
+        },
+        {
+          "id": "doc-process",
+          "cat": "process",
+          "icon": "🔄",
+          "title": "Folyamat dokumentáció",
+          "sub": "Üzleti/technikai folyamat leírás",
+          "desc": "Folyamat leírás diagramokkal és felelősségekkel.",
+          "tools": [],
+          "vars": [
+            "FOLYAMAT_NÉV",
+            "LÉPÉSEK",
+            "SZEREPLŐK"
+          ],
+          "prompt": "Készíts folyamat dokumentációt:\n\nFolyamat: [FOLYAMAT_NÉV]\nFő lépések: [LÉPÉSEK]\nSzereplők: [SZEREPLŐK]\n\nStruktúra:\n\n1. FOLYAMAT ÁTTEKINTÉS\n   - Cél\n   - Hatókör\n   - Tulajdonos\n\n2. SZEREPLŐK ÉS FELELŐSSÉGEK\n   | Szereplő | Felelősség |\n   |----------|------------|\n\n3. FOLYAMATÁBRA (ASCII)\n   ```\n   [Kezdés] → [Lépés 1] → [Döntés?]\n                              ↓ Igen\n                         [Lépés 2]\n                              ↓\n                         [Vége]\n   ```\n\n4. RÉSZLETES LÉPÉSEK\n\n   ### Lépés 1: [Név]\n   - **Trigger:** Mi indítja\n   - **Input:** Bemenetek\n   - **Tevékenység:** Mit kell tenni\n   - **Output:** Kimenetek\n   - **Felelős:** Ki végzi\n\n5. KIVÉTELEK ÉS ESKALÁCIÓK\n\n6. MÉRŐSZÁMOK (KPI)\n\n7. KAPCSOLÓDÓ DOKUMENTUMOK"
+        },
+        {
+          "id": "doc-runbook",
+          "cat": "process",
+          "icon": "📋",
+          "title": "Runbook/Üzemeltetési",
+          "sub": "Ops dokumentáció",
+          "desc": "Üzemeltetési kézikönyv hibaelhárítással.",
+          "tools": [],
+          "vars": [
+            "SZOLGÁLTATÁS_NÉV",
+            "KRITIKUS_KOMPONENSEK"
+          ],
+          "prompt": "Készíts Runbook dokumentációt:\n\nSzolgáltatás: [SZOLGÁLTATÁS_NÉV]\nKritikus komponensek: [KRITIKUS_KOMPONENSEK]\n\nStruktúra:\n\n1. SZOLGÁLTATÁS ÁTTEKINTÉS\n   - Architektúra diagram\n   - Komponensek\n   - Függőségek\n\n2. HOZZÁFÉRÉSEK\n   | Rendszer | URL | Credentials (hol) |\n   |----------|-----|-------------------|\n\n3. MONITORING\n   - Dashboard linkek\n   - Kulcs metrikák\n   - Riasztási szabályok\n\n4. NAPI ÜZEMELTETÉS\n   - Egészség ellenőrzés\n   - Log lokációk\n   - Backup ellenőrzés\n\n5. GYAKORI PROBLÉMÁK\n\n   ### [Probléma neve]\n   **Tünetek:** Mit látunk\n   **Diagnózis:** Hogyan ellenőrizzük\n   **Megoldás:**\n   ```bash\n   # Parancsok\n   ```\n   **Megelőzés:** Hogyan kerüljük el\n\n6. VÉSZHELYZETI ELJÁRÁSOK\n   - Rollback lépések\n   - Eskalációs mátrix\n   - Kommunikációs terv\n\n7. KARBANTARTÁSI ABLAKOK"
+        },
+        {
+          "id": "doc-onboarding",
+          "cat": "process",
+          "icon": "👋",
+          "title": "Onboarding dokumentáció",
+          "sub": "Új csapattag bevonás",
+          "desc": "Új fejlesztő/csapattag onboarding útmutató.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "TECH_STACK"
+          ],
+          "prompt": "Készíts onboarding dokumentációt:\n\nProjekt: [PROJEKT_NÉV]\nTech stack: [TECH_STACK]\n\nStruktúra:\n\n# Üdvözlünk a csapatban! 👋\n\n## 1. ELSŐ NAP\n\n### Hozzáférések beszerzése\n- [ ] Email fiók\n- [ ] Git repository\n- [ ] Jira/Project tool\n- [ ] Slack/Teams csatornák\n- [ ] VPN\n\n### Környezet beállítása\n```bash\n# Telepítési lépések\n```\n\n## 2. ELSŐ HÉT\n\n### Projekt megismerése\n- [ ] Architektúra áttekintés\n- [ ] Kódbázis struktúra\n- [ ] Fejlesztési workflow\n- [ ] Code review folyamat\n\n### Ajánlott olvasmányok\n- [Link 1]\n- [Link 2]\n\n## 3. ELSŐ HÓNAP\n\n### Célok\n- [ ] Első önálló feature\n- [ ] Code review végzése\n- [ ] Dokumentáció írása\n\n## HASZNOS LINKEK\n| Mit | Hol |\n|-----|-----|\n\n## KI KICSODA\n| Név | Szerep | Miben segít |\n|-----|--------|-------------|\n\n## GYIK ÚJONCOKNAK"
+        },
+        {
+          "id": "doc-release-notes",
+          "cat": "release",
+          "icon": "🚀",
+          "title": "Release Notes",
+          "sub": "Kiadási jegyzetek",
+          "desc": "Verzió kiadási jegyzetek felhasználóknak.",
+          "tools": [],
+          "vars": [
+            "VERZIÓ",
+            "KIADÁS_DÁTUM",
+            "VÁLTOZÁSOK"
+          ],
+          "prompt": "Készíts Release Notes-ot:\n\nVerzió: [VERZIÓ]\nKiadás dátuma: [KIADÁS_DÁTUM]\nFő változások: [VÁLTOZÁSOK]\n\nFormátum:\n\n# Release Notes - v[VERZIÓ]\n\n📅 **Kiadás dátuma:** [DÁTUM]\n\n## ✨ Új funkciók\n\n### [Funkció neve]\n[Leírás, hogy mit tud és hogyan használható]\n\n![Screenshot placeholder]\n\n## 🔧 Fejlesztések\n\n- **[Terület]:** [Fejlesztés leírása]\n- **[Terület]:** [Fejlesztés leírása]\n\n## 🐛 Hibajavítások\n\n- Javítva: [Hiba leírása] (#issue-szám)\n- Javítva: [Hiba leírása]\n\n## ⚠️ Ismert problémák\n\n- [Probléma leírása] - Megoldás tervezett: vX.Y\n\n## 🔄 Frissítési útmutató\n\n### Előfeltételek\n[Ha van]\n\n### Lépések\n1. [Lépés]\n2. [Lépés]\n\n## 📚 Dokumentáció\n\nFrissített dokumentáció: [Link]"
+        },
+        {
+          "id": "doc-changelog",
+          "cat": "release",
+          "icon": "📝",
+          "title": "CHANGELOG",
+          "sub": "Keep a Changelog formátum",
+          "desc": "Standard CHANGELOG.md fájl generálása.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "VERZIÓK_ÉS_VÁLTOZÁSOK"
+          ],
+          "prompt": "Készíts CHANGELOG.md fájlt:\n\nProjekt: [PROJEKT_NÉV]\nVerziók és változások: [VERZIÓK_ÉS_VÁLTOZÁSOK]\n\nFormátum (Keep a Changelog):\n\n```markdown\n# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\n## [Unreleased]\n\n### Added\n- Új funkciók\n\n### Changed\n- Változások meglévő funkcionalitásban\n\n### Deprecated\n- Hamarosan eltávolítandó funkciók\n\n### Removed\n- Eltávolított funkciók\n\n### Fixed\n- Hibajavítások\n\n### Security\n- Biztonsági javítások\n\n## [1.0.0] - 2024-01-15\n\n### Added\n- Initial release\n- Feature 1\n- Feature 2\n\n[Unreleased]: https://github.com/user/repo/compare/v1.0.0...HEAD\n[1.0.0]: https://github.com/user/repo/releases/tag/v1.0.0\n```"
+        },
+        {
+          "id": "doc-migration",
+          "cat": "release",
+          "icon": "🔄",
+          "title": "Migrációs útmutató",
+          "sub": "Verzió közötti átállás",
+          "desc": "Verzió migrációs dokumentáció lépésekkel.",
+          "tools": [],
+          "vars": [
+            "RÉGI_VERZIÓ",
+            "ÚJ_VERZIÓ",
+            "BREAKING_CHANGES"
+          ],
+          "prompt": "Készíts migrációs útmutatót:\n\nVerzió váltás: [RÉGI_VERZIÓ] → [ÚJ_VERZIÓ]\nBreaking changes: [BREAKING_CHANGES]\n\nStruktúra:\n\n# Migrációs útmutató: v[RÉGI] → v[ÚJ]\n\n## ⚠️ Fontos tudnivalók\n\nBecsült migráció idő: [X óra/nap]\nÁllásidő szükséges: [Igen/Nem]\n\n## 📋 Előfeltételek\n\n- [ ] Backup készítése\n- [ ] Függőségek ellenőrzése\n- [ ] Teszt környezet validálása\n\n## 🔄 Breaking Changes\n\n### 1. [Változás neve]\n\n**Előtte:**\n```\nrégi kód/konfiguráció\n```\n\n**Utána:**\n```\núj kód/konfiguráció\n```\n\n**Migráció:**\n1. [Lépés]\n2. [Lépés]\n\n## 📝 Lépésről lépésre migráció\n\n### 1. fázis: Előkészítés\n[Lépések]\n\n### 2. fázis: Migráció végrehajtása\n[Lépések]\n\n### 3. fázis: Validálás\n[Ellenőrzési pontok]\n\n## 🔙 Rollback terv\n\nHa valami rosszul megy:\n1. [Rollback lépés]\n2. [Rollback lépés]\n\n## ✅ Migráció utáni ellenőrzőlista\n\n- [ ] Funkció 1 működik\n- [ ] Funkció 2 működik\n- [ ] Teljesítmény megfelelő"
+        },
+        {
+          "id": "doc-readme",
+          "cat": "tech",
+          "icon": "📄",
+          "title": "README.md",
+          "sub": "Projekt README generálása",
+          "desc": "GitHub/GitLab projekt README dokumentáció.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "LEÍRÁS",
+            "TECH_STACK"
+          ],
+          "prompt": "Készíts README.md fájlt:\n\nProjekt: [PROJEKT_NÉV]\nLeírás: [LEÍRÁS]\nTechnológiák: [TECH_STACK]\n\nStruktúra:\n\n```markdown\n# [PROJEKT_NÉV]\n\n[Rövid, egy mondatos leírás]\n\n[![Build Status](badge)](link)\n[![License](badge)](link)\n\n## 📋 Tartalom\n\n- [Funkciók](#funkciók)\n- [Telepítés](#telepítés)\n- [Használat](#használat)\n- [API](#api)\n- [Közreműködés](#közreműködés)\n- [Licenc](#licenc)\n\n## ✨ Funkciók\n\n- Funkció 1\n- Funkció 2\n- Funkció 3\n\n## 🚀 Telepítés\n\n### Előfeltételek\n\n- Node.js >= 18\n- [Egyéb]\n\n### Lépések\n\n\\`\\`\\`bash\ngit clone https://github.com/user/repo\ncd repo\nnpm install\n\\`\\`\\`\n\n## 📖 Használat\n\n\\`\\`\\`bash\nnpm start\n\\`\\`\\`\n\n## 🔧 Konfiguráció\n\n| Változó | Leírás | Alapértelmezett |\n|---------|--------|-----------------|\n\n## 🤝 Közreműködés\n\n1. Fork-old a repót\n2. Hozz létre feature branch-et\n3. Commit-olj\n4. Push-olj\n5. Nyiss Pull Request-et\n\n## 📄 Licenc\n\n[MIT](LICENSE)\n```"
+        },
+        {
+          "id": "doc-adr",
+          "cat": "tech",
+          "icon": "🏛️",
+          "title": "Architecture Decision Record",
+          "sub": "ADR dokumentum",
+          "desc": "Architekturális döntések dokumentálása.",
+          "tools": [],
+          "vars": [
+            "DÖNTÉS_CÍME",
+            "KONTEXTUS",
+            "OPCIÓK"
+          ],
+          "prompt": "Készíts Architecture Decision Record-ot:\n\nDöntés: [DÖNTÉS_CÍME]\nKontextus: [KONTEXTUS]\nVizsgált opciók: [OPCIÓK]\n\nFormátum:\n\n# ADR-[SZÁM]: [DÖNTÉS_CÍME]\n\n**Dátum:** [DÁTUM]\n**Státusz:** [Proposed / Accepted / Deprecated / Superseded]\n**Döntéshozók:** [Nevek]\n\n## Kontextus\n\n[Miért kell döntést hoznunk? Mi a probléma?]\n\n## Döntés\n\n[Mit döntöttünk?]\n\n## Vizsgált alternatívák\n\n### 1. opció: [Név]\n**Előnyök:**\n- [Előny]\n\n**Hátrányok:**\n- [Hátrány]\n\n### 2. opció: [Név]\n**Előnyök:**\n- [Előny]\n\n**Hátrányok:**\n- [Hátrány]\n\n## Következmények\n\n### Pozitív\n- [Következmény]\n\n### Negatív\n- [Következmény]\n\n### Kockázatok\n- [Kockázat]\n\n## Kapcsolódó döntések\n\n- ADR-X: [Kapcsolódó döntés]"
+        }
+      ]
+    },
+    {
+      "id": "database",
+      "name": "Database",
+      "icon": "🗄️",
+      "color": "#0891b2",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "design",
+          "label": "📐 Tervezés",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "query",
+          "label": "🔍 Lekérdezés",
+          "color": "#10b981"
+        },
+        {
+          "id": "optimize",
+          "label": "⚡ Optimalizálás",
+          "color": "#f59e0b"
+        },
+        {
+          "id": "migrate",
+          "label": "🔄 Migráció",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "admin",
+          "label": "🔧 Adminisztráció",
+          "color": "#ef4444"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "db-schema-design",
+          "cat": "design",
+          "icon": "📐",
+          "title": "Séma tervezés",
+          "sub": "Adatbázis struktúra tervezése",
+          "desc": "Új adatbázis séma tervezése követelmények alapján.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "ENTITÁSOK",
+            "KÖVETELMÉNYEK"
+          ],
+          "prompt": "Tervezz adatbázis sémát:\n\nProjekt: [PROJEKT_NÉV]\nFő entitások: [ENTITÁSOK]\nKövetelmények: [KÖVETELMÉNYEK]\n\nTartalmazzon:\n\n1. ER DIAGRAM (ASCII)\n```\n[User] 1──N [Order] N──M [Product]\n   │                        │\n   └──N [Address]    [Category]──1\n```\n\n2. TÁBLA DEFINÍCIÓK\nMinden táblához:\n```sql\nCREATE TABLE table_name (\n    id BIGINT PRIMARY KEY AUTO_INCREMENT,\n    -- mezők típussal és constraint-ekkel\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);\n```\n\n3. KAPCSOLATOK\n- Foreign key-ek\n- Kardinalitás indoklása\n- ON DELETE / ON UPDATE viselkedés\n\n4. INDEXEK\n- Primary key-ek\n- Unique constraint-ek\n- Keresési indexek\n\n5. NORMALIZÁCIÓ\n- Alkalmazott normálforma (3NF/BCNF)\n- Denormalizáció indoklása (ha van)"
+        },
+        {
+          "id": "db-normalize",
+          "cat": "design",
+          "icon": "🔀",
+          "title": "Normalizálás",
+          "sub": "Tábla normalizálása/denormalizálása",
+          "desc": "Meglévő tábla struktúra normalizálása vagy denormalizálása.",
+          "tools": [],
+          "vars": [
+            "TÁBLA_STRUKTÚRA",
+            "CÉL_NORMÁLFORMA"
+          ],
+          "prompt": "Végezz normalizálást:\n\nJelenlegi struktúra:\n[TÁBLA_STRUKTÚRA]\n\nCél normálforma: [CÉL_NORMÁLFORMA]\n\nElemzés:\n\n1. JELENLEGI ÁLLAPOT\n   - Azonosított anomáliák\n   - Redundancia\n\n2. FUNKCIONÁLIS FÜGGŐSÉGEK\n   - A → B jelöléssel\n   - Kulcs azonosítása\n\n3. NORMÁLFORMÁK ELLENŐRZÉSE\n   ☐ 1NF: Atomi értékek?\n   ☐ 2NF: Teljes függőség a kulcstól?\n   ☐ 3NF: Nincs tranzitív függőség?\n   ☐ BCNF: Minden determináns kulcs?\n\n4. NORMALIZÁLT SÉMA\n   - Új táblák\n   - CREATE TABLE statement-ek\n\n5. DENORMALIZÁCIÓ (ha szükséges)\n   - Teljesítmény indoklás\n   - Trade-off elemzés"
+        },
+        {
+          "id": "db-data-model",
+          "cat": "design",
+          "icon": "📊",
+          "title": "Adatmodell dokumentáció",
+          "sub": "Data dictionary készítése",
+          "desc": "Részletes adatmodell és data dictionary dokumentáció.",
+          "tools": [],
+          "vars": [
+            "ADATBÁZIS_NÉV",
+            "TÁBLÁK"
+          ],
+          "prompt": "Készíts adatmodell dokumentációt:\n\nAdatbázis: [ADATBÁZIS_NÉV]\nTáblák: [TÁBLÁK]\n\nStruktúra:\n\n# DATA DICTIONARY\n\n## Táblák áttekintése\n| Tábla | Leírás | Rekordszám (becsült) | Növekedés |\n|-------|--------|----------------------|-----------|\n\n## Részletes tábla leírások\n\n### [tábla_név]\n\n**Cél:** [Mit tárol]\n**Tulajdonos:** [Ki felelős érte]\n\n| Mező | Típus | Null | Default | Leírás | Példa |\n|------|-------|------|---------|--------|-------|\n| id | BIGINT | NO | AUTO | Elsődleges kulcs | 12345 |\n\n**Constraint-ek:**\n- PK: [mező]\n- FK: [mező] → [tábla.mező]\n- UNIQUE: [mezők]\n- CHECK: [feltétel]\n\n**Indexek:**\n| Index | Mezők | Típus | Cél |\n|-------|-------|-------|-----|\n\n**Kapcsolatok:**\n- 1:N → [tábla]\n- N:M → [tábla] (kapcsolótábla: [név])"
+        },
+        {
+          "id": "db-select-complex",
+          "cat": "query",
+          "icon": "🔍",
+          "title": "Komplex SELECT",
+          "sub": "Összetett lekérdezés írása",
+          "desc": "Bonyolult SELECT query JOIN-okkal, aggregációval.",
+          "tools": [],
+          "vars": [
+            "TÁBLÁK",
+            "MIT_KÉRDEZÜNK",
+            "FELTÉTELEK"
+          ],
+          "prompt": "Írj komplex SELECT lekérdezést:\n\nTáblák: [TÁBLÁK]\nMit kérdezünk le: [MIT_KÉRDEZÜNK]\nFeltételek: [FELTÉTELEK]\n\nAdj részletes megoldást:\n\n1. LEKÉRDEZÉS ELEMZÉSE\n   - Szükséges táblák\n   - JOIN típusok (INNER/LEFT/RIGHT)\n   - Szűrési feltételek\n   - Csoportosítás/aggregáció\n\n2. SQL QUERY\n```sql\nSELECT\n    t1.field1,\n    t2.field2,\n    COUNT(*) as count,\n    SUM(t1.amount) as total\nFROM table1 t1\nINNER JOIN table2 t2 ON t1.id = t2.table1_id\nLEFT JOIN table3 t3 ON t2.id = t3.table2_id\nWHERE t1.status = 'active'\n    AND t2.date >= '2024-01-01'\nGROUP BY t1.field1, t2.field2\nHAVING COUNT(*) > 5\nORDER BY total DESC\nLIMIT 100;\n```\n\n3. MAGYARÁZAT\n   - Minden JOIN célja\n   - WHERE vs HAVING\n   - Aggregációs logika\n\n4. VÉGREHAJTÁSI TERV\n   - Melyik index-et használja\n   - Becsült költség"
+        },
+        {
+          "id": "db-subquery",
+          "cat": "query",
+          "icon": "🎯",
+          "title": "Subquery és CTE",
+          "sub": "Allekérdezések, WITH clause",
+          "desc": "Subquery, correlated subquery és CTE (Common Table Expression).",
+          "tools": [],
+          "vars": [
+            "FELADAT_LEÍRÁS",
+            "TÁBLÁK"
+          ],
+          "prompt": "Írj lekérdezést subquery/CTE használatával:\n\nFeladat: [FELADAT_LEÍRÁS]\nTáblák: [TÁBLÁK]\n\nMegoldások különböző technikákkal:\n\n1. SCALAR SUBQUERY\n```sql\nSELECT name,\n       (SELECT COUNT(*) FROM orders WHERE user_id = users.id) as order_count\nFROM users;\n```\n\n2. INLINE VIEW (FROM-ban)\n```sql\nSELECT * FROM (\n    SELECT user_id, SUM(amount) as total\n    FROM orders\n    GROUP BY user_id\n) subq\nWHERE total > 1000;\n```\n\n3. CORRELATED SUBQUERY\n```sql\nSELECT * FROM products p\nWHERE price > (\n    SELECT AVG(price)\n    FROM products\n    WHERE category_id = p.category_id\n);\n```\n\n4. CTE (WITH clause)\n```sql\nWITH monthly_sales AS (\n    SELECT\n        DATE_TRUNC('month', order_date) as month,\n        SUM(amount) as total\n    FROM orders\n    GROUP BY 1\n),\navg_sales AS (\n    SELECT AVG(total) as avg_total FROM monthly_sales\n)\nSELECT * FROM monthly_sales, avg_sales\nWHERE total > avg_total;\n```\n\n5. RECURSIVE CTE (hierarchia)\n```sql\nWITH RECURSIVE tree AS (\n    SELECT id, name, parent_id, 0 as level\n    FROM categories WHERE parent_id IS NULL\n    UNION ALL\n    SELECT c.id, c.name, c.parent_id, t.level + 1\n    FROM categories c\n    JOIN tree t ON c.parent_id = t.id\n)\nSELECT * FROM tree;\n```\n\nMelyik technika a legjobb ehhez a feladathoz és miért?"
+        },
+        {
+          "id": "db-window-func",
+          "cat": "query",
+          "icon": "🪟",
+          "title": "Window Functions",
+          "sub": "Ablakfüggvények használata",
+          "desc": "ROW_NUMBER, RANK, LAG, LEAD, running totals.",
+          "tools": [],
+          "vars": [
+            "FELADAT",
+            "TÁBLA_STRUKTÚRA"
+          ],
+          "prompt": "Írj lekérdezést window function-ökkel:\n\nFeladat: [FELADAT]\nTábla struktúra: [TÁBLA_STRUKTÚRA]\n\nWindow function típusok:\n\n1. RANKING FUNCTIONS\n```sql\nSELECT\n    name,\n    department,\n    salary,\n    ROW_NUMBER() OVER (ORDER BY salary DESC) as row_num,\n    RANK() OVER (ORDER BY salary DESC) as rank,\n    DENSE_RANK() OVER (ORDER BY salary DESC) as dense_rank,\n    NTILE(4) OVER (ORDER BY salary DESC) as quartile\nFROM employees;\n```\n\n2. PARTITION BY\n```sql\nSELECT\n    name,\n    department,\n    salary,\n    RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank,\n    salary - AVG(salary) OVER (PARTITION BY department) as diff_from_avg\nFROM employees;\n```\n\n3. LAG / LEAD\n```sql\nSELECT\n    order_date,\n    amount,\n    LAG(amount, 1) OVER (ORDER BY order_date) as prev_amount,\n    LEAD(amount, 1) OVER (ORDER BY order_date) as next_amount,\n    amount - LAG(amount, 1) OVER (ORDER BY order_date) as change\nFROM orders;\n```\n\n4. RUNNING TOTALS\n```sql\nSELECT\n    order_date,\n    amount,\n    SUM(amount) OVER (ORDER BY order_date) as running_total,\n    AVG(amount) OVER (ORDER BY order_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as moving_avg_7\nFROM orders;\n```\n\n5. FIRST_VALUE / LAST_VALUE\n```sql\nSELECT\n    name,\n    salary,\n    FIRST_VALUE(name) OVER (PARTITION BY dept ORDER BY salary DESC) as highest_paid\nFROM employees;\n```"
+        },
+        {
+          "id": "db-query-optimize",
+          "cat": "optimize",
+          "icon": "⚡",
+          "title": "Query optimalizálás",
+          "sub": "Lassú lekérdezés gyorsítása",
+          "desc": "SQL query teljesítmény optimalizálás EXPLAIN-nel.",
+          "tools": [],
+          "vars": [
+            "LASSÚ_QUERY",
+            "TÁBLA_INFO"
+          ],
+          "prompt": "Optimalizáld a lekérdezést:\n\nLassú query:\n[LASSÚ_QUERY]\n\nTábla információk:\n[TÁBLA_INFO]\n\nElemzés:\n\n1. EXPLAIN ANALYZE\n```sql\nEXPLAIN ANALYZE [query];\n```\n\nEllenőrizendő:\n- Seq Scan vs Index Scan\n- Join típusok (Nested Loop, Hash, Merge)\n- Sort műveletek\n- Estimated vs Actual rows\n\n2. PROBLÉMÁK AZONOSÍTÁSA\n☐ Hiányzó index\n☐ SELECT * használata\n☐ N+1 query probléma\n☐ Felesleges JOIN\n☐ Rossz JOIN sorrend\n☐ OR feltételek index-et blokkolnak\n☐ Függvény az indexelt mezőn\n☐ Implicit type conversion\n\n3. OPTIMALIZÁLT QUERY\n```sql\n-- Javított verzió\n```\n\n4. SZÜKSÉGES INDEXEK\n```sql\nCREATE INDEX idx_name ON table(column);\n```\n\n5. TOVÁBBI JAVASLATOK\n- Partícionálás\n- Materialized view\n- Query cache\n- Denormalizáció"
+        },
+        {
+          "id": "db-index-strategy",
+          "cat": "optimize",
+          "icon": "📇",
+          "title": "Index stratégia",
+          "sub": "Index tervezés és elemzés",
+          "desc": "Optimális index struktúra tervezése.",
+          "tools": [],
+          "vars": [
+            "TÁBLA_NÉV",
+            "GYAKORI_QUERYK",
+            "JELENLEGI_INDEXEK"
+          ],
+          "prompt": "Tervezz index stratégiát:\n\nTábla: [TÁBLA_NÉV]\nGyakori lekérdezések: [GYAKORI_QUERYK]\nJelenlegi indexek: [JELENLEGI_INDEXEK]\n\nElemzés:\n\n1. QUERY PATTERN ELEMZÉS\n   | Query | WHERE | ORDER BY | JOIN | Gyakoriság |\n   |-------|-------|----------|------|------------|\n\n2. INDEX TÍPUSOK\n   - B-Tree: Egyenlőség és range query-k\n   - Hash: Csak egyenlőség\n   - GIN: Full-text, JSONB, tömbök\n   - GiST: Geometria, full-text\n   - BRIN: Nagy táblák, sorrendben növekvő adat\n\n3. JAVASOLT INDEXEK\n```sql\n-- Composite index (sorrend fontos!)\nCREATE INDEX idx_orders_user_date\nON orders(user_id, created_at DESC);\n\n-- Partial index (csak bizonyos sorokra)\nCREATE INDEX idx_orders_pending\nON orders(created_at)\nWHERE status = 'pending';\n\n-- Covering index (INCLUDE)\nCREATE INDEX idx_orders_cover\nON orders(user_id)\nINCLUDE (total, status);\n\n-- Expression index\nCREATE INDEX idx_users_email_lower\nON users(LOWER(email));\n```\n\n4. TÖRLENDŐ INDEXEK\n   - Duplikált\n   - Nem használt\n   - Túl drága maintenance\n\n5. MONITORING\n```sql\n-- Index használat ellenőrzése\nSELECT * FROM pg_stat_user_indexes;\n```"
+        },
+        {
+          "id": "db-partition",
+          "cat": "optimize",
+          "icon": "📦",
+          "title": "Partícionálás",
+          "sub": "Tábla partícionálás tervezése",
+          "desc": "Nagy táblák partícionálási stratégiája.",
+          "tools": [],
+          "vars": [
+            "TÁBLA_NÉV",
+            "REKORDSZÁM",
+            "TIPIKUS_QUERYK"
+          ],
+          "prompt": "Tervezz partícionálási stratégiát:\n\nTábla: [TÁBLA_NÉV]\nRekordszám: [REKORDSZÁM]\nTipikus query-k: [TIPIKUS_QUERYK]\n\nElemzés:\n\n1. PARTÍCIONÁLÁS SZÜKSÉGES?\n   ☐ 100M+ rekord\n   ☐ Időalapú adatok\n   ☐ Régi adatok ritkán kellenek\n   ☐ Bulk delete szükséges\n\n2. PARTÍCIONÁLÁSI TÍPUSOK\n\n   ### RANGE (időalapú)\n```sql\nCREATE TABLE orders (\n    id BIGINT,\n    created_at DATE,\n    amount DECIMAL\n) PARTITION BY RANGE (created_at);\n\nCREATE TABLE orders_2024_01 PARTITION OF orders\n    FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');\n```\n\n   ### LIST (kategória alapú)\n```sql\nCREATE TABLE orders (\n    id BIGINT,\n    region VARCHAR(10),\n    amount DECIMAL\n) PARTITION BY LIST (region);\n\nCREATE TABLE orders_eu PARTITION OF orders\n    FOR VALUES IN ('DE', 'FR', 'IT');\n```\n\n   ### HASH (egyenletes elosztás)\n```sql\nCREATE TABLE orders (\n    id BIGINT,\n    user_id BIGINT\n) PARTITION BY HASH (user_id);\n\nCREATE TABLE orders_0 PARTITION OF orders\n    FOR VALUES WITH (MODULUS 4, REMAINDER 0);\n```\n\n3. PARTITION PRUNING\n   - Query-k használják a partition key-t?\n   - EXPLAIN ellenőrzés\n\n4. MAINTENANCE\n   - Régi partíciók törlése/archiválása\n   - Új partíciók automatikus létrehozása\n   - Constraint exclusion"
+        },
+        {
+          "id": "db-migration-create",
+          "cat": "migrate",
+          "icon": "📝",
+          "title": "Migráció készítése",
+          "sub": "Schema változás migrációval",
+          "desc": "Adatbázis migráció létrehozása biztonságosan.",
+          "tools": [],
+          "vars": [
+            "VÁLTOZÁS_LEÍRÁSA",
+            "ADATBÁZIS_TÍPUS"
+          ],
+          "prompt": "Készíts adatbázis migrációt:\n\nVáltozás: [VÁLTOZÁS_LEÍRÁSA]\nAdatbázis: [ADATBÁZIS_TÍPUS]\n\nMigráció struktúra:\n\n1. UP MIGRÁCIÓ\n```sql\n-- ============================================\n-- Migration: [verzió]_[leírás]\n-- Created: [dátum]\n-- ============================================\n\nBEGIN;\n\n-- Új tábla\nCREATE TABLE new_table (\n    id BIGSERIAL PRIMARY KEY,\n    name VARCHAR(255) NOT NULL\n);\n\n-- Új mező meglévő táblához\nALTER TABLE existing_table\nADD COLUMN new_field VARCHAR(100);\n\n-- Index\nCREATE INDEX CONCURRENTLY idx_name\nON table(column);\n\n-- Constraint\nALTER TABLE child_table\nADD CONSTRAINT fk_parent\nFOREIGN KEY (parent_id) REFERENCES parent_table(id);\n\nCOMMIT;\n```\n\n2. DOWN MIGRÁCIÓ (rollback)\n```sql\nBEGIN;\n\nALTER TABLE child_table DROP CONSTRAINT fk_parent;\nDROP INDEX idx_name;\nALTER TABLE existing_table DROP COLUMN new_field;\nDROP TABLE new_table;\n\nCOMMIT;\n```\n\n3. ADAT MIGRÁCIÓ (ha szükséges)\n```sql\n-- Adat másolás/transzformáció\nUPDATE table SET new_column = old_column;\n```\n\n4. ZERO-DOWNTIME STRATÉGIA\n   - Először ADD COLUMN (nullable)\n   - Backfill data\n   - Aztán ADD CONSTRAINT\n   - Végül ALTER COLUMN SET NOT NULL"
+        },
+        {
+          "id": "db-data-migration",
+          "cat": "migrate",
+          "icon": "🔄",
+          "title": "Adat migráció",
+          "sub": "Adatok átalakítása/költöztetése",
+          "desc": "Nagy mennyiségű adat migrálása biztonságosan.",
+          "tools": [],
+          "vars": [
+            "FORRÁS",
+            "CÉL",
+            "ADAT_MENNYISÉG",
+            "TRANSZFORMÁCIÓ"
+          ],
+          "prompt": "Tervezz adat migrációt:\n\nForrás: [FORRÁS]\nCél: [CÉL]\nAdat mennyiség: [ADAT_MENNYISÉG]\nTranszformáció: [TRANSZFORMÁCIÓ]\n\nMigráció terv:\n\n1. ELŐKÉSZÍTÉS\n```sql\n-- Forrás elemzés\nSELECT COUNT(*), MIN(id), MAX(id) FROM source_table;\n\n-- Cél tábla előkészítése\nTRUNCATE target_table;\nALTER TABLE target_table DISABLE TRIGGER ALL;\n```\n\n2. BATCH MIGRÁCIÓ (nagy adathoz)\n```sql\nDO $$\nDECLARE\n    batch_size INT := 10000;\n    max_id BIGINT;\n    current_id BIGINT := 0;\nBEGIN\n    SELECT MAX(id) INTO max_id FROM source_table;\n\n    WHILE current_id < max_id LOOP\n        INSERT INTO target_table (col1, col2)\n        SELECT\n            s.col1,\n            TRANSFORM(s.col2) as col2\n        FROM source_table s\n        WHERE s.id > current_id\n          AND s.id <= current_id + batch_size;\n\n        current_id := current_id + batch_size;\n        COMMIT;\n\n        RAISE NOTICE 'Processed up to %', current_id;\n    END LOOP;\nEND $$;\n```\n\n3. VALIDÁLÁS\n```sql\n-- Rekordszám egyezés\nSELECT\n    (SELECT COUNT(*) FROM source_table) as source_count,\n    (SELECT COUNT(*) FROM target_table) as target_count;\n\n-- Adatintegritás\nSELECT s.id\nFROM source_table s\nLEFT JOIN target_table t ON s.id = t.id\nWHERE t.id IS NULL;\n```\n\n4. BEFEJEZÉS\n```sql\nALTER TABLE target_table ENABLE TRIGGER ALL;\nANALYZE target_table;\n```\n\n5. ROLLBACK TERV"
+        },
+        {
+          "id": "db-version-compare",
+          "cat": "migrate",
+          "icon": "⚖️",
+          "title": "Séma összehasonlítás",
+          "sub": "Két adatbázis diff-je",
+          "desc": "Adatbázis sémák közötti különbségek azonosítása.",
+          "tools": [],
+          "vars": [
+            "FORRÁS_DB",
+            "CÉL_DB"
+          ],
+          "prompt": "Hasonlítsd össze a sémákat:\n\nForrás: [FORRÁS_DB]\nCél: [CÉL_DB]\n\nÖsszehasonlítás:\n\n1. TÁBLÁK\n```sql\n-- Csak forrásban létezik\nSELECT table_name FROM source.information_schema.tables\nWHERE table_schema = 'public'\nEXCEPT\nSELECT table_name FROM target.information_schema.tables\nWHERE table_schema = 'public';\n\n-- Csak célban létezik\nSELECT table_name FROM target.information_schema.tables\nWHERE table_schema = 'public'\nEXCEPT\nSELECT table_name FROM source.information_schema.tables\nWHERE table_schema = 'public';\n```\n\n2. OSZLOPOK KÜLÖNBSÉGEI\n| Tábla | Oszlop | Forrás | Cél | Eltérés |\n|-------|--------|--------|-----|---------|\n\n3. INDEX KÜLÖNBSÉGEK\n| Tábla | Index | Forrás | Cél |\n|-------|-------|--------|-----|\n\n4. CONSTRAINT KÜLÖNBSÉGEK\n| Tábla | Constraint | Típus | Forrás | Cél |\n|-------|------------|-------|--------|-----|\n\n5. SZINKRONIZÁLÓ SCRIPT\n```sql\n-- Hiányzó táblák létrehozása\n-- Hiányzó oszlopok hozzáadása\n-- Típus különbségek javítása\n-- Hiányzó indexek\n-- Hiányzó constraint-ek\n```"
+        },
+        {
+          "id": "db-backup-restore",
+          "cat": "admin",
+          "icon": "💾",
+          "title": "Backup és Restore",
+          "sub": "Mentési stratégia és visszaállítás",
+          "desc": "Adatbázis backup és disaster recovery tervezése.",
+          "tools": [],
+          "vars": [
+            "ADATBÁZIS_NÉV",
+            "MÉRET",
+            "RTO_RPO"
+          ],
+          "prompt": "Tervezz backup stratégiát:\n\nAdatbázis: [ADATBÁZIS_NÉV]\nMéret: [MÉRET]\nRTO/RPO követelmény: [RTO_RPO]\n\nBackup terv:\n\n1. BACKUP TÍPUSOK\n\n   ### Full Backup (heti)\n```bash\npg_dump -Fc -f backup_full_$(date +%Y%m%d).dump dbname\n```\n\n   ### Incremental/WAL Archiving (folyamatos)\n```bash\n# postgresql.conf\narchive_mode = on\narchive_command = 'cp %p /archive/%f'\n```\n\n   ### Logical Backup (specifikus táblák)\n```bash\npg_dump -t specific_table -f table_backup.sql dbname\n```\n\n2. RESTORE ELJÁRÁSOK\n\n   ### Full Restore\n```bash\npg_restore -d dbname backup_full.dump\n```\n\n   ### Point-in-Time Recovery\n```bash\n# recovery.conf\nrestore_command = 'cp /archive/%f %p'\nrecovery_target_time = '2024-01-15 10:30:00'\n```\n\n3. BACKUP ÜTEMEZÉS\n| Típus | Gyakoriság | Megőrzés | Tárolás |\n|-------|------------|----------|---------|\n| Full | Heti | 4 hét | S3 |\n| WAL | Folyamatos | 7 nap | Local + S3 |\n| Logical | Napi | 30 nap | S3 |\n\n4. TESZTELÉS\n   - Havi restore teszt\n   - RTO/RPO validálás\n   - Dokumentált eljárás\n\n5. MONITORING\n   - Backup sikeresség alerting\n   - Tárhely használat\n   - WAL lag monitoring"
+        },
+        {
+          "id": "db-user-permissions",
+          "cat": "admin",
+          "icon": "🔐",
+          "title": "Jogosultságkezelés",
+          "sub": "User és role management",
+          "desc": "Adatbázis felhasználók és jogosultságok kezelése.",
+          "tools": [],
+          "vars": [
+            "FELHASZNÁLÓK",
+            "SZEREPKÖRÖK"
+          ],
+          "prompt": "Tervezz jogosultsági rendszert:\n\nFelhasználók: [FELHASZNÁLÓK]\nSzerepkörök: [SZEREPKÖRÖK]\n\nImplementáció:\n\n1. SZEREPKÖRÖK (ROLES)\n```sql\n-- Olvasási szerepkör\nCREATE ROLE readonly;\nGRANT CONNECT ON DATABASE mydb TO readonly;\nGRANT USAGE ON SCHEMA public TO readonly;\nGRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly;\nALTER DEFAULT PRIVILEGES IN SCHEMA public\n    GRANT SELECT ON TABLES TO readonly;\n\n-- Írási szerepkör\nCREATE ROLE readwrite;\nGRANT readonly TO readwrite;\nGRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO readwrite;\n\n-- Admin szerepkör\nCREATE ROLE admin;\nGRANT readwrite TO admin;\nGRANT CREATE ON SCHEMA public TO admin;\n```\n\n2. FELHASZNÁLÓK\n```sql\n-- Felhasználó létrehozás\nCREATE USER app_user WITH PASSWORD 'secure_password';\nGRANT readwrite TO app_user;\n\n-- Service account (külső alkalmazáshoz)\nCREATE USER api_service WITH PASSWORD 'service_pwd';\nGRANT readonly TO api_service;\n\n-- Jelszó policy\nALTER USER app_user VALID UNTIL '2025-01-01';\n```\n\n3. ROW LEVEL SECURITY\n```sql\nALTER TABLE orders ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY orders_tenant_policy ON orders\n    USING (tenant_id = current_setting('app.tenant_id')::int);\n```\n\n4. AUDIT\n```sql\n-- Ki mit csinált\nSELECT * FROM pg_stat_activity;\n\n-- Jogosultságok ellenőrzése\nSELECT grantee, privilege_type, table_name\nFROM information_schema.table_privileges\nWHERE table_schema = 'public';\n```\n\n5. BEST PRACTICES\n   - Least privilege elv\n   - Nincs közvetlen superuser használat\n   - Jelszó rotation\n   - Audit logging"
+        },
+        {
+          "id": "db-monitoring",
+          "cat": "admin",
+          "icon": "📈",
+          "title": "Monitoring és alerting",
+          "sub": "Adatbázis health monitoring",
+          "desc": "Adatbázis teljesítmény és health monitoring beállítása.",
+          "tools": [],
+          "vars": [
+            "ADATBÁZIS_TÍPUS",
+            "KRITIKUS_METRIKÁK"
+          ],
+          "prompt": "Állíts be adatbázis monitoringot:\n\nAdatbázis: [ADATBÁZIS_TÍPUS]\nKritikus metrikák: [KRITIKUS_METRIKÁK]\n\nMonitoring terv:\n\n1. KULCS METRIKÁK\n\n   ### Teljesítmény\n   - Query response time (p50, p95, p99)\n   - Queries per second\n   - Slow query count\n   - Lock wait time\n\n   ### Erőforrások\n   - CPU usage\n   - Memory usage\n   - Disk I/O\n   - Connection count\n\n   ### Replikáció\n   - Replication lag\n   - WAL generation rate\n\n2. LEKÉRDEZÉSEK MONITORINGHOZ\n```sql\n-- Aktív kapcsolatok\nSELECT count(*) FROM pg_stat_activity\nWHERE state = 'active';\n\n-- Leglassabb query-k\nSELECT query, mean_time, calls\nFROM pg_stat_statements\nORDER BY mean_time DESC LIMIT 10;\n\n-- Tábla méret\nSELECT relname, pg_size_pretty(pg_total_relation_size(relid))\nFROM pg_catalog.pg_statio_user_tables\nORDER BY pg_total_relation_size(relid) DESC;\n\n-- Cache hit ratio\nSELECT\n    sum(heap_blks_hit) / (sum(heap_blks_hit) + sum(heap_blks_read)) as ratio\nFROM pg_statio_user_tables;\n\n-- Replication lag\nSELECT extract(epoch from now() - pg_last_xact_replay_timestamp());\n```\n\n3. ALERTING SZABÁLYOK\n| Metrika | Warning | Critical | Akció |\n|---------|---------|----------|-------|\n| CPU | >70% | >90% | Scale up |\n| Connections | >80% max | >95% max | Pool növelés |\n| Repl lag | >30s | >60s | Investigate |\n| Disk | >75% | >90% | Cleanup/expand |\n\n4. DASHBOARD\n   - Grafana dashboard JSON template\n   - Key visualizations\n\n5. LOG MONITORING\n   - Slow query log\n   - Error log parsing\n   - Connection attempts"
+        },
+        {
+          "id": "db-troubleshoot",
+          "cat": "admin",
+          "icon": "🔧",
+          "title": "Hibaelhárítás",
+          "sub": "Gyakori DB problémák megoldása",
+          "desc": "Adatbázis problémák diagnosztizálása és javítása.",
+          "tools": [],
+          "vars": [
+            "PROBLÉMA_LEÍRÁS",
+            "HIBAÜZENET"
+          ],
+          "prompt": "Diagnosztizáld az adatbázis problémát:\n\nProbléma: [PROBLÉMA_LEÍRÁS]\nHibaüzenet: [HIBAÜZENET]\n\nHibaelhárítási útmutató:\n\n1. LASSÚ QUERY-K\n```sql\n-- Futó query-k ellenőrzése\nSELECT pid, now() - query_start as duration, query, state\nFROM pg_stat_activity\nWHERE state != 'idle'\nORDER BY duration DESC;\n\n-- Query kilövése\nSELECT pg_terminate_backend(pid);\n```\n\n2. LOCK PROBLÉMÁK\n```sql\n-- Lock-ok megtekintése\nSELECT blocked_locks.pid AS blocked_pid,\n       blocking_locks.pid AS blocking_pid,\n       blocked_activity.query AS blocked_query\nFROM pg_catalog.pg_locks blocked_locks\nJOIN pg_catalog.pg_locks blocking_locks ON ...;\n\n-- Deadlock feloldása\nSELECT pg_terminate_backend(blocking_pid);\n```\n\n3. KAPCSOLAT PROBLÉMÁK\n```sql\n-- Kapcsolatok száma\nSELECT count(*) FROM pg_stat_activity;\n\n-- Idle kapcsolatok kilövése\nSELECT pg_terminate_backend(pid)\nFROM pg_stat_activity\nWHERE state = 'idle'\n  AND query_start < now() - interval '10 minutes';\n```\n\n4. DISK SPACE\n```sql\n-- Legnagyobb táblák\nSELECT relname, pg_size_pretty(pg_total_relation_size(relid))\nFROM pg_catalog.pg_statio_user_tables\nORDER BY pg_total_relation_size(relid) DESC;\n\n-- VACUUM és cleanup\nVACUUM FULL tablename;\nREINDEX TABLE tablename;\n```\n\n5. REPLIKÁCIÓ\n```sql\n-- Replication status\nSELECT * FROM pg_stat_replication;\n\n-- WAL position\nSELECT pg_current_wal_lsn();\n```\n\nMEGOLDÁSI JAVASLATOK:"
+        },
+        {
+          "id": "db-performance-tuning",
+          "cat": "optimize",
+          "icon": "🎛️",
+          "title": "Konfiguráció tuning",
+          "sub": "Adatbázis szerver optimalizálás",
+          "desc": "PostgreSQL/MySQL konfiguráció optimalizálás.",
+          "tools": [],
+          "vars": [
+            "DB_TÍPUS",
+            "RAM",
+            "CPU",
+            "WORKLOAD_TÍPUS"
+          ],
+          "prompt": "Optimalizáld az adatbázis konfigurációt:\n\nAdatbázis: [DB_TÍPUS]\nRAM: [RAM]\nCPU: [CPU]\nWorkload: [WORKLOAD_TÍPUS] (OLTP/OLAP/Mixed)\n\nPostgreSQL konfiguráció:\n\n1. MEMÓRIA BEÁLLÍTÁSOK\n```\n# Shared memory\nshared_buffers = RAM * 0.25\n\n# Work memory (per operation)\nwork_mem = RAM / max_connections / 4\n\n# Maintenance\nmaintenance_work_mem = RAM * 0.05\n\n# Effective cache\neffective_cache_size = RAM * 0.75\n```\n\n2. WAL ÉS CHECKPOINT\n```\n# WAL\nwal_buffers = 64MB\nmax_wal_size = 4GB\nmin_wal_size = 1GB\n\n# Checkpoint\ncheckpoint_completion_target = 0.9\ncheckpoint_timeout = 10min\n```\n\n3. KAPCSOLATOK\n```\nmax_connections = 200\n# Használj connection poolt (PgBouncer)!\n```\n\n4. QUERY PLANNER\n```\nrandom_page_cost = 1.1  # SSD-hez\neffective_io_concurrency = 200  # SSD-hez\ndefault_statistics_target = 100\n```\n\n5. PARALLEL QUERY\n```\nmax_parallel_workers_per_gather = CPU / 2\nmax_parallel_workers = CPU\nmax_worker_processes = CPU + 2\n```\n\n6. LOGGING\n```\nlog_min_duration_statement = 1000  # ms\nlog_checkpoints = on\nlog_lock_waits = on\n```\n\nWORKLOAD-SPECIFIKUS AJÁNLÁSOK:"
+        }
+      ]
+    },
+    {
+      "id": "sap-integration",
+      "name": "SAP Integration",
+      "icon": "🔗",
+      "color": "#059669",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "rfc",
+          "label": "📞 RFC/BAPI",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "idoc",
+          "label": "📨 IDoc",
+          "color": "#10b981"
+        },
+        {
+          "id": "odata",
+          "label": "🌐 OData",
+          "color": "#f59e0b"
+        },
+        {
+          "id": "btp",
+          "label": "☁️ BTP/Cloud",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "middleware",
+          "label": "🔄 Middleware",
+          "color": "#ec4899"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "int-rfc-call",
+          "cat": "rfc",
+          "icon": "📞",
+          "title": "RFC hívás implementálása",
+          "sub": "Távoli függvényhívás",
+          "desc": "RFC modul hívása ABAP-ból vagy külső rendszerből.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [],
+          "prompt": "Implementálj RFC hívást:\n\nRFC modul: [RFC_NÉV]\nParaméterek: [PARAMÉTEREK]\nHívó rendszer: [HÍVÓ_RENDSZER]\n\n1. RFC DEFINÍCIÓ ELLENŐRZÉSE\n   - SE37-ben ellenőrizd a szignatúrát\n   - Import/Export/Tables paraméterek\n   - Keresd meg a használaton kívüli változókat és elemeket\n   - jelezd a hiányos hibakezeléseket\n   - Kivételek\n\n2. ABAP HÍVÁS (ha ABAP-ból hívod)\n```abap\nDATA: lt_result TYPE TABLE OF bapi_return.\n\nCALL FUNCTION '[RFC_NÉV]'\n  DESTINATION 'RFC_DEST'\n  EXPORTING\n    iv_param1 = lv_value1\n  IMPORTING\n    ev_result = lv_result\n  TABLES\n    t_return  = lt_result\n  EXCEPTIONS\n    system_failure        = 1\n    communication_failure = 2\n    OTHERS                = 3.\n\nIF sy-subrc <> 0.\n  \" Error handling\nENDIF.\n```\n\n3. SM59 DESTINATION KONFIGURÁCIÓ\n   - Connection type (3 = ABAP, H = HTTP, G = External)\n   - Load balancing\n   - Logon paraméterek\n\n4. ERROR HANDLING\n   - SYSTEM_FAILURE\n   - COMMUNICATION_FAILURE\n   - Timeout kezelés\n\n5. MONITORING\n   - ST22 dump-ok\n   - SM21 system log\n   - SMGW gateway monitor",
+          "favorite": true
+        },
+        {
+          "id": "int-bapi-wrapper",
+          "cat": "rfc",
+          "icon": "🎁",
+          "title": "BAPI wrapper osztály",
+          "sub": "OO wrapper BAPI-hoz",
+          "desc": "Objektum-orientált wrapper készítése BAPI-khoz.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "BAPI_NÉV",
+            "ÜZLETI_OBJEKTUM"
+          ],
+          "prompt": "Készíts BAPI wrapper osztályt:\n\nBAPI: [BAPI_NÉV]\nÜzleti objektum: [ÜZLETI_OBJEKTUM]\n\nWrapper struktúra:\n\n1. INTERFÉSZ DEFINÍCIÓ\n```abap\nINTERFACE zif_[objektum]_service.\n  METHODS:\n    create\n      IMPORTING is_data TYPE [struktúra]\n      RETURNING VALUE(rv_id) TYPE [típus]\n      RAISING   zcx_[objektum]_error,\n\n    read\n      IMPORTING iv_id TYPE [típus]\n      RETURNING VALUE(rs_data) TYPE [struktúra]\n      RAISING   zcx_[objektum]_error,\n\n    update\n      IMPORTING iv_id   TYPE [típus]\n                is_data TYPE [struktúra]\n      RAISING   zcx_[objektum]_error,\n\n    delete\n      IMPORTING iv_id TYPE [típus]\n      RAISING   zcx_[objektum]_error.\nENDINTERFACE.\n```\n\n2. IMPLEMENTÁCIÓ\n```abap\nCLASS zcl_[objektum]_service DEFINITION.\n  PUBLIC SECTION.\n    INTERFACES zif_[objektum]_service.\n  PRIVATE SECTION.\n    METHODS:\n      handle_return\n        IMPORTING it_return TYPE bapiret2_t\n        RAISING   zcx_[objektum]_error,\n      commit_work\n        RAISING   zcx_[objektum]_error.\nENDCLASS.\n```\n\n3. RETURN KEZELÉS\n   - BAPIRET2 feldolgozás\n   - Error/Warning/Info szétválasztás\n   - Exception mapping\n\n4. COMMIT HANDLING\n   - BAPI_TRANSACTION_COMMIT\n   - WAIT paraméter\n   - Rollback kezelés"
+        },
+        {
+          "id": "int-rfc-server",
+          "cat": "rfc",
+          "icon": "🖥️",
+          "title": "RFC szerver funkció",
+          "sub": "Beérkező RFC kezelése",
+          "desc": "RFC szerver implementálása külső rendszerek számára.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "FUNKCIÓ_NÉV",
+            "BEMENETI_PARAMÉTEREK",
+            "KIMENETI_ADATOK"
+          ],
+          "prompt": "Készíts RFC szerver funkciót:\n\nFunkció neve: [FUNKCIÓ_NÉV]\nBemeneti paraméterek: [BEMENETI_PARAMÉTEREK]\nKimeneti adatok: [KIMENETI_ADATOK]\n\n1. FUNKCIÓ DEFINÍCIÓ (SE37)\n```abap\nFUNCTION z_[funkció_név].\n*\"----------------------------------------------------------------------\n*\"*\"Remote-Enabled Module\n*\"----------------------------------------------------------------------\n*\"  IMPORTING\n*\"     VALUE(IV_PARAM1) TYPE [típus]\n*\"  EXPORTING\n*\"     VALUE(EV_RESULT) TYPE [típus]\n*\"  TABLES\n*\"     T_DATA STRUCTURE [struktúra]\n*\"  EXCEPTIONS\n*\"     INVALID_INPUT\n*\"     PROCESSING_ERROR\n*\"----------------------------------------------------------------------\n\n  \" Input validation\n  IF iv_param1 IS INITIAL.\n    RAISE invalid_input.\n  ENDIF.\n\n  TRY.\n      \" Business logic\n    CATCH cx_root INTO DATA(lx_error).\n      RAISE processing_error.\n  ENDTRY.\n\nENDFUNCTION.\n```\n\n2. REMOTE-ENABLED BEÁLLÍTÁS\n   - Attributes → Processing Type: Remote-Enabled\n\n3. JOGOSULTSÁG KEZELÉS\n```abap\nAUTHORITY-CHECK OBJECT 'S_RFC'\n  ID 'RFC_TYPE' FIELD 'FUGR'\n  ID 'RFC_NAME' FIELD '[funkciócsoport]'\n  ID 'ACTVT'    FIELD '16'.\n```\n\n4. TESZT\n   - SE37 teszt lokálisan\n   - RFC kliens teszt SM59-ből"
+        },
+        {
+          "id": "int-idoc-inbound",
+          "cat": "idoc",
+          "icon": "📥",
+          "title": "IDoc beérkező feldolgozás",
+          "sub": "Inbound IDoc processing",
+          "desc": "Beérkező IDoc feldolgozás FM implementálása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "IDOC_TÍPUS",
+            "ÜZLETI_LOGIKA"
+          ],
+          "prompt": "Implementálj IDoc inbound feldolgozást:\n\nIDoc típus: [IDOC_TÍPUS]\nÜzleti logika: [ÜZLETI_LOGIKA]\n\n1. FUNKCIÓ MODUL STRUKTÚRA\n```abap\nFUNCTION z_idoc_[típus]_inbound.\n*\"----------------------------------------------------------------------\n*\"  IMPORTING\n*\"     VALUE(INPUT_METHOD) TYPE BDWFAP_PAR-INPUTMETHD\n*\"     VALUE(MASS_PROCESSING) TYPE BDWFAP_PAR-MASS_PROC\n*\"  EXPORTING\n*\"     VALUE(WORKFLOW_RESULT) TYPE BDWF_PARAM-RESULT\n*\"     VALUE(APPLICATION_VARIABLE) TYPE BDWF_PARAM-APPL_VAR\n*\"     VALUE(IN_UPDATE_TASK) TYPE BDWFAP_PAR-UPDATETASK\n*\"     VALUE(CALL_TRANSACTION_DONE) TYPE BDWFAP_PAR-CALLTRANS\n*\"  TABLES\n*\"     IDOC_CONTRL STRUCTURE EDIDC\n*\"     IDOC_DATA STRUCTURE EDIDD\n*\"     IDOC_STATUS STRUCTURE BDIDOCSTAT\n*\"     RETURN_VARIABLES STRUCTURE BDWFRETVAR\n*\"     SERIALIZATION_INFO STRUCTURE BDI_SER\n*\"----------------------------------------------------------------------\n\n  DATA: ls_status TYPE bdidocstat.\n\n  LOOP AT idoc_contrl INTO DATA(ls_control).\n    TRY.\n        \" IDoc szegmensek feldolgozása\n        LOOP AT idoc_data INTO DATA(ls_data)\n             WHERE docnum = ls_control-docnum.\n          CASE ls_data-segnam.\n            WHEN 'E1...'\n              \" Szegmens feldolgozás\n          ENDCASE.\n        ENDLOOP.\n\n        \" Sikeres feldolgozás\n        ls_status-docnum = ls_control-docnum.\n        ls_status-status = '53'.  \" Success\n        ls_status-msgty  = 'S'.\n        APPEND ls_status TO idoc_status.\n\n      CATCH cx_root INTO DATA(lx_error).\n        \" Hiba státusz\n        ls_status-status = '51'.  \" Error\n        ls_status-msgty  = 'E'.\n        ls_status-msgid  = 'Z...'.\n        ls_status-msgno  = '001'.\n        APPEND ls_status TO idoc_status.\n    ENDTRY.\n  ENDLOOP.\n\nENDFUNCTION.\n```\n\n2. PARTNER PROFIL (WE20)\n   - Partner szám\n   - Üzenet típus hozzárendelés\n   - Inbound process code\n\n3. STÁTUSZ KÓDOK\n   - 51: Hiba\n   - 53: Sikeres\n   - 64: IDoc kész átadásra\n\n4. DEBUG\n   - WE02/WE05 IDoc lista\n   - BD87 újrafeldolgozás"
+        },
+        {
+          "id": "int-idoc-outbound",
+          "cat": "idoc",
+          "icon": "📤",
+          "title": "IDoc kimenő generálás",
+          "sub": "Outbound IDoc creation",
+          "desc": "Kimenő IDoc létrehozása és küldése.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "IDOC_TÍPUS",
+            "FORRÁS_ADATOK"
+          ],
+          "prompt": "Implementálj IDoc outbound generálást:\n\nIDoc típus: [IDOC_TÍPUS]\nForrás adatok: [FORRÁS_ADATOK]\n\n1. IDOC FELÉPÍTÉSE\n```abap\nDATA: ls_control  TYPE edidc,\n      lt_data     TYPE TABLE OF edidd,\n      lt_comm     TYPE TABLE OF edidc.\n\n\" Control rekord\nls_control-mestyp = '[MESTYPE]'.\nls_control-idoctp = '[IDOC_TÍPUS]'.\nls_control-rcvprt = 'LS'.\nls_control-rcvprn = '[PARTNER]'.\n\n\" Szegmensek feltöltése\nDATA(ls_data) = VALUE edidd(\n  segnam = 'E1...'\n  sdata  = ls_segment_data\n).\nAPPEND ls_data TO lt_data.\n\n\" IDoc létrehozása\nCALL FUNCTION 'MASTER_IDOC_DISTRIBUTE'\n  EXPORTING\n    master_idoc_control = ls_control\n  TABLES\n    communication_idoc_control = lt_comm\n    master_idoc_data = lt_data\n  EXCEPTIONS\n    error_in_idoc_control = 1\n    error_writing_idoc_status = 2\n    error_in_idoc_data = 3\n    OTHERS = 4.\n\nIF sy-subrc = 0.\n  COMMIT WORK.\nENDIF.\n```\n\n2. PARTNER PROFIL (WE20)\n   - Outbound paraméterek\n   - Port hozzárendelés\n   - Output mode (immediate/batch)\n\n3. PORT KONFIGURÁCIÓ (WE21)\n   - tRFC port\n   - File port\n   - XML port\n\n4. TESZT\n   - WE19 teszt tool\n   - BD64 distribution model"
+        },
+        {
+          "id": "int-idoc-custom",
+          "cat": "idoc",
+          "icon": "🛠️",
+          "title": "Egyedi IDoc típus",
+          "sub": "Custom IDoc development",
+          "desc": "Saját IDoc típus és szegmensek létrehozása.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "IDOC_NÉV",
+            "SZEGMENSEK",
+            "ADATSTRUKTÚRA"
+          ],
+          "prompt": "Hozz létre egyedi IDoc típust:\n\nIDoc neve: [IDOC_NÉV]\nSzegmensek: [SZEGMENSEK]\nAdatstruktúra: [ADATSTRUKTÚRA]\n\n1. SZEGMENS DEFINÍCIÓ (WE31)\n   - Szegmens neve: Z1[NÉV]\n   - Mezők és típusok\n   - Kötelező/opcionális\n\n2. IDOC TÍPUS (WE30)\n   - Basic type: Z[NÉV]01\n   - Szegmens hierarchia\n   - Min/Max előfordulás\n\n3. MESSAGE TYPE (WE81)\n   - Üzenet típus: Z[NÉV]\n\n4. HOZZÁRENDELÉS (WE82)\n   - Message type → IDoc type\n\n5. PROCESS CODE\n   - Inbound: WE42\n   - Outbound: WE41\n\n6. PÉLDA SZEGMENS\n```\nSzegmens: Z1[NÉV]_HEADER\n  BUKRS    CHAR 4    Vállalati kód\n  DOCNUM   CHAR 10   Bizonylat szám\n  DOCDATE  DATS 8    Dátum\n\nSzegmens: Z1[NÉV]_ITEM\n  POSNR    NUMC 6    Tétel szám\n  MATNR    CHAR 18   Anyag szám\n  MENGE    QUAN 13   Mennyiség\n```\n\n7. DOKUMENTÁCIÓ\n   - Szegmens leírások\n   - Mező mapping\n   - Példa IDoc"
+        },
+        {
+          "id": "int-odata-service",
+          "cat": "odata",
+          "icon": "🌐",
+          "title": "OData szolgáltatás",
+          "sub": "SEGW OData fejlesztés",
+          "desc": "OData szolgáltatás létrehozása Gateway-ben.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "SZOLGÁLTATÁS_NÉV",
+            "ENTITÁSOK",
+            "MŰVELETEK"
+          ],
+          "prompt": "Hozz létre OData szolgáltatást:\n\nSzolgáltatás: [SZOLGÁLTATÁS_NÉV]\nEntitások: [ENTITÁSOK]\nMűveletek: [MŰVELETEK]\n\n1. SEGW PROJEKT LÉTREHOZÁSA\n   - Projekt neve: Z[NÉV]_SRV\n   - Verzió: 2 vagy 4\n\n2. ENTITÁS TÍPUS DEFINÍCIÓ\n```\nEntityType: [Entitás]\n  - Key: ID (Edm.String)\n  - Property: Name (Edm.String)\n  - Property: Amount (Edm.Decimal)\n  - Navigation: ToItems (1:N)\n```\n\n3. DPC_EXT IMPLEMENTÁCIÓ\n```abap\nMETHOD /iwbep/if_mgw_appl_srv_runtime~get_entityset.\n  CASE iv_entity_name.\n    WHEN 'EntitySet'.\n      \" Lekérdezés implementálása\n      SELECT * FROM ztable INTO TABLE @DATA(lt_data).\n\n      \" $filter kezelés\n      DATA(lt_filter) = io_tech_request_context->get_filter( )->get_filter_select_options( ).\n\n      \" $orderby\n      DATA(lt_order) = io_tech_request_context->get_orderby( ).\n\n      \" $top/$skip\n      DATA(lv_top) = io_tech_request_context->get_top( ).\n      DATA(lv_skip) = io_tech_request_context->get_skip( ).\n\n      \" Eredmény visszaadása\n      copy_data_to_ref(\n        EXPORTING is_data = lt_data\n        CHANGING  cr_data = er_entityset ).\n  ENDCASE.\nENDMETHOD.\n```\n\n4. CRUD MŰVELETEK\n   - CREATE_ENTITY\n   - UPDATE_ENTITY\n   - DELETE_ENTITY\n\n5. REGISZTRÁCIÓ (/IWFND/MAINT_SERVICE)\n   - System alias\n   - Service aktiválás\n\n6. TESZT\n   - /IWFND/GW_CLIENT\n   - $metadata lekérdezés"
+        },
+        {
+          "id": "int-odata-deep",
+          "cat": "odata",
+          "icon": "🔗",
+          "title": "Deep Insert/Expand",
+          "sub": "Összetett OData műveletek",
+          "desc": "Deep entity és $expand implementáció.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "HEADER_ENTITÁS",
+            "ITEM_ENTITÁS"
+          ],
+          "prompt": "Implementálj Deep Insert és $expand-ot:\n\nHeader entitás: [HEADER_ENTITÁS]\nItem entitás: [ITEM_ENTITÁS]\n\n1. NAVIGÁCIÓS PROPERTY (SEGW)\n```\n[Header] 1 -----> N [Items]\nNavigation: ToItems\nReferential constraint: HeaderID = HeaderID\n```\n\n2. $EXPAND IMPLEMENTÁCIÓ\n```abap\nMETHOD /iwbep/if_mgw_appl_srv_runtime~get_expanded_entityset.\n  DATA: lt_headers TYPE TABLE OF [header_type],\n        lt_items   TYPE TABLE OF [item_type].\n\n  \" Header-ek lekérdezése\n  SELECT * FROM zheader INTO TABLE lt_headers.\n\n  \" Item-ek lekérdezése\n  SELECT * FROM zitem INTO TABLE lt_items\n    FOR ALL ENTRIES IN lt_headers\n    WHERE header_id = lt_headers-id.\n\n  \" Expand clause ellenőrzése\n  DATA(lt_expand) = io_tech_request_context->get_expand( ).\n\n  \" Eredmény összeállítása\n  LOOP AT lt_headers INTO DATA(ls_header).\n    \" Items hozzáadása navigation property-hez\n    LOOP AT lt_items INTO DATA(ls_item)\n         WHERE header_id = ls_header-id.\n      \" ...\n    ENDLOOP.\n  ENDLOOP.\nENDMETHOD.\n```\n\n3. DEEP INSERT\n```abap\nMETHOD /iwbep/if_mgw_appl_srv_runtime~create_deep_entity.\n  DATA: ls_header TYPE [header],\n        lt_items  TYPE TABLE OF [item].\n\n  \" Request body feldolgozása\n  io_data_provider->read_entry_data(\n    IMPORTING es_data = ls_request_data ).\n\n  \" Header mentése\n  INSERT zheader FROM ls_header.\n\n  \" Item-ek mentése\n  LOOP AT lt_items INTO DATA(ls_item).\n    ls_item-header_id = ls_header-id.\n    INSERT zitem FROM ls_item.\n  ENDLOOP.\n\n  COMMIT WORK.\nENDMETHOD.\n```\n\n4. $SELECT OPTIMALIZÁLÁS\n   - Csak kért mezők lekérdezése\n\n5. BATCH REQUEST TÁMOGATÁS\n   - $batch endpoint\n   - Changeset kezelés"
+        },
+        {
+          "id": "int-odata-v4",
+          "cat": "odata",
+          "icon": "4️⃣",
+          "title": "OData V4 / RAP",
+          "sub": "Modern OData fejlesztés",
+          "desc": "OData V4 szolgáltatás RAP-pal vagy manuálisan.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "ENTITÁS_NÉV",
+            "CDS_VIEW"
+          ],
+          "prompt": "Készíts OData V4 szolgáltatást:\n\nEntitás: [ENTITÁS_NÉV]\nCDS View: [CDS_VIEW]\n\n1. CDS VIEW ANNOTÁCIÓK\n```cds\n@OData.publish: true\n@EndUserText.label: '[Leírás]'\ndefine view Z_C_[Entitás]\n  as select from Z_I_[Entitás]\n{\n  @UI.facet: [{ type: #COLLECTION }]\n\n  @UI.lineItem: [{ position: 10 }]\n  key ID,\n\n  @UI.lineItem: [{ position: 20 }]\n  @UI.selectionField: [{ position: 10 }]\n  Name,\n\n  @Semantics.amount.currencyCode: 'Currency'\n  Amount,\n\n  Currency\n}\n```\n\n2. SERVICE DEFINITION (RAP)\n```cds\n@EndUserText.label: '[Szolgáltatás neve]'\ndefine service Z_UI_[Szolgáltatás] {\n  expose Z_C_[Entitás] as [Entitás];\n}\n```\n\n3. SERVICE BINDING\n   - Binding type: OData V4 - UI\n   - Publish és aktiválás\n\n4. V4 SPECIFIKUS FUNKCIÓK\n   - $apply (aggregation)\n   - $compute\n   - Deep operations\n   - ETag kezelés\n\n5. BEHAVIOR DEFINITION (opcionális)\n```cds\nmanaged implementation in class ZBP_[Entitás];\n\ndefine behavior for Z_I_[Entitás]\n  persistent table Z[TÁBLA]\n  lock master\n  authorization master\n{\n  create;\n  update;\n  delete;\n\n  field ( readonly ) ID;\n  field ( mandatory ) Name;\n\n  action approve result [1] $self;\n\n  validation validateData on save;\n  determination setDefaults on modify;\n}\n```"
+        },
+        {
+          "id": "int-btp-destination",
+          "cat": "btp",
+          "icon": "🎯",
+          "title": "BTP Destination",
+          "sub": "Cloud destination konfiguráció",
+          "desc": "SAP BTP destination beállítás on-premise rendszerhez.",
+          "tools": [],
+          "vars": [
+            "DESTINATION_NÉV",
+            "CÉL_RENDSZER",
+            "AUTH_TÍPUS"
+          ],
+          "prompt": "Konfigurálj BTP Destination-t:\n\nDestination neve: [DESTINATION_NÉV]\nCél rendszer: [CÉL_RENDSZER]\nAutentikáció: [AUTH_TÍPUS]\n\n1. DESTINATION KONFIGURÁCIÓ\n```properties\nName=[DESTINATION_NÉV]\nType=HTTP\nURL=https://[sap-host]:443/sap/opu/odata/sap/[SERVICE]\nProxyType=OnPremise\nAuthentication=BasicAuthentication\nUser=[service_user]\nPassword=[password]\n\n# Cloud Connector\nCloudConnectorLocationId=[location_id]\n\n# Additional properties\nsap-client=100\nHTML5.DynamicDestination=true\nWebIDEEnabled=true\nWebIDEUsage=odata_abap\n```\n\n2. CLOUD CONNECTOR BEÁLLÍTÁS\n   - Virtual host mapping\n   - Back-end rendszer hozzáadás\n   - Resource path engedélyezés\n   - Principal propagation (opcionális)\n\n3. PRINCIPAL PROPAGATION\n```properties\nAuthentication=PrincipalPropagation\nSystemUser=[technical_user]\n```\n\n4. OAUTH2 KONFIGURÁCIÓ\n```properties\nAuthentication=OAuth2SAMLBearerAssertion\naudience=[audience]\nauthnContextClassRef=urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession\nclientKey=[client_id]\ntokenServiceURL=https://[host]/oauth/token\ntokenServiceUser=[oauth_client]\ntokenServicePassword=[oauth_secret]\n```\n\n5. TESZT\n   - BTP Cockpit → Connectivity → Destinations\n   - \"Check Connection\" gomb\n   - CAP/UI5 alkalmazásból teszt"
+        },
+        {
+          "id": "int-btp-cap",
+          "cat": "btp",
+          "icon": "☁️",
+          "title": "CAP szolgáltatás",
+          "sub": "Cloud Application Programming",
+          "desc": "SAP CAP projekt készítése Node.js vagy Java alapon.",
+          "tools": [],
+          "vars": [
+            "PROJEKT_NÉV",
+            "ENTITÁSOK",
+            "SZOLGÁLTATÁSOK"
+          ],
+          "prompt": "Készíts SAP CAP projektet:\n\nProjekt: [PROJEKT_NÉV]\nEntitások: [ENTITÁSOK]\nSzolgáltatások: [SZOLGÁLTATÁSOK]\n\n1. PROJEKT INICIALIZÁLÁS\n```bash\ncds init [PROJEKT_NÉV]\ncd [PROJEKT_NÉV]\nnpm install\n```\n\n2. DOMAIN MODEL (db/schema.cds)\n```cds\nnamespace my.app;\n\nentity [Entitás] {\n  key ID   : UUID;\n  name     : String(100);\n  descr    : localized String(1000);\n  amount   : Decimal(15,2);\n  currency : Currency;\n  status   : String enum { draft; active; closed };\n  createdAt : Timestamp @cds.on.insert: $now;\n  modifiedAt: Timestamp @cds.on.insert: $now @cds.on.update: $now;\n}\n\nentity [MásikEntitás] {\n  key ID   : UUID;\n  parent   : Association to [Entitás];\n  // ...\n}\n```\n\n3. SERVICE DEFINITION (srv/service.cds)\n```cds\nusing my.app from '../db/schema';\n\nservice MainService @(path: '/api') {\n  entity [Entitás] as projection on app.[Entitás];\n\n  // Akció\n  action approve(id: UUID) returns [Entitás];\n\n  // Funkció\n  function getStats() returns { count: Integer; total: Decimal };\n}\n```\n\n4. SERVICE IMPLEMENTÁCIÓ (srv/service.js)\n```javascript\nconst cds = require('@sap/cds');\n\nmodule.exports = class MainService extends cds.ApplicationService {\n  async init() {\n    this.on('approve', async (req) => {\n      const { id } = req.data;\n      await UPDATE('[Entitás]').set({ status: 'active' }).where({ ID: id });\n      return SELECT.one.from('[Entitás]').where({ ID: id });\n    });\n\n    this.before('CREATE', '[Entitás]', (req) => {\n      req.data.status = 'draft';\n    });\n\n    await super.init();\n  }\n};\n```\n\n5. EXTERNAL SERVICE (S/4HANA)\n```cds\nusing { API_BUSINESS_PARTNER as BP } from './external/API_BUSINESS_PARTNER';\n\nextend service MainService with {\n  entity BusinessPartners as projection on BP.A_BusinessPartner;\n}\n```\n\n6. FUTTATÁS\n```bash\ncds watch\n# vagy\ncds deploy --to sqlite\ncds serve\n```"
+        },
+        {
+          "id": "int-event-mesh",
+          "cat": "btp",
+          "icon": "📡",
+          "title": "Event Mesh integráció",
+          "sub": "Esemény alapú kommunikáció",
+          "desc": "SAP Event Mesh használata esemény publikálásra és feliratkozásra.",
+          "tools": [],
+          "vars": [
+            "ESEMÉNY_TÍPUS",
+            "FORRÁS_RENDSZER",
+            "CÉL_RENDSZER"
+          ],
+          "prompt": "Implementálj Event Mesh integrációt:\n\nEsemény típus: [ESEMÉNY_TÍPUS]\nForrás: [FORRÁS_RENDSZER]\nCél: [CÉL_RENDSZER]\n\n1. EVENT MESH KONFIGURÁCIÓ\n   - Queue létrehozása\n   - Topic subscription\n   - Webhook konfiguráció\n\n2. ESEMÉNY PUBLIKÁLÁS (ABAP)\n```abap\n\" RAP Event\ndefine behavior for Z_I_Entity\n{\n  event EntityCreated parameter Z_D_EntityEventData;\n}\n\n\" Event raise\nRAISE ENTITY EVENT Z_I_Entity~EntityCreated\n  FROM VALUE #( ( %key = ls_entity-%key\n                  %param = VALUE #( id = ls_entity-id\n                                    data = ls_entity-data ) ) ).\n```\n\n3. ESEMÉNY PUBLIKÁLÁS (CAP)\n```javascript\nconst messaging = await cds.connect.to('messaging');\n\n// Esemény küldése\nawait messaging.emit('my/app/EntityCreated', {\n  id: entity.ID,\n  data: entity\n});\n```\n\n4. FELIRATKOZÁS (CAP)\n```cds\n// package.json\n\"cds\": {\n  \"requires\": {\n    \"messaging\": {\n      \"kind\": \"enterprise-messaging\"\n    }\n  }\n}\n```\n\n```javascript\nconst messaging = await cds.connect.to('messaging');\n\nmessaging.on('my/app/EntityCreated', async (msg) => {\n  console.log('Received:', msg.data);\n  // Feldolgozás\n});\n```\n\n5. CLOUDÉVENTS FORMÁTUM\n```json\n{\n  \"specversion\": \"1.0\",\n  \"type\": \"my.app.EntityCreated\",\n  \"source\": \"/default/my.app/\",\n  \"id\": \"[uuid]\",\n  \"time\": \"2024-01-15T10:00:00Z\",\n  \"data\": { }\n}\n```"
+        },
+        {
+          "id": "int-cpi-iflow",
+          "cat": "middleware",
+          "icon": "🔄",
+          "title": "CPI iFlow fejlesztés",
+          "sub": "Integration Flow tervezés",
+          "desc": "SAP Cloud Platform Integration iFlow készítése.",
+          "tools": [],
+          "vars": [
+            "INTEGRÁCIÓ_NÉV",
+            "FORRÁS",
+            "CÉL",
+            "TRANSZFORMÁCIÓ"
+          ],
+          "prompt": "Tervezz CPI Integration Flow-t:\n\nIntegráció: [INTEGRÁCIÓ_NÉV]\nForrás rendszer: [FORRÁS]\nCél rendszer: [CÉL]\nTranszformáció: [TRANSZFORMÁCIÓ]\n\n1. IFLOW STRUKTÚRA\n```\n[Sender] → [Start] → [Content Modifier] → [Mapping] → [Receiver]\n              ↓\n        [Exception Handler]\n```\n\n2. SENDER ADAPTER\n   - HTTP/HTTPS\n   - SOAP\n   - OData\n   - SFTP\n   - IDoc\n   - RFC\n\n3. CONTENT MODIFIER\n```\nHeader:\n  SAP_ApplicationID = [app_id]\n  Content-Type = application/json\n\nProperty:\n  sourceSystem = [forrás]\n  timestamp = ${date:now:yyyy-MM-dd}\n```\n\n4. MESSAGE MAPPING\n```\nSource: [Forrás struktúra]\nTarget: [Cél struktúra]\n\nMapping rules:\n  Target.ID = Source.Identifier\n  Target.Name = concat(Source.FirstName, ' ', Source.LastName)\n  Target.Date = formatDate(Source.Timestamp, 'yyyy-MM-dd')\n```\n\n5. GROOVY SCRIPT (ha szükséges)\n```groovy\nimport com.sap.gateway.ip.core.customdev.util.Message\n\ndef Message processData(Message message) {\n    def body = message.getBody(String)\n    def json = new groovy.json.JsonSlurper().parseText(body)\n\n    // Transzformáció\n    json.processed = true\n    json.timestamp = new Date().format(\"yyyy-MM-dd'T'HH:mm:ss\")\n\n    message.setBody(new groovy.json.JsonBuilder(json).toString())\n    return message\n}\n```\n\n6. ERROR HANDLING\n   - Exception subprocess\n   - Retry konfiguráció\n   - Dead letter queue\n\n7. MONITORING\n   - Message monitoring\n   - Trace aktiválás\n   - Alert szabályok"
+        },
+        {
+          "id": "int-pi-mapping",
+          "cat": "middleware",
+          "icon": "🗺️",
+          "title": "PI/PO Message Mapping",
+          "sub": "ESR mapping fejlesztés",
+          "desc": "SAP PI/PO message mapping és operation mapping.",
+          "tools": [],
+          "vars": [
+            "FORRÁS_STRUKTÚRA",
+            "CÉL_STRUKTÚRA",
+            "SZABÁLYOK"
+          ],
+          "prompt": "Készíts PI/PO Message Mapping-et:\n\nForrás: [FORRÁS_STRUKTÚRA]\nCél: [CÉL_STRUKTÚRA]\nMapping szabályok: [SZABÁLYOK]\n\n1. MESSAGE TYPE DEFINÍCIÓ (ESR)\n   - Forrás message type\n   - Cél message type\n   - XSD struktúra\n\n2. MESSAGE MAPPING\n```\nSource                    Target\n─────────────────────────────────────\nRoot                  →   Root\n  Header              →     Header\n    DocNumber         →       ID\n    DocDate           →       Date (formatDate)\n    Company           →       CompanyCode\n  Items[]             →     LineItems[]\n    ItemNo            →       Position\n    Material          →       ProductID\n    Quantity          →       Qty\n    Unit              →       UOM (lookup)\n```\n\n3. STANDARD FÜGGVÉNYEK\n   - concat, substring, replace\n   - formatDate, formatNumber\n   - if, exists, equals\n   - sum, count, min, max\n\n4. UDF (User Defined Function)\n```java\npublic String convertUnit(String input, Container container) {\n    Map<String, String> mapping = new HashMap<>();\n    mapping.put(\"ST\", \"EA\");\n    mapping.put(\"KG\", \"KGM\");\n    mapping.put(\"L\", \"LTR\");\n\n    return mapping.getOrDefault(input, input);\n}\n```\n\n5. LOOKUP (értéktáblázat)\n```\nInput    Output\nST    →  EA\nKG    →  KGM\nL     →  LTR\n```\n\n6. OPERATION MAPPING\n   - Source operation\n   - Target operation\n   - Message mapping hozzárendelés\n\n7. TESZT\n   - Test tab az ESR-ben\n   - Test message példa"
+        },
+        {
+          "id": "int-api-management",
+          "cat": "middleware",
+          "icon": "🛡️",
+          "title": "API Management",
+          "sub": "API proxy és policy-k",
+          "desc": "SAP API Management proxy és biztonsági policy-k.",
+          "tools": [],
+          "vars": [
+            "API_NÉV",
+            "BACKEND_URL",
+            "POLICY_TÍPUSOK"
+          ],
+          "prompt": "Konfigurálj API Management proxy-t:\n\nAPI neve: [API_NÉV]\nBackend URL: [BACKEND_URL]\nPolicy-k: [POLICY_TÍPUSOK]\n\n1. API PROXY LÉTREHOZÁSA\n```yaml\nAPIProxy:\n  name: [API_NÉV]\n  basePath: /api/v1/[resource]\n  targetEndpoint:\n    url: [BACKEND_URL]\n    authentication: OAuth2\n```\n\n2. SECURITY POLICY-K\n\n### API Key Verification\n```xml\n<VerifyAPIKey>\n    <APIKey ref=\"request.header.x-api-key\"/>\n</VerifyAPIKey>\n```\n\n### OAuth 2.0 Token Validation\n```xml\n<OAuthV2 name=\"ValidateToken\">\n    <Operation>VerifyAccessToken</Operation>\n    <AccessToken ref=\"request.header.Authorization\"/>\n</OAuthV2>\n```\n\n### Rate Limiting\n```xml\n<Quota name=\"QuotaPolicy\">\n    <Interval>1</Interval>\n    <TimeUnit>hour</TimeUnit>\n    <Allow count=\"1000\"/>\n</Quota>\n\n<SpikeArrest name=\"SpikeArrestPolicy\">\n    <Rate>10ps</Rate>\n</SpikeArrest>\n```\n\n3. TRAFFIC MANAGEMENT\n```xml\n<ResponseCache name=\"CacheResponse\">\n    <CacheKey>\n        <KeyFragment ref=\"request.uri\"/>\n    </CacheKey>\n    <ExpirySettings>\n        <TimeoutInSec>300</TimeoutInSec>\n    </ExpirySettings>\n</ResponseCache>\n```\n\n4. TRANSFORMATION\n```xml\n<AssignMessage name=\"ModifyRequest\">\n    <Set>\n        <Headers>\n            <Header name=\"X-Correlation-ID\">{messageid}</Header>\n        </Headers>\n    </Set>\n</AssignMessage>\n```\n\n5. ERROR HANDLING\n```xml\n<FaultRules>\n    <FaultRule name=\"AuthError\">\n        <Condition>(fault.name = \"InvalidAccessToken\")</Condition>\n        <Step><Name>ReturnAuthError</Name></Step>\n    </FaultRule>\n</FaultRules>\n```\n\n6. ANALYTICS\n   - Traffic metriklk\n   - Error rate monitoring\n   - Latency tracking"
+        }
+      ]
+    },
+    {
+      "id": "sap-analytics",
+      "name": "SAP Analytics",
+      "icon": "📊",
+      "color": "#7c3aed",
+      "categories": [
+        {
+          "id": "all",
+          "label": "🗂️ Mind",
+          "color": "#374151"
+        },
+        {
+          "id": "cds",
+          "label": "📐 CDS View",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "alv",
+          "label": "📋 ALV Report",
+          "color": "#10b981"
+        },
+        {
+          "id": "embedded",
+          "label": "📈 Embedded Analytics",
+          "color": "#f59e0b"
+        },
+        {
+          "id": "sac",
+          "label": "☁️ SAC/BW",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "fiori",
+          "label": "🎨 Fiori Elements",
+          "color": "#ec4899"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "ana-cds-basic",
+          "cat": "cds",
+          "icon": "📐",
+          "title": "CDS View alapok",
+          "sub": "Basic és composite view",
+          "desc": "CDS View létrehozása alap és összetett nézetekhez.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "VIEW_NÉV",
+            "ALAP_TÁBLA",
+            "MEZŐK"
+          ],
+          "prompt": "Készíts CDS View-t:\n\nView neve: [VIEW_NÉV]\nAlap tábla: [ALAP_TÁBLA]\nMezők: [MEZŐK]\n\n1. INTERFACE VIEW (I_)\n```cds\n@AbapCatalog.sqlViewName: 'ZVI_[NÉV]'\n@AbapCatalog.compiler.compareFilter: true\n@AccessControl.authorizationCheck: #CHECK\n@EndUserText.label: '[Leírás]'\n\n@VDM.viewType: #BASIC\n\ndefine view Z_I_[Entitás]\n  as select from [alap_tábla] as db\n  association [0..1] to Z_I_[MásikEntitás] as _Related\n    on $projection.RelatedID = _Related.ID\n{\n  key db.id           as ID,\n      db.name         as Name,\n      db.amount       as Amount,\n      db.currency     as Currency,\n      db.created_at   as CreatedAt,\n\n      // Számított mező\n      case db.status\n        when 'A' then 'Active'\n        when 'I' then 'Inactive'\n        else 'Unknown'\n      end             as StatusText,\n\n      // Aggregáció\n      @Semantics.amount.currencyCode: 'Currency'\n      db.amount       as AmountInCurrency,\n\n      // Asszociáció\n      _Related\n}\n```\n\n2. CONSUMPTION VIEW (C_)\n```cds\n@AbapCatalog.sqlViewName: 'ZVC_[NÉV]'\n@VDM.viewType: #CONSUMPTION\n@Analytics.query: true\n\ndefine view Z_C_[Entitás]\n  as select from Z_I_[Entitás]\n{\n  @UI.lineItem: [{ position: 10 }]\n  @UI.selectionField: [{ position: 10 }]\n  ID,\n\n  @UI.lineItem: [{ position: 20 }]\n  Name,\n\n  @UI.lineItem: [{ position: 30 }]\n  @DefaultAggregation: #SUM\n  Amount,\n\n  Currency,\n  StatusText,\n\n  _Related\n}\n```\n\n3. UNION VIEW\n```cds\ndefine view Z_I_Combined\n  as select from Z_I_Source1 { key ID, Name, 'SRC1' as Source }\n  union\n  select from Z_I_Source2 { key ID, Name, 'SRC2' as Source }\n```\n\n4. VIEW EXTENSION\n```cds\nextend view Z_I_[Entitás] with {\n  db.new_field as NewField\n}\n```"
+        },
+        {
+          "id": "ana-cds-cube",
+          "cat": "cds",
+          "icon": "🧊",
+          "title": "CDS Analytical Cube",
+          "sub": "OLAP kocka CDS-sel",
+          "desc": "Analitikai kocka létrehozása CDS annotációkkal.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "CUBE_NÉV",
+            "FACT_TÁBLA",
+            "DIMENZIÓK",
+            "MÉRTÉKEK"
+          ],
+          "prompt": "Készíts analitikai kockát:\n\nCube neve: [CUBE_NÉV]\nFact tábla: [FACT_TÁBLA]\nDimenziók: [DIMENZIÓK]\nMértékek: [MÉRTÉKEK]\n\n1. DIMENSION VIEW-K\n```cds\n@Analytics.dataCategory: #DIMENSION\n@ObjectModel.representativeKey: 'ID'\n\ndefine view Z_I_Dim_Product\n  as select from mara\n  association [0..1] to Z_I_Dim_ProductGroup as _ProductGroup\n    on $projection.ProductGroup = _ProductGroup.ProductGroup\n{\n  key matnr     as ProductID,\n      maktx     as ProductName,\n      matkl     as ProductGroup,\n      mtart     as ProductType,\n\n      _ProductGroup\n}\n```\n\n2. CUBE VIEW\n```cds\n@Analytics.dataCategory: #CUBE\n@Analytics.internalName: #LOCAL\n\ndefine view Z_I_Cube_Sales\n  as select from vbrp as item\n  inner join vbrk as header on item.vbeln = header.vbeln\n  association [0..1] to Z_I_Dim_Product  as _Product  on $projection.ProductID = _Product.ProductID\n  association [0..1] to Z_I_Dim_Customer as _Customer on $projection.CustomerID = _Customer.CustomerID\n  association [0..1] to I_CalendarDate   as _Date     on $projection.BillingDate = _Date.CalendarDate\n{\n  // Dimenziók\n  key item.vbeln         as BillingDocument,\n  key item.posnr         as BillingItem,\n\n  @ObjectModel.foreignKey.association: '_Product'\n  item.matnr             as ProductID,\n\n  @ObjectModel.foreignKey.association: '_Customer'\n  header.kunag           as CustomerID,\n\n  @ObjectModel.foreignKey.association: '_Date'\n  header.fkdat           as BillingDate,\n\n  // Mértékek\n  @Semantics.quantity.unitOfMeasure: 'Unit'\n  @DefaultAggregation: #SUM\n  item.fkimg             as BilledQuantity,\n  item.vrkme             as Unit,\n\n  @Semantics.amount.currencyCode: 'Currency'\n  @DefaultAggregation: #SUM\n  item.netwr             as NetAmount,\n  header.waerk           as Currency,\n\n  // Asszociációk\n  _Product,\n  _Customer,\n  _Date\n}\n```\n\n3. QUERY VIEW\n```cds\n@Analytics.query: true\n@VDM.viewType: #CONSUMPTION\n\ndefine view Z_C_Query_Sales\n  as select from Z_I_Cube_Sales\n{\n  @AnalyticsDetails.query.axis: #ROWS\n  ProductID,\n  _Product.ProductName,\n\n  @AnalyticsDetails.query.axis: #ROWS\n  CustomerID,\n\n  @AnalyticsDetails.query.axis: #COLUMNS\n  BillingDate,\n\n  @AnalyticsDetails.query.totals: #SHOW\n  BilledQuantity,\n\n  @AnalyticsDetails.query.totals: #SHOW\n  NetAmount,\n  Currency\n}\n```"
+        },
+        {
+          "id": "ana-cds-hierarchy",
+          "cat": "cds",
+          "icon": "🌳",
+          "title": "CDS Hierarchia",
+          "sub": "Parent-child és level hierarchia",
+          "desc": "Hierarchikus struktúrák CDS-ben.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "HIERARCHIA_NÉV",
+            "ALAP_VIEW",
+            "SZÜLŐ_MEZŐ"
+          ],
+          "prompt": "Készíts CDS hierarchiát:\n\nHierarchia neve: [HIERARCHIA_NÉV]\nAlap view: [ALAP_VIEW]\nSzülő mező: [SZÜLŐ_MEZŐ]\n\n1. ALAP HIERARCHIA VIEW\n```cds\n@Analytics.dataCategory: #DIMENSION\n\ndefine view Z_I_CostCenter\n  as select from csks\n{\n  key kostl      as CostCenter,\n      ktext      as CostCenterName,\n      kosar      as CostCenterType,\n      veession   as ResponsiblePerson,\n\n      // Parent referencia\n      cast('' as kostl) as ParentCostCenter\n}\n```\n\n2. PARENT-CHILD HIERARCHIA\n```cds\ndefine hierarchy Z_H_CostCenterHier\n  as parent child hierarchy(\n    source Z_I_CostCenter\n    child to parent association _Parent\n    start where ParentCostCenter is initial\n    siblings order by CostCenter\n  )\n{\n  CostCenter,\n  CostCenterName,\n  ParentCostCenter,\n\n  // Hierarchia attribútumok\n  $node.hierarchy_rank         as HierarchyRank,\n  $node.hierarchy_tree_size    as TreeSize,\n  $node.hierarchy_parent_rank  as ParentRank,\n  $node.hierarchy_level        as HierarchyLevel,\n  $node.hierarchy_is_cycle     as IsCycle,\n  $node.hierarchy_is_orphan    as IsOrphan\n}\n```\n\n3. LEVEL HIERARCHIA\n```cds\ndefine hierarchy Z_H_TimeDimHier\n  as level hierarchy(\n    source Z_I_CalendarDay\n    level year = CalendarYear\n    level quarter = CalendarQuarter\n    level month = CalendarMonth\n    level day = CalendarDay\n  )\n{\n  CalendarYear,\n  CalendarQuarter,\n  CalendarMonth,\n  CalendarDay\n}\n```\n\n4. HIERARCHIA HASZNÁLATA QUERY-BEN\n```cds\n@Analytics.query: true\n\ndefine view Z_C_CostCenterQuery\n  as select from Z_I_Cube_Costs\n{\n  @AnalyticsDetails.query.axis: #ROWS\n  @AnalyticsDetails.query.displayHierarchy: #ON\n  CostCenter,\n\n  @DefaultAggregation: #SUM\n  Amount,\n  Currency\n}\nwith hierarchy Z_H_CostCenterHier\n```\n\n5. HIERARCHY DIRECTORY (HDIR)\n```cds\n@Analytics.dataCategory: #HIERARCHY\n@Hierarchy.parentChild.directory: 'HRRP_DIR_...'\n\ndefine view Z_H_Directory\n  as select from hrrp_directory\n{\n  // ...\n}\n```"
+        },
+        {
+          "id": "ana-alv-salv",
+          "cat": "alv",
+          "icon": "📋",
+          "title": "SALV ALV Report",
+          "sub": "Modern ALV CL_SALV_TABLE-lel",
+          "desc": "ALV report készítése SALV osztályokkal.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "REPORT_NÉV",
+            "ADATFORRÁS",
+            "OSZLOPOK"
+          ],
+          "prompt": "Készíts SALV alapú ALV reportot:\n\nReport neve: [REPORT_NÉV]\nAdatforrás: [ADATFORRÁS]\nOszlopok: [OSZLOPOK]\n\n1. REPORT STRUKTÚRA\n```abap\nREPORT z_[report_név].\n\n\" Selection screen\nPARAMETERS: p_bukrs TYPE bukrs OBLIGATORY.\nSELECT-OPTIONS: s_kostl FOR csks-kostl.\n\n\" Types\nTYPES: BEGIN OF ty_data,\n         bukrs TYPE bukrs,\n         kostl TYPE kostl,\n         ktext TYPE ktext,\n         amount TYPE netwr,\n         currency TYPE waers,\n       END OF ty_data.\n\n\" Data\nDATA: gt_data TYPE TABLE OF ty_data,\n      go_alv  TYPE REF TO cl_salv_table.\n\nSTART-OF-SELECTION.\n  PERFORM get_data.\n  PERFORM display_alv.\n```\n\n2. ADAT LEKÉRDEZÉS\n```abap\nFORM get_data.\n  SELECT bukrs, kostl, ktext, amount, currency\n    FROM [tábla]\n    INTO TABLE @gt_data\n    WHERE bukrs = @p_bukrs\n      AND kostl IN @s_kostl.\nENDFORM.\n```\n\n3. ALV MEGJELENÍTÉS\n```abap\nFORM display_alv.\n  TRY.\n      cl_salv_table=>factory(\n        IMPORTING r_salv_table = go_alv\n        CHANGING  t_table      = gt_data ).\n\n      \" Oszlop beállítások\n      DATA(lo_columns) = go_alv->get_columns( ).\n      lo_columns->set_optimize( abap_true ).\n\n      DATA(lo_column) = CAST cl_salv_column_table(\n        lo_columns->get_column( 'AMOUNT' ) ).\n      lo_column->set_long_text( 'Összeg' ).\n\n      \" Aggregáció\n      DATA(lo_aggr) = go_alv->get_aggregations( ).\n      lo_aggr->add_aggregation(\n        columnname  = 'AMOUNT'\n        aggregation = if_salv_c_aggregation=>total ).\n\n      \" Rendezés\n      DATA(lo_sorts) = go_alv->get_sorts( ).\n      lo_sorts->add_sort( columnname = 'KOSTL' ).\n\n      \" Toolbar\n      DATA(lo_functions) = go_alv->get_functions( ).\n      lo_functions->set_all( abap_true ).\n\n      \" Layout mentés\n      DATA(lo_layout) = go_alv->get_layout( ).\n      lo_layout->set_key( VALUE #( report = sy-repid ) ).\n      lo_layout->set_save_restriction( if_salv_c_layout=>restrict_none ).\n\n      \" Megjelenítés\n      go_alv->display( ).\n\n    CATCH cx_salv_error INTO DATA(lx_error).\n      MESSAGE lx_error TYPE 'E'.\n  ENDTRY.\nENDFORM.\n```\n\n4. SZÍNEZÉS\n```abap\n\" T_table-hez color mező hozzáadása\nDATA: lt_color TYPE lvc_t_scol.\n\nlo_column->set_color_column( 'COLOR' ).\n```\n\n5. HOTSPOT / EVENT\n```abap\nDATA: go_events TYPE REF TO cl_salv_events_table.\n\ngo_events = go_alv->get_event( ).\nSET HANDLER lcl_handler=>on_link_click FOR go_events.\n```"
+        },
+        {
+          "id": "ana-alv-interactive",
+          "cat": "alv",
+          "icon": "🖱️",
+          "title": "Interaktív ALV",
+          "sub": "Események és szerkesztés",
+          "desc": "ALV interaktív funkciókkal és cellaszerkesztéssel.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "REPORT_NÉV",
+            "SZERKESZTHETŐ_MEZŐK",
+            "AKCIÓK"
+          ],
+          "prompt": "Készíts interaktív ALV-t:\n\nReport neve: [REPORT_NÉV]\nSzerkeszthető mezők: [SZERKESZTHETŐ_MEZŐK]\nAkciók: [AKCIÓK]\n\n1. SZERKESZTHETŐ ALV\n```abap\n\" Tábla módosítható legyen\nDATA(lo_columns) = go_alv->get_columns( ).\n\nDATA(lo_column) = CAST cl_salv_column_table(\n  lo_columns->get_column( 'AMOUNT' ) ).\nlo_column->set_cell_type( if_salv_c_cell_type=>editable ).\n\n\" Full screen szükséges szerkesztéshez\ngo_alv->set_screen_status(\n  pfstatus      = 'SALV_STANDARD'\n  report        = 'SALV_DEMO_TABLE_FUNCTIONS' ).\n```\n\n2. EVENT HANDLER OSZTÁLY\n```abap\nCLASS lcl_event_handler DEFINITION.\n  PUBLIC SECTION.\n    METHODS:\n      on_user_command FOR EVENT added_function OF cl_salv_events\n        IMPORTING e_salv_function,\n\n      on_link_click FOR EVENT link_click OF cl_salv_events_table\n        IMPORTING row column,\n\n      on_double_click FOR EVENT double_click OF cl_salv_events_table\n        IMPORTING row column,\n\n      on_data_changed FOR EVENT data_changed OF cl_salv_table\n        IMPORTING er_data_changed.\nENDCLASS.\n\nCLASS lcl_event_handler IMPLEMENTATION.\n  METHOD on_user_command.\n    CASE e_salv_function.\n      WHEN 'SAVE'.\n        \" Módosítások mentése\n      WHEN 'REFRESH'.\n        \" Adatok frissítése\n    ENDCASE.\n  ENDMETHOD.\n\n  METHOD on_link_click.\n    READ TABLE gt_data INTO DATA(ls_data) INDEX row.\n    \" Navigáció\n  ENDMETHOD.\n\n  METHOD on_data_changed.\n    LOOP AT er_data_changed->mt_good_cells INTO DATA(ls_cell).\n      \" Módosított cella feldolgozása\n    ENDLOOP.\n  ENDMETHOD.\nENDCLASS.\n```\n\n3. CUSTOM TOOLBAR\n```abap\nDATA(lo_functions) = go_alv->get_functions( ).\n\n\" Standard funkciók\nlo_functions->set_all( abap_true ).\n\n\" Custom gomb hozzáadása\nlo_functions->add_function(\n  name     = 'MYACTION'\n  icon     = '@01@'\n  text     = 'Saját akció'\n  tooltip  = 'Tooltip szöveg'\n  position = if_salv_c_function_position=>right_of_salv_functions ).\n```\n\n4. POPUP ALV\n```abap\n\" Popup-ban megjelenítés\ngo_alv->set_screen_popup(\n  start_column = 10\n  end_column   = 100\n  start_line   = 5\n  end_line     = 20 ).\n```\n\n5. CHECKBOX KEZELÉS\n```abap\n\" Checkbox oszlop\nlo_column->set_cell_type( if_salv_c_cell_type=>checkbox_hotspot ).\n\n\" Kiválasztott sorok lekérdezése\nDATA(lo_selections) = go_alv->get_selections( ).\nDATA(lt_rows) = lo_selections->get_selected_rows( ).\n```"
+        },
+        {
+          "id": "ana-alv-export",
+          "cat": "alv",
+          "icon": "📤",
+          "title": "ALV Export",
+          "sub": "Excel, PDF, email küldés",
+          "desc": "ALV adatok exportálása különböző formátumokba.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "EXPORT_TÍPUS",
+            "FORMÁTUM"
+          ],
+          "prompt": "Implementálj ALV exportot:\n\nExport típus: [EXPORT_TÍPUS]\nFormátum: [FORMÁTUM]\n\n1. EXCEL EXPORT (SALV)\n```abap\n\" Standard Excel export engedélyezése\nDATA(lo_functions) = go_alv->get_functions( ).\nlo_functions->set_export_localfile( abap_true ).\nlo_functions->set_export_spreadsheet( abap_true ).\n```\n\n2. PROGRAMOZOTT EXCEL EXPORT\n```abap\nDATA: lo_result TYPE REF TO cl_salv_ex_result_data_table.\n\n\" XLSX generálás\ncl_salv_table=>factory(\n  IMPORTING r_salv_table = DATA(lo_table)\n  CHANGING  t_table      = gt_data ).\n\nDATA(lo_columns_table) = lo_table->get_columns( ).\n\ncl_salv_bs_runtime_info=>set(\n  EXPORTING display  = abap_false\n            metadata = abap_false\n            data     = abap_true ).\n\nlo_table->display( ).\n\ncl_salv_bs_runtime_info=>get_data_ref(\n  IMPORTING r_data = lo_result ).\n\n\" XML átalakítás\nDATA(lv_xml) = cl_salv_bs_lex=>convert_to_xlsx( lo_result ).\n\n\" File mentés\ncl_gui_frontend_services=>gui_download(\n  EXPORTING bin_filesize = xstrlen( lv_xml )\n            filename     = 'export.xlsx'\n            filetype     = 'BIN'\n  CHANGING  data_tab     = lt_binary ).\n```\n\n3. PDF EXPORT (ALV PRINT)\n```abap\nDATA: ls_print TYPE lvc_s_prnt.\n\nls_print-print     = abap_true.\nls_print-no_dialog = abap_true.\nls_print-no_print  = abap_true.  \" Csak PDF generálás\n\ngo_alv->set_print_settings( ls_print ).\n```\n\n4. EMAIL KÜLDÉS\n```abap\nDATA: lo_send_request TYPE REF TO cl_bcs,\n      lo_document     TYPE REF TO cl_document_bcs,\n      lo_recipient    TYPE REF TO if_recipient_bcs.\n\n\" Document létrehozása\nlo_document = cl_document_bcs=>create_document(\n  i_type    = 'RAW'\n  i_text    = lt_text\n  i_subject = 'ALV Export' ).\n\n\" Excel melléklet\nlo_document->add_attachment(\n  i_attachment_type    = 'XLS'\n  i_attachment_subject = 'data.xlsx'\n  i_att_content_hex    = lt_attachment ).\n\n\" Küldés\nlo_send_request = cl_bcs=>create_persistent( ).\nlo_send_request->set_document( lo_document ).\nlo_send_request->add_recipient( lo_recipient ).\nlo_send_request->send( ).\nCOMMIT WORK.\n```\n\n5. BACKGROUND JOB EXPORT\n```abap\n\" Háttérben futtatás spool-ba\nSUBMIT z_report\n  WITH p_bukrs = p_bukrs\n  TO SAP-SPOOL\n  SPOOL PARAMETERS ls_print\n  WITHOUT SPOOL DYNPRO\n  AND RETURN.\n```"
+        },
+        {
+          "id": "ana-embedded-kpi",
+          "cat": "embedded",
+          "icon": "🎯",
+          "title": "KPI Tile",
+          "sub": "Fiori KPI csempe",
+          "desc": "KPI tile létrehozása Fiori Launchpad-hez.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "KPI_NÉV",
+            "MÉRTÉK",
+            "CÉL_ÉRTÉK"
+          ],
+          "prompt": "Készíts KPI Tile-t:\n\nKPI neve: [KPI_NÉV]\nMérték: [MÉRTÉK]\nCél érték: [CÉL_ÉRTÉK]\n\n1. CDS VIEW KPI-HOZ\n```cds\n@AbapCatalog.sqlViewName: 'ZV_KPI_[NÉV]'\n@Analytics.query: true\n@VDM.viewType: #CONSUMPTION\n\n@UI.chart: [{\n  chartType: #DONUT,\n  measures: ['ActualValue'],\n  measureAttributes: [{\n    measure: 'ActualValue',\n    role: #AXIS_1\n  }]\n}]\n\n@UI.presentationVariant: [{\n  qualifier: 'KPI',\n  visualizations: [{\n    type: #AS_CHART,\n    qualifier: 'KPIChart'\n  }]\n}]\n\ndefine view Z_C_KPI_[Entitás]\n  as select from Z_I_Cube_[...]\n{\n  @EndUserText.label: 'Aktuális érték'\n  @DefaultAggregation: #SUM\n  ActualValue,\n\n  @EndUserText.label: 'Cél érték'\n  @DefaultAggregation: #SUM\n  TargetValue,\n\n  @EndUserText.label: 'Teljesítmény %'\n  division(ActualValue, TargetValue, 2) as Performance,\n\n  Currency\n}\n```\n\n2. SSB KPI MODELL (SSKM)\n   - KPI ID és leírás\n   - Evaluation measure\n   - Target és Threshold értékek\n   - Trend calculation\n\n3. SMART BUSINESS TILE CONFIG\n```\nTile Configuration:\n  Title: [KPI_NÉV]\n  Subtitle: [Leírás]\n  Evaluation: Z_KPI_[ID]\n  Drill-down App: Z_APP_[NÉV]\n\nThresholds:\n  Critical: < 70%\n  Warning:  70% - 90%\n  Good:     > 90%\n```\n\n4. LAUNCHPAD KONFIGURÁCIÓ\n   - Target mapping\n   - Tile group hozzárendelés\n   - Role assignment\n\n5. NAVIGATION\n```\nIntent: ZKPI-display\nParameters:\n  - EvaluationId\n  - FilterByDate\n```"
+        },
+        {
+          "id": "ana-embedded-dashboard",
+          "cat": "embedded",
+          "icon": "📊",
+          "title": "Overview Page",
+          "sub": "Fiori Overview Page app",
+          "desc": "Fiori Elements Overview Page alkalmazás készítése.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "APP_NÉV",
+            "KÁRTYÁK",
+            "SZŰRŐK"
+          ],
+          "prompt": "Készíts Overview Page alkalmazást:\n\nApp neve: [APP_NÉV]\nKártyák: [KÁRTYÁK]\nSzűrők: [SZŰRŐK]\n\n1. CDS VIEW ANNOTÁCIÓK\n```cds\n@UI.headerInfo: {\n  typeName: 'Order',\n  typeNamePlural: 'Orders',\n  title: { value: 'OrderID' },\n  description: { value: 'CustomerName' }\n}\n\n@UI.presentationVariant: [{\n  qualifier: 'Default',\n  sortOrder: [{ by: 'CreatedAt', direction: #DESC }],\n  visualizations: [{ type: #AS_CHART }]\n}]\n\ndefine view Z_C_OVP_[Entitás]\n  as select from Z_I_[Entitás]\n{\n  @UI.selectionField: [{ position: 10 }]\n  @UI.lineItem: [{ position: 10 }]\n  key OrderID,\n\n  @UI.lineItem: [{ position: 20 }]\n  CustomerName,\n\n  @UI.lineItem: [{ position: 30 }]\n  @UI.dataPoint: { visualization: #NUMBER }\n  @DefaultAggregation: #SUM\n  Amount,\n\n  @UI.lineItem: [{ position: 40 }]\n  @UI.dataPoint: {\n    visualization: #PROGRESS,\n    targetValue: 100,\n    criticality: 'StatusCriticality'\n  }\n  CompletionPercent,\n\n  // Criticality (1=Error, 2=Warning, 3=Success)\n  case\n    when CompletionPercent < 50 then 1\n    when CompletionPercent < 80 then 2\n    else 3\n  end as StatusCriticality\n}\n```\n\n2. CARD TÍPUSOK\n\n### List Card\n```json\n{\n  \"card\": {\n    \"type\": \"List\",\n    \"settings\": {\n      \"listFlavor\": \"standard\",\n      \"sortBy\": \"CreatedAt\",\n      \"sortOrder\": \"Descending\"\n    }\n  }\n}\n```\n\n### Table Card\n```json\n{\n  \"card\": {\n    \"type\": \"Table\",\n    \"settings\": {\n      \"columns\": [\"OrderID\", \"CustomerName\", \"Amount\"]\n    }\n  }\n}\n```\n\n### Chart Card\n```json\n{\n  \"card\": {\n    \"type\": \"Analytical\",\n    \"settings\": {\n      \"chartType\": \"Donut\",\n      \"dimensions\": [\"Category\"],\n      \"measures\": [\"Amount\"]\n    }\n  }\n}\n```\n\n### Stack Card\n```json\n{\n  \"card\": {\n    \"type\": \"Stack\",\n    \"settings\": {\n      \"stackContent\": [\"Card1\", \"Card2\"]\n    }\n  }\n}\n```\n\n3. GLOBAL FILTER\n```cds\n@UI.selectionVariant: [{\n  qualifier: 'Default',\n  text: 'Default Filter',\n  selectOptions: [{\n    propertyName: 'Status',\n    ranges: [{ sign: #I, option: #EQ, low: 'OPEN' }]\n  }]\n}]\n```\n\n4. MANIFEST.JSON\n```json\n{\n  \"sap.ovp\": {\n    \"globalFilterModel\": \"mainModel\",\n    \"cards\": {\n      \"card01\": {\n        \"model\": \"mainModel\",\n        \"template\": \"sap.ovp.cards.list\",\n        \"settings\": { }\n      }\n    }\n  }\n}\n```"
+        },
+        {
+          "id": "ana-analytical-list",
+          "cat": "embedded",
+          "icon": "📈",
+          "title": "Analytical List Page",
+          "sub": "Fiori ALP alkalmazás",
+          "desc": "Analytical List Page készítése chart-tal és táblázattal.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "APP_NÉV",
+            "CUBE_VIEW",
+            "CHART_TÍPUS"
+          ],
+          "prompt": "Készíts Analytical List Page-et:\n\nApp neve: [APP_NÉV]\nCube view: [CUBE_VIEW]\nChart típus: [CHART_TÍPUS]\n\n1. CDS ANNOTÁCIÓK\n```cds\n@Analytics.query: true\n@VDM.viewType: #CONSUMPTION\n\n@UI.chart: [{\n  qualifier: 'MainChart',\n  chartType: #COLUMN,\n  dimensions: ['ProductCategory'],\n  measures: ['Revenue'],\n  dimensionAttributes: [{\n    dimension: 'ProductCategory',\n    role: #CATEGORY\n  }],\n  measureAttributes: [{\n    measure: 'Revenue',\n    role: #AXIS_1\n  }]\n}]\n\n@UI.presentationVariant: [{\n  qualifier: 'Default',\n  visualizations: [\n    { type: #AS_CHART, qualifier: 'MainChart' },\n    { type: #AS_LINEITEM }\n  ]\n}]\n\ndefine view Z_C_ALP_[Entitás]\n  as select from Z_I_Cube_[...]\n{\n  @AnalyticsDetails.query.axis: #ROWS\n  @UI.lineItem: [{ position: 10 }]\n  @UI.selectionField: [{ position: 10 }]\n  ProductCategory,\n\n  @AnalyticsDetails.query.axis: #ROWS\n  @UI.lineItem: [{ position: 20 }]\n  ProductID,\n\n  @UI.lineItem: [{ position: 30 }]\n  ProductName,\n\n  @DefaultAggregation: #SUM\n  @UI.lineItem: [{ position: 40 }]\n  @UI.dataPoint: { visualization: #NUMBER }\n  Revenue,\n\n  @DefaultAggregation: #SUM\n  @UI.lineItem: [{ position: 50 }]\n  Quantity,\n\n  Currency,\n  Unit\n}\n```\n\n2. VISUAL FILTER\n```cds\n@UI.selectionPresentationVariant: [{\n  qualifier: 'Filter',\n  presentationVariantQualifier: 'FilterPV',\n  selectionVariantQualifier: 'FilterSV'\n}]\n\n@UI.presentationVariant: [{\n  qualifier: 'FilterPV',\n  visualizations: [{\n    type: #AS_CHART,\n    qualifier: 'FilterChart'\n  }]\n}]\n\n@UI.chart: [{\n  qualifier: 'FilterChart',\n  chartType: #BAR,\n  dimensions: ['Status'],\n  measures: ['Count']\n}]\n```\n\n3. SEMANTIC COLORING\n```cds\n@UI.dataPoint: {\n  visualization: #NUMBER,\n  criticality: 'RevenueCriticality'\n}\nRevenue,\n\ncase\n  when Revenue < 1000 then 1  // Negative (Red)\n  when Revenue < 5000 then 2  // Critical (Orange)\n  else 3                       // Positive (Green)\nend as RevenueCriticality\n```\n\n4. MANIFEST SETTINGS\n```json\n{\n  \"sap.ui.generic.app\": {\n    \"settings\": {\n      \"showDraftToggle\": false\n    },\n    \"pages\": [{\n      \"component\": {\n        \"name\": \"sap.suite.ui.generic.template.AnalyticalListPage\"\n      },\n      \"entitySet\": \"Z_C_ALP_[Entitás]\"\n    }]\n  }\n}\n```"
+        },
+        {
+          "id": "ana-bw-query",
+          "cat": "sac",
+          "icon": "🔮",
+          "title": "BW Query",
+          "sub": "BEx Query tervezés",
+          "desc": "BW Query készítése Query Designer-ben.",
+          "tools": [],
+          "vars": [
+            "QUERY_NÉV",
+            "INFOPROVIDER",
+            "STRUKTÚRÁK"
+          ],
+          "prompt": "Tervezz BW Query-t:\n\nQuery neve: [QUERY_NÉV]\nInfoProvider: [INFOPROVIDER]\nStruktúrák: [STRUKTÚRÁK]\n\n1. QUERY STRUKTÚRA\n```\nRows:\n  - 0MATERIAL (Material)\n  - 0CUSTOMER (Customer)\n  - Free characteristics...\n\nColumns:\n  - Key Figures Structure\n    - Revenue (0REVENUE)\n    - Quantity (0QUANTITY)\n    - Calculated: Avg Price = Revenue / Quantity\n\nFree Characteristics:\n  - 0CALMONTH (Calendar Month)\n  - 0COMP_CODE (Company Code)\n\nFilter:\n  - 0FISCYEAR = Current Year\n```\n\n2. CALCULATED KEY FIGURE\n```\nTechnical name: CAVGPRICE\nDescription: Average Price\nFormula: {Revenue} / {Quantity}\nException aggregation: None\nCalculate result as: Formula\n```\n\n3. RESTRICTED KEY FIGURE\n```\nTechnical name: REV_CURR_YEAR\nDescription: Revenue Current Year\nBase KF: 0REVENUE\nRestriction: 0FISCYEAR = Variable (Current Year)\n```\n\n4. VARIABLES\n```\nVariable: Current Year\nTechnical name: 0CYEAR\nType: Characteristic value\nProcessing: User entry/default\nReference: 0FISCYEAR\nDefault: Current fiscal year\n\nVariable: Company Code\nTechnical name: V_BUKRS\nType: Characteristic value\nProcessing: User entry mandatory\nReference: 0COMP_CODE\n```\n\n5. CONDITIONS\n```\nCondition: Top 10 by Revenue\nActive: Yes\nCharacteristic: 0MATERIAL\nRanked List: Top 10 by Revenue\n```\n\n6. EXCEPTIONS\n```\nException: Revenue Alert\nActive: Yes\nDefinition:\n  - Revenue < 1000: Bad (Red)\n  - Revenue 1000-5000: Medium (Yellow)\n  - Revenue > 5000: Good (Green)\n```\n\n7. CELL DEFINITION (ha szükséges)\n```\nCell: Selection for specific combination\nRow: Material = MAT001\nColumn: Revenue\nFormula: Custom calculation\n```"
+        },
+        {
+          "id": "ana-sac-story",
+          "cat": "sac",
+          "icon": "☁️",
+          "title": "SAC Story",
+          "sub": "SAP Analytics Cloud story",
+          "desc": "SAC Story tervezés és létrehozás.",
+          "tools": [],
+          "vars": [
+            "STORY_NÉV",
+            "ADATFORRÁS",
+            "OLDALAK"
+          ],
+          "prompt": "Tervezz SAC Story-t:\n\nStory neve: [STORY_NÉV]\nAdatforrás: [ADATFORRÁS]\nOldalak: [OLDALAK]\n\n1. STORY STRUKTÚRA\n```\nPage 1: Executive Summary\n  - KPI tiles (Revenue, Margin, Growth)\n  - Trend chart (12 months)\n  - Regional comparison map\n\nPage 2: Detailed Analysis\n  - Pivot table\n  - Variance chart\n  - Top N chart\n\nPage 3: Planning\n  - Input forms\n  - What-if simulation\n  - Version comparison\n```\n\n2. ADATMODELL\n```\nModel: [Model név]\nType: Live / Import\n\nDimensions:\n  - Date (hierarchy: Year > Quarter > Month)\n  - Product (hierarchy: Category > Group > Product)\n  - Region (hierarchy: Country > Region > City)\n  - Account\n\nMeasures:\n  - Revenue\n  - Cost\n  - Margin (calculated)\n  - Quantity\n```\n\n3. WIDGET TÍPUSOK\n```\nCharts:\n  - Column/Bar\n  - Line/Area\n  - Combo\n  - Pie/Donut\n  - Waterfall\n  - Scatter\n  - Geo Map\n\nTables:\n  - Table\n  - Crosstab (pivot)\n\nKPIs:\n  - Numeric Point\n  - Bullet chart\n  - Sparkline\n\nInput Controls:\n  - Filter\n  - Dropdown\n  - Date picker\n  - Slider\n```\n\n4. SCRIPT PÉLDÁK\n```javascript\n// Szűrő alkalmazása\nChart_1.getDataSource().setDimensionFilter(\"Product_Category\", [\"Electronics\"]);\n\n// Measure váltás\nTable_1.setVisibleMeasures([\"Revenue\", \"Margin\"]);\n\n// Navigáció\nApplication.showPage(\"Page_2\");\n\n// Input form érték\nvar planValue = InputField_1.getValue();\nPlanningModel_1.setValue(\"Revenue\", planValue);\n```\n\n5. LINKED ANALYSIS\n```\nWidget Group: Main Dashboard\n  - Chart_1\n  - Table_1\n  - KPI_1\n\nLinked: Yes\nFilter synchronization: Enabled\n```\n\n6. MOBILE OPTIMALIZÁCIÓ\n   - Responsive layout\n   - Touch-friendly widgets\n   - Portrait/Landscape support"
+        },
+        {
+          "id": "ana-fiori-worklist",
+          "cat": "fiori",
+          "icon": "📝",
+          "title": "Worklist Report",
+          "sub": "Fiori Elements worklist",
+          "desc": "Fiori Elements Worklist alkalmazás annotációkkal.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "APP_NÉV",
+            "ENTITÁS",
+            "AKCIÓK"
+          ],
+          "prompt": "Készíts Fiori Elements Worklist-et:\n\nApp neve: [APP_NÉV]\nEntitás: [ENTITÁS]\nAkciók: [AKCIÓK]\n\n1. CDS VIEW ANNOTÁCIÓK\n```cds\n@UI.headerInfo: {\n  typeName: '[Entitás egyes]',\n  typeNamePlural: '[Entitás többes]',\n  title: { type: #STANDARD, value: 'Name' },\n  description: { type: #STANDARD, value: 'Description' }\n}\n\ndefine view Z_C_[Entitás]\n  as select from Z_I_[Entitás]\n{\n  @UI.facet: [{\n    id: 'GeneralInfo',\n    type: #COLLECTION,\n    label: 'General Information',\n    position: 10\n  }, {\n    id: 'Details',\n    parentId: 'GeneralInfo',\n    type: #FIELDGROUP_REFERENCE,\n    targetQualifier: 'Details',\n    position: 10\n  }]\n\n  @UI.lineItem: [{ position: 10, importance: #HIGH }]\n  @UI.selectionField: [{ position: 10 }]\n  @UI.identification: [{ position: 10 }]\n  key ID,\n\n  @UI.lineItem: [{ position: 20, importance: #HIGH }]\n  @UI.fieldGroup: [{ qualifier: 'Details', position: 10 }]\n  Name,\n\n  @UI.lineItem: [{ position: 30, importance: #MEDIUM }]\n  @UI.fieldGroup: [{ qualifier: 'Details', position: 20 }]\n  Description,\n\n  @UI.lineItem: [{\n    position: 40,\n    importance: #HIGH,\n    criticality: 'StatusCriticality'\n  }]\n  @UI.fieldGroup: [{ qualifier: 'Details', position: 30 }]\n  Status,\n\n  @UI.lineItem: [{\n    position: 50,\n    type: #AS_DATAPOINT,\n    importance: #HIGH\n  }]\n  @UI.dataPoint: {\n    visualization: #NUMBER,\n    valueFormat: { numberOfFractionalDigits: 2 }\n  }\n  @Semantics.amount.currencyCode: 'Currency'\n  Amount,\n\n  Currency,\n\n  // Criticality for status\n  case Status\n    when 'OPEN' then 2\n    when 'APPROVED' then 3\n    when 'REJECTED' then 1\n    else 0\n  end as StatusCriticality\n}\n```\n\n2. AKCIÓK\n```cds\n@UI.lineItem: [{\n  position: 60,\n  type: #FOR_ACTION,\n  dataAction: 'approve',\n  label: 'Approve'\n}]\n@UI.identification: [{\n  type: #FOR_ACTION,\n  dataAction: 'approve',\n  label: 'Approve'\n}]\n```\n\n3. BEHAVIOR DEFINITION\n```cds\ndefine behavior for Z_C_[Entitás]\n{\n  action approve result [1] $self;\n  action reject result [1] $self;\n}\n```\n\n4. SERVICE BINDING\n   - OData V2/V4 UI service\n   - Publish\n\n5. MANIFEST.JSON SETTINGS\n```json\n{\n  \"sap.ui.generic.app\": {\n    \"pages\": [{\n      \"entitySet\": \"Z_C_[Entitás]\",\n      \"component\": {\n        \"name\": \"sap.suite.ui.generic.template.ListReport\"\n      },\n      \"pages\": [{\n        \"entitySet\": \"Z_C_[Entitás]\",\n        \"component\": {\n          \"name\": \"sap.suite.ui.generic.template.ObjectPage\"\n        }\n      }]\n    }]\n  }\n}\n```"
+        },
+        {
+          "id": "ana-fiori-listreport",
+          "cat": "fiori",
+          "icon": "📊",
+          "title": "List Report",
+          "sub": "Fiori List Report + Object Page",
+          "desc": "List Report és Object Page kombináció.",
+          "tools": [
+            "adt"
+          ],
+          "vars": [
+            "APP_NÉV",
+            "MASTER_ENTITÁS",
+            "DETAIL_ENTITÁS"
+          ],
+          "prompt": "Készíts List Report + Object Page-et:\n\nApp neve: [APP_NÉV]\nMaster entitás: [MASTER_ENTITÁS]\nDetail entitás: [DETAIL_ENTITÁS]\n\n1. LIST REPORT ANNOTÁCIÓK\n```cds\n@UI.selectionPresentationVariant: [{\n  qualifier: 'Default',\n  selectionVariantQualifier: 'DefaultSelection',\n  presentationVariantQualifier: 'DefaultPresentation'\n}]\n\n@UI.selectionVariant: [{\n  qualifier: 'DefaultSelection',\n  text: 'Default',\n  selectOptions: [{\n    propertyName: 'Status',\n    ranges: [{ sign: #I, option: #EQ, low: 'OPEN' }]\n  }]\n}]\n\n@UI.presentationVariant: [{\n  qualifier: 'DefaultPresentation',\n  sortOrder: [{ by: 'CreatedAt', direction: #DESC }],\n  visualizations: [{ type: #AS_LINEITEM }]\n}]\n```\n\n2. OBJECT PAGE - HEADER\n```cds\n@UI.headerInfo: {\n  typeName: 'Order',\n  typeNamePlural: 'Orders',\n  title: { value: 'OrderID' },\n  description: { value: 'CustomerName' },\n  imageUrl: 'ImageURL'\n}\n\n@UI.headerFacet: [{\n  type: #DATAPOINT_REFERENCE,\n  targetQualifier: 'Amount',\n  position: 10\n}, {\n  type: #DATAPOINT_REFERENCE,\n  targetQualifier: 'Status',\n  position: 20\n}]\n```\n\n3. OBJECT PAGE - SECTIONS\n```cds\n@UI.facet: [\n  // General Section\n  {\n    id: 'General',\n    type: #COLLECTION,\n    label: 'General',\n    position: 10\n  },\n  {\n    id: 'GeneralFields',\n    parentId: 'General',\n    type: #FIELDGROUP_REFERENCE,\n    targetQualifier: 'GeneralData',\n    position: 10\n  },\n\n  // Items Section (tábla)\n  {\n    id: 'Items',\n    type: #LINEITEM_REFERENCE,\n    label: 'Items',\n    position: 20,\n    targetElement: '_Items'\n  }\n]\n```\n\n4. DETAIL ENTITÁS (Items)\n```cds\ndefine view Z_C_OrderItem\n  as select from Z_I_OrderItem\n{\n  @UI.lineItem: [{ position: 10 }]\n  key ItemID,\n\n  @UI.lineItem: [{ position: 20 }]\n  ProductID,\n\n  @UI.lineItem: [{ position: 30 }]\n  ProductName,\n\n  @UI.lineItem: [{ position: 40 }]\n  Quantity,\n\n  @UI.lineItem: [{ position: 50 }]\n  @Semantics.amount.currencyCode: 'Currency'\n  ItemAmount,\n\n  Currency\n}\n```\n\n5. FLEXIBLE COLUMN LAYOUT\n```json\n{\n  \"sap.ui.generic.app\": {\n    \"settings\": {\n      \"flexibleColumnLayout\": {\n        \"defaultTwoColumnLayoutType\": \"TwoColumnsMidExpanded\"\n      }\n    }\n  }\n}\n```\n\n6. VARIANT MANAGEMENT\n```cds\n@UI.selectionVariant: [{\n  qualifier: 'OpenOrders',\n  text: 'Open Orders',\n  selectOptions: [{\n    propertyName: 'Status',\n    ranges: [{ sign: #I, option: #EQ, low: 'OPEN' }]\n  }]\n}, {\n  qualifier: 'HighValue',\n  text: 'High Value Orders',\n  selectOptions: [{\n    propertyName: 'Amount',\n    ranges: [{ sign: #I, option: #GT, low: '10000' }]\n  }]\n}]\n```"
+        }
+      ]
+    }
+  ]
+}

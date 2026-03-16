@@ -1,18 +1,49 @@
 import ToolTag from './ToolTag.jsx'
 
-export default function PromptCard({ prompt, catIconBg = {}, onOpen, onQuickCopy, onEdit, onDelete, copiedId }) {
+// Generate background color from category
+const getCatBg = (cat) => {
+  const colors = {
+    review: 'rgba(29,78,216,0.25)',
+    code: 'rgba(6,95,70,0.25)',
+    test: 'rgba(124,58,237,0.25)',
+    debug: 'rgba(185,28,28,0.25)',
+    workflow: 'rgba(146,64,14,0.25)',
+    transport: 'rgba(8,145,178,0.25)',
+    general: 'rgba(107,114,128,0.25)',
+  }
+  return colors[cat] || 'rgba(100,100,100,0.25)'
+}
+
+export default function PromptCard({ prompt, onOpen, onQuickCopy, copiedId, onEdit, onDelete, onToggleFavorite, isCustom }) {
   const isCopied = copiedId === prompt.id
+
+  const handleEdit = (e) => {
+    e.stopPropagation()
+    onEdit?.(prompt)
+  }
+
+  const handleDelete = (e) => {
+    e.stopPropagation()
+    if (window.confirm(`Törlöd a "${prompt.title}" promptot?`)) {
+      onDelete?.(prompt.id)
+    }
+  }
+
+  const handleFavorite = (e) => {
+    e.stopPropagation()
+    onToggleFavorite?.(prompt.id)
+  }
 
   return (
     <div
       onClick={() => onOpen(prompt)}
-      className="prompt-card"
+      className={`prompt-card${prompt.favorite ? ' is-favorite' : ''}`}
     >
       <div style={{ padding: '16px 18px 12px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8, flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 16, background: catIconBg[prompt.cat] || 'rgba(99,102,241,0.25)',
+          fontSize: 16, background: getCatBg(prompt.cat),
         }}>
           {prompt.icon}
         </div>
@@ -22,19 +53,22 @@ export default function PromptCard({ prompt, catIconBg = {}, onOpen, onQuickCopy
         </div>
         <div className="card-actions">
           <button
-            onClick={e => { e.stopPropagation(); onEdit(prompt) }}
-            className="card-action-btn"
-            title="Szerkesztés"
+            onClick={handleFavorite}
+            title={prompt.favorite ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
+            className={`card-action-btn favorite-btn${prompt.favorite ? ' active' : ''}`}
           >
-            ✏️
+            {prompt.favorite ? '⭐' : '☆'}
           </button>
-          <button
-            onClick={e => { e.stopPropagation(); onDelete(prompt.id) }}
-            className="card-action-btn delete"
-            title="Törlés"
-          >
-            🗑️
-          </button>
+          {isCustom && (
+            <>
+              <button onClick={handleEdit} title="Szerkesztés" className="card-action-btn">
+                ✏️
+              </button>
+              <button onClick={handleDelete} title="Törlés" className="card-action-btn">
+                🗑️
+              </button>
+            </>
+          )}
         </div>
       </div>
 

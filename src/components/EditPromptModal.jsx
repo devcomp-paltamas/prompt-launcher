@@ -77,20 +77,20 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-box edit-modal" onClick={e => e.stopPropagation()}>
-
+        {/* Header */}
         <div className="edit-modal-header">
-          <div style={{ fontSize: 16, fontWeight: 700 }}>
-            {prompt ? 'Jegyzet szerkesztése' : 'Új jegyzet létrehozása'}
+          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#131e29' }}>
+            {prompt ? 'Prompt szerkesztése' : 'Új prompt létrehozása'}
           </div>
           <button onClick={onClose} className="modal-close">×</button>
         </div>
 
         <form onSubmit={handleSubmit} className="edit-form">
           <div className="edit-form-body">
-
-            <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+            {/* Title + Icon */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
               <div style={{ flex: 1 }}>
-                <label className="form-label">Cím</label>
+                <label className="form-label">Cím *</label>
                 <input
                   className="form-input"
                   value={form.title}
@@ -99,19 +99,20 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
                   required
                 />
               </div>
-              <div style={{ width: 80 }}>
+              <div style={{ width: '4.5rem' }}>
                 <label className="form-label">Ikon</label>
                 <input
                   className="form-input"
                   value={form.icon}
                   onChange={e => handleChange('icon', e.target.value)}
                   placeholder="📝"
-                  style={{ textAlign: 'center' }}
+                  style={{ textAlign: 'center', fontSize: '1.125rem' }}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            {/* Subtitle */}
+            <div style={{ marginBottom: '1rem' }}>
               <label className="form-label">Alcím</label>
               <input
                 className="form-input"
@@ -121,7 +122,8 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
               />
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            {/* Description */}
+            <div style={{ marginBottom: '1rem' }}>
               <label className="form-label">Leírás</label>
               <textarea
                 className="form-input"
@@ -132,9 +134,10 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
               />
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            {/* Category */}
+            <div style={{ marginBottom: '1rem' }}>
               <label className="form-label">Kategória</label>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 {filteredCategories.map(cat => (
                   <button
                     key={cat.id}
@@ -149,9 +152,10 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
               </div>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            {/* Tools */}
+            <div style={{ marginBottom: '1rem' }}>
               <label className="form-label">Eszközök</label>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 {TOOL_OPTIONS.map(tool => (
                   <button
                     key={tool.id}
@@ -165,7 +169,8 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
               </div>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            {/* Variables */}
+            <div style={{ marginBottom: '1rem' }}>
               <label className="form-label">Változók (vesszővel elválasztva)</label>
               <input
                 className="form-input"
@@ -173,13 +178,14 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
                 onChange={e => handleChange('vars', e.target.value)}
                 placeholder="OSZTÁLYNÉV, METÓDUSNÉV"
               />
-              <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+              <div style={{ fontSize: '0.75rem', color: '#556b82', marginTop: '0.25rem' }}>
                 Használd [VÁLTOZÓNÉV] formátumban a promptban
               </div>
             </div>
 
-            <div style={{ marginBottom: 8 }}>
-              <label className="form-label">Prompt szöveg</label>
+            {/* Prompt text */}
+            <div>
+              <label className="form-label">Prompt szöveg *</label>
               <textarea
                 className="form-input prompt-textarea"
                 value={form.prompt}
@@ -191,10 +197,11 @@ export default function EditPromptModal({ prompt, categories = [], onSave, onClo
             </div>
           </div>
 
+          {/* Footer */}
           <div className="edit-form-footer">
             <button type="button" onClick={onClose} className="btn-secondary">Mégse</button>
-            <button type="submit" className="btn-primary" style={{ background: 'var(--sap-blue)' }}>
-              {prompt ? '💾 Mentés' : '➕ Létrehozás'}
+            <button type="submit" className="btn-primary">
+              {prompt ? 'Mentés' : 'Létrehozás'}
             </button>
           </div>
         </form>
