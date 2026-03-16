@@ -17,26 +17,22 @@ Megnyílik: http://localhost:5173
 npm run build
 ```
 
-## Projekt struktúra
+## Tesztek
 
-```
-src/
-├── components/
-│   ├── PromptLauncher.jsx   # Fő alkalmazás
-│   ├── PromptCard.jsx       # Kártya komponens
-│   ├── PromptModal.jsx      # Modal + változó kitöltés
-│   └── ToolTag.jsx          # MCP tool badge
-├── data/
-│   └── prompts.js           # Prompt adatok + kategóriák
-├── App.jsx
-├── main.jsx
-└── index.css
+```bash
+npm test           # Összes teszt
+npm run test:ui    # Playwright UI
 ```
 
-## Fejlesztési tervek
+## Netlify Deploy
 
-- [ ] Keresés / szűrés szöveg alapján
-- [ ] Saját prompt hozzáadása (localStorage)
-- [ ] Prompt export / import JSON
-- [ ] Kedvencek jelölése
-- [ ] Sötét/Világos téma váltó
+Lásd: [NETLIFY_DEPLOY.md](NETLIFY_DEPLOY.md)
+
+## Funkciók
+
+- Prompt gyűjtemények kezelése
+- Kategóriák és szűrés
+- Kedvencek (⭐)
+- Változók kitöltése
+- Előnézet szerkesztése és mentése
+- Export / Import JSON
