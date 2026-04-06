@@ -17,12 +17,33 @@ Megnyílik: http://localhost:5173
 npm run build
 ```
 
+## Vercel Deploy
+
+Vercelre elő van készítve a projekt.
+
+- Konfiguráció: `vercel.json`
+- Leírás: [VERCEL_DEPLOY.md](VERCEL_DEPLOY.md)
+- Perzisztens mentés: Vercel Blobbal
+- A Vercelben a projekt alá csatlakoztatni kell egy Blob store-t
+
+Fontos: productionben a `src/data/prompts.json` nem írható vissza. A közös mentés a Vercel Blob storage-be megy az `api/prompts.js` függvényen keresztül. Ha a Blob üres, az első betöltés automatikusan seedeli a Blobot a repóban lévő JSON alapján.
+
 ## Tesztek
 
 ```bash
 npm test           # Összes teszt
 npm run test:ui    # Playwright UI
 ```
+
+### Vizuális képernyőkép összehasonlítás
+
+```bash
+npm run test:visual:update   # baseline képernyőképek létrehozása/frissítése
+npm run test:visual          # aktuális állapot automatikus összehasonlítása a baseline-hoz
+```
+
+A baseline képek a `tests/visual.spec.js-snapshots` mappába kerülnek.
+GitHubon PR esetén a `.github/workflows/visual-regression.yml` workflow automatikusan lefuttatja az összehasonlítást.
 
 ## Netlify Deploy
 

@@ -1,4 +1,6 @@
 import ToolTag from './ToolTag.jsx'
+import { getPromptMcpIds } from '../lib/promptMcp.js'
+import useAsyncAction from '../hooks/useAsyncAction.js'
 
 // Generate background color from category
 const getCatBg = (cat) => {
@@ -14,81 +16,111 @@ const getCatBg = (cat) => {
   return colors[cat] || 'rgba(100,100,100,0.25)'
 }
 
-export default function PromptCard({ prompt, onOpen, onQuickCopy, copiedId, onEdit, onDelete, onToggleFavorite, isCustom }) {
-  const isCopied = copiedId === prompt.id
+export default function PromptCard({ prompt, onOpen, onDuplicate, onEdit, onDelete, onToggleFavorite, isCustom, mcpOptions = [] }) {
+  const promptMcps = getPromptMcpIds(prompt, mcpOptions)
+  const { pendingAction, isBusy, isPending, runAction } = useAsyncAction()
 
   const handleEdit = (e) => {
     e.stopPropagation()
+    if (isBusy) return
     onEdit?.(prompt)
   }
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     e.stopPropagation()
+    if (isBusy) return
     if (window.confirm(`Törlöd a "${prompt.title}" promptot?`)) {
-      onDelete?.(prompt.id)
+      await runAction('delete-prompt', async () => onDelete?.(prompt.id))
     }
   }
 
-  const handleFavorite = (e) => {
+  const handleFavorite = async (e) => {
     e.stopPropagation()
-    onToggleFavorite?.(prompt.id)
+    if (isBusy) return
+    await runAction('toggle-favorite', async () => onToggleFavorite?.(prompt.id))
   }
 
   return (
     <div
-      onClick={() => onOpen(prompt)}
-      className={`prompt-card${prompt.favorite ? ' is-favorite' : ''}`}
+      onClick={() => {
+        if (!isBusy) {
+          onOpen(prompt)
+        }
+      }}
+      className={`prompt-card${prompt.favorite ? ' is-favorite' : ''}${isBusy ? ' is-busy' : ''}`}
     >
-      <div style={{ padding: '16px 18px 12px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 16, background: getCatBg(prompt.cat),
-        }}>
+      <div className="prompt-card-head">
+        <div
+          className="prompt-card-icon"
+          style={{ background: getCatBg(prompt.cat) }}
+        >
           {prompt.icon}
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3 }}>{prompt.title}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 3 }}>{prompt.sub}</div>
+        <div className="prompt-card-title-wrap">
+          <div className="prompt-card-title">{prompt.title}</div>
+          <div className="prompt-card-sub">{prompt.sub}</div>
         </div>
         <div className="card-actions">
           <button
             onClick={handleFavorite}
             title={prompt.favorite ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
             className={`card-action-btn favorite-btn${prompt.favorite ? ' active' : ''}`}
+            disabled={isBusy}
           >
-            {prompt.favorite ? '⭐' : '☆'}
+            {isPending('toggle-favorite') ? '⏳' : prompt.favorite ? '⭐' : '☆'}
           </button>
           {isCustom && (
             <>
-              <button onClick={handleEdit} title="Szerkesztés" className="card-action-btn">
+              <button onClick={handleEdit} title="Szerkesztés" className="card-action-btn" disabled={isBusy}>
                 ✏️
               </button>
-              <button onClick={handleDelete} title="Törlés" className="card-action-btn">
-                🗑️
+              <button onClick={handleDelete} title="Törlés" className="card-action-btn" disabled={isBusy}>
+                {isPending('delete-prompt') ? '⏳' : '🗑️'}
               </button>
             </>
           )}
         </div>
       </div>
 
-      <div style={{ padding: '0 18px 14px', fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.6, flex: 1 }}>
+      <div className="prompt-card-desc">
         {prompt.desc}
       </div>
 
-      <div style={{
-        padding: '10px 18px',
-        borderTop: '1px solid var(--border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {prompt.tools.map(t => <ToolTag key={t} tool={t} />)}
+      {/* Collection badge (shown in "all collections" view) */}
+      {prompt._collectionName && (
+        <div className="card-collection-badge">
+          <span>{prompt._collectionIcon}</span>
+          <span>{prompt._collectionName}</span>
+        </div>
+      )}
+
+      {/* Tags */}
+      {prompt.tags && prompt.tags.length > 0 && (
+        <div className="card-tags">
+          {prompt.tags.slice(0, 3).map(tag => (
+            <span key={tag} className="card-tag">{tag}</span>
+          ))}
+          {prompt.tags.length > 3 && (
+            <span className="card-tag card-tag-more">+{prompt.tags.length - 3}</span>
+          )}
+        </div>
+      )}
+
+      <div className="prompt-card-footer">
+        <div className="prompt-card-tools">
+          {promptMcps.map(mcpId => <ToolTag key={mcpId} tool={mcpId} mcpOptions={mcpOptions} />)}
         </div>
         <button
-          onClick={e => { e.stopPropagation(); onQuickCopy(prompt) }}
-          className={`copy-btn${isCopied ? ' copied' : ''}`}
+          onClick={e => {
+            e.stopPropagation()
+            if (isBusy) return
+            onDuplicate(prompt)
+          }}
+          className="copy-btn"
+          title="Prompt duplikálása"
+          disabled={isBusy}
         >
-          {isCopied ? '✅ Másolva' : 'Másolás'}
+          {pendingAction === 'delete-prompt' ? 'Folyamatban...' : '📋 Duplikálás'}
         </button>
       </div>
     </div>

@@ -2,17 +2,21 @@
   "name": "prompt-launcher",
   "version": "2.0.0",
   "private": true,
+  "type": "module",
   "description": "SAP ABAP MCP – Prompt Launcher (React)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "test": "playwright test",
+    "test:visual": "playwright test tests/visual.spec.js",
+    "test:visual:update": "playwright test tests/visual.spec.js --update-snapshots",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug"
   },
   "dependencies": {
+    "@vercel/blob": "^2.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

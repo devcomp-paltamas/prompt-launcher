@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import { test, expect } from '@playwright/test'
 
 // Helper: switch to "All" category to see all prompts
@@ -136,7 +137,52 @@ test.describe('Prompt Modal', () => {
     const copyButton = page.locator('.modal-box button:has-text("Másolás")')
     await copyButton.click()
 
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    expect(clipboardText).toContain('Használd az abap-adt MCP szervert')
+
     // Gomb szövege megváltozik
+    await expect(page.locator('.modal-box button:has-text("Másolva")')).toBeVisible()
+  })
+
+  test('MCP váltás frissíti a végső promptot', async ({ page }) => {
+    await page.locator('.prompt-card').first().click()
+
+    await page.locator('.modal-box button.tool-btn:has-text("SAP Docs")').click()
+
+    const finalPrompt = page.locator('.prompt-preview-final')
+    await expect(finalPrompt).toHaveValue(/Használd a sap-docs MCP-t/)
+  })
+
+  test('fordítás pipa angol szöveget másol vágólapra', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+
+    await page.addInitScript(() => {
+      window.LanguageDetector = {
+        availability: async () => 'available',
+        create: async () => ({
+          detect: async () => [{ detectedLanguage: 'hu', confidence: 1 }],
+          destroy: () => {},
+        }),
+      }
+
+      window.Translator = {
+        availability: async () => 'available',
+        create: async () => ({
+          translate: async text => `EN:${text}`,
+          destroy: () => {},
+        }),
+      }
+    })
+
+    await page.goto('/')
+    await switchToAllCategory(page)
+    await page.locator('.prompt-card').first().click()
+
+    await page.locator('.translate-checkbox input[type="checkbox"]').check()
+    await page.locator('.modal-box button:has-text("Másolás")').click()
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+    expect(clipboardText.startsWith('EN:')).toBeTruthy()
     await expect(page.locator('.modal-box button:has-text("Másolva")')).toBeVisible()
   })
 
@@ -274,6 +320,17 @@ test.describe('Responsive design', () => {
 
     await expect(page.locator('header')).toBeVisible()
     await expect(page.locator('.prompt-card').first()).toBeVisible()
+    await expect(page.locator('button:has-text("Export")')).toBeVisible()
+    await expect(page.locator('button:has-text("Import")')).toBeVisible()
+
+    const overflow = await page.evaluate(() => ({
+      body: document.body.scrollWidth,
+      viewport: window.innerWidth,
+      header: document.querySelector('header')?.scrollWidth ?? 0,
+    }))
+
+    expect(overflow.body).toBeLessThanOrEqual(overflow.viewport + 1)
+    expect(overflow.header).toBeLessThanOrEqual(overflow.viewport + 1)
   })
 
   test('tablet nézetben is működik', async ({ page }) => {
@@ -369,6 +426,75 @@ test.describe('Prompt mentés API', () => {
 
     // Toast megjelenik
     await expect(page.locator('.toast')).toBeVisible({ timeout: 5000 })
+  })
+
+  test('mentés reload után is megmarad', async ({ page }) => {
+    const apiState = JSON.parse(fs.readFileSync('src/data/prompts.json', 'utf-8'))
+    let etag = 'test-etag-1'
+
+    await page.route('**/api/prompts', async route => {
+      const method = route.request().method()
+
+      if (method === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            collections: apiState.collections,
+            etag,
+            storage: 'blob',
+            migrated: false,
+            blobConfigured: true,
+          }),
+        })
+        return
+      }
+
+      if (method === 'POST') {
+        const payload = route.request().postDataJSON()
+        apiState.collections = payload.collections
+        etag = `test-etag-${Date.now()}`
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            etag,
+            storage: 'blob',
+          }),
+        })
+        return
+      }
+
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await switchToAllCategory(page)
+
+    const firstCard = page.locator('.prompt-card').first()
+    await firstCard.click()
+    await expect(page.locator('.modal-box')).toBeVisible()
+
+    const preview = page.locator('.prompt-preview.editable')
+    await expect(preview).not.toHaveValue('')
+
+    const savedText = `Playwright mentés teszt ${Date.now()}`
+    const saveBtn = page.locator('.modal-box button:has-text("Mentés")')
+
+    await preview.clear()
+    await preview.fill(savedText)
+    await expect(saveBtn).toBeEnabled({ timeout: 10000 })
+    await saveBtn.click()
+    await expect(page.locator('.toast')).toContainText('Prompt mentve', { timeout: 5000 })
+
+    await page.reload()
+    await switchToAllCategory(page)
+    await page.locator('.search-input').fill(savedText)
+    await page.locator('.prompt-card').first().click()
+    await expect(page.locator('.modal-box')).toBeVisible()
+    await expect(page.locator('.prompt-preview.editable')).toHaveValue(savedText)
   })
 
 })

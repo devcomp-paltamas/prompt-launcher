@@ -159,16 +159,14 @@
           "vars": [
             "OSZTÁLYNÉV",
             "CÉL_LEÍRÁS",
-            "PUBLIKUS_METÓDUSOK",
-            "CSOMAG_NÉV",
-            "TRANSPORT_SZÁM"
+            "PUBLIKUS_METÓDUSOK"
           ],
           "tags": [
             "oop",
             "generálás",
             "új-fejlesztés"
           ],
-          "prompt": "Hozz létre egy új ABAP osztályt az alábbi specifikáció szerint, majd írd vissza és aktiváld a megfelelő MCP-vel.\n\nOsztálynév: [OSZTÁLYNÉV]\nCél: [CÉL_LEÍRÁS]\nPublikus metódusok: [PUBLIKUS_METÓDUSOK]\nCsomag: [CSOMAG_NÉV]\nTransport: [TRANSPORT_SZÁM]\n\nKövetelmények:\n- ABAP 7.54+ szintaxis (DATA(...), NEW, method chaining)\n- Kivételkezelés: egyéni ZCX_ kivétel, ha indokolt\n- Inline dokumentáció minden publikus metódushoz\n- Névkonvenció: Z prefix, snake_case, iv_/ev_/rv_ prefix\n\nWorkflow:\n1. Ellenőrizd, hogy az objektum már létezik-e\n2. Ha nem létezik, hozd létre a megadott csomagban és transportban\n3. Írd be a forráskódot\n4. Végezz szintaxis ellenőrzést\n5. Aktiváld\n\nHa a létrehozáshoz hiányzik kötelező technikai adat, előbb jelezd pontosan, mi hiányzik.",
+          "prompt": "Hozz létre egy új ABAP osztályt az alábbi specifikáció szerint,\nmajd írd vissza az SAP rendszerbe a megfelelő MCP-vel és aktiváld:\n\nOsztálynév: [OSZTÁLYNÉV]\nCél: [CÉL_LEÍRÁS]\nPublikus metódusok: [PUBLIKUS_METÓDUSOK]\n\nKövetelmények:\n- ABAP 7.54+ szintaxis (DATA(...), NEW, method chaining)\n- Kivételkezelés: egyéni ZCX_ kivétel\n- Inline dokumentáció minden publikus metódushoz\n- Névkonvenció: Z prefix, snake_case, iv_/ev_/rv_ prefix\n\nWorkflow: searchObject → (ha nincs) createObject → setObjectSource → syntaxCheckCode → activate",
           "mcps": [
             "abap-adt"
           ],
@@ -186,18 +184,14 @@
           ],
           "vars": [
             "OSZTÁLYNÉV",
-            "UJMETODUSNEVE",
-            "BEMENETI_PARAMÉTEREK",
-            "LOGIKA",
-            "VISSZATÉRÉSI_ÉRTÉK",
-            "LÉTEZŐ_ELEM"
+            "UJMETODUSNEVE"
           ],
           "tags": [
             "oop",
             "refaktorálás",
             "bővítés"
           ],
-          "prompt": "Működj közre SAP ABAP fejlesztőként. Szeretném bővíteni a(z) [OSZTÁLYNÉV] osztályt.\n\nFeladat:\nHozz létre egy új publikus metódust [UJMETODUSNEVE] néven, amely a következő logikát valósítja meg.\n\nBemeneti paraméterek:\n[BEMENETI_PARAMÉTEREK]\n\nLogika:\n[LOGIKA]\n\nVisszatérési érték:\n[VISSZATÉRÉSI_ÉRTÉK]\n\nKezelési szabályok:\n- Használd a modern ABAP szintaxist (inline deklarációk, NEW, @-jelölés)\n- Ha releváns, használd a meglévő [LÉTEZŐ_ELEM] elemet\n- Tartsd meg az osztály egységességét és a Clean ABAP elveket\n\nKimeneti formátum:\n- METHODS deklaráció\n- METHOD ... ENDMETHOD implementációs blokk\n- Rövid megjegyzés, ha a módosításhoz további függőség vagy kivételosztály is kell",
+          "prompt": "\"Működj közre SAP ABAP fejlesztőként. Szeretném bővíteni a csatolt [OSZTÁLYNÉV] osztályt.\n\nFeladat:\nHozz létre egy új publikus metódust [UJMETODUSNEVE] néven, amely a következő logikát valósítja meg:\n\nBemeneti paraméterek: [Paraméterek és típusaik, pl. IV_VBELN TYPE VBELN]\n\nLogika: [Rövid leírás, pl. Keresd ki a VBAK táblából a fejléc adatokat, és ha nem található, válts ki egy meglévő kivételt.]\n\nVisszatérési érték: [Pl. RS_DATA vagy ET_ITEMS]\n\nKezelési szabályok:\n\nHasználd a modern ABAP szintaxist (Inline declarations, NEW operator, SELECT statements with @-sign).\n\nÜgyelj arra, hogy a metódus használja a már meglévő [Említs meg egy létező attribútumot vagy helper metódust] elemet, ha releváns.\n\nTarts meg az osztály egységességét és a Clean ABAP elveket.\n\nKimeneti formátum:\nKérlek, csak a METHODS deklarációt és a METHOD ... ENDMETHOD implementációs blokkot generáld le.\"",
           "favorite": true,
           "createdAt": 1773909739539,
           "useCount": 3,
@@ -384,7 +378,7 @@
             "OSZTÁLYNÉV",
             "MÓDOSÍTÁS_LEÍRÁSA"
           ],
-          "prompt": "Teljes fejlesztési ciklust szeretnék:\n\n1. Kérd le a(z) [OSZTÁLYNÉV] jelenlegi forráskódját (a megfelelő MCP)\n2. Végezz gyors kód review-t (főbb problémák azonosítása)\n3. Implementáld az alábbi változtatást: [MÓDOSÍTÁS_LEÍRÁSA]\n4. Végezz szintaxis ellenőrzést\n5. Aktiváld az osztályt\n6. Összefoglalóban írd le mit változtattál és miért",
+          "prompt": "Teljes fejlesztési ciklust szeretnék:\n\n1. Kérd le a(z) [OSZTÁLYNÉV] jelenlegi forráskódját (a megfelelő MCP)\n2. Végezz gyors kod review-t (főbb problémák azonosítása)\n3. Implementáld az alábbi változtatást: [MÓDOSÍTÁS_LEÍRÁSA]\n4. Végezz szintaxis ellenőrzést\n5. Aktiváld az osztályt\n6. Összefoglalóban írd le mit változtattál és miért",
           "mcps": [
             "abap-adt",
             "sap-docs"
@@ -884,7 +878,7 @@
             "OSZTÁLYNÉV",
             "CÉLRENDSZER"
           ],
-          "prompt": "Elemezd a(z) [OSZTÁLYNÉV] transzportálásához szükséges technikai függőségeket.\n\nCélrendszer: [CÉLRENDSZER]\n\nAzonosítsd:\n1. Közvetlen függőségek (használt osztályok, interfészek)\n2. Data Dictionary objektumok (táblák, struktúrák, domain-ek)\n3. Message class-ok\n4. Number range objektumok\n5. Customizing táblák és szükséges adatok, ha ez megállapítható\n\nSorrend javaslat (STMS):\n1. DDIC objektumok\n2. Interfészek\n3. Osztályok\n4. Konfigurációs adatok\n\nFigyelmeztetések:\n- Jelöld, ha van rendszerfüggő hardkódolt érték\n- Ha a célrendszerre vagy customizing adatokra vonatkozó információ nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd, és sorold fel, milyen további input kell.\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Kérd le a(z) [OSZTÁLYNÉV] és függőségeinek forráskódját (a megfelelő MCP).\n\nKészíts transzport checklistet:\nCélrendszer: [CÉLRENDSZER]\n\nAzonosítsd:\n1. Közvetlen függőségek (használt osztályok, interfészek)\n2. Data Dictionary objektumok (táblák, struktúrák, domain-ek)\n3. Message class-ok\n4. Number range objektumok\n5. Customizing táblák (van-e adat is?)\n\nSorrend javaslat (STMS):\n1. DDIC objektumok\n2. Interfészek\n3. Osztályok\n4. Konfigurációs adatok\n\nFigyelmeztetések ha van rendszer-függő hardkódolt érték!",
           "mcps": [
             "abap-adt"
           ],
@@ -1032,7 +1026,7 @@
             "TRANSZPORT_1",
             "TRANSZPORT_2"
           ],
-          "prompt": "Elemezd a következő transzportokat ütközés szempontjából:\n- Transzport 1: [TRANSZPORT_1]\n- Transzport 2: [TRANSZPORT_2]\n\nEllenőrizd:\n☐ Ugyanazt az objektumot módosítják?\n☐ Van-e átfedő DDIC objektum?\n☐ Sorrendfüggőség van köztük?\n☐ Melyik írja felül a másikat?\n\nHa ütközés van:\n1. Azonosítsd az érintett objektumokat\n2. Javasolj import sorrendet\n3. Adj merge stratégiát ha szükséges\n4. Figyelmeztetés ha adatvesztés lehetséges\n\nSE09/SE10 és STMS lépések az ellenőrzéshez!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Elemezd a következő transzportokat ütközés szempontjából:\n- Transzport 1: [TRANSZPORT_1]\n- Transzport 2: [TRANSZPORT_2]\n\nEllenőrizd:\n☐ Ugyanazt az objektumot módosítják?\n☐ Van-e átfedő DDIC objektum?\n☐ Sorrendfüggőség van köztük?\n☐ Melyik írja felül a másikat?\n\nHa ütközés van:\n1. Azonosítsd az érintett objektumokat\n2. Javasolj import sorrendet\n3. Adj merge stratégiát ha szükséges\n4. Figyelmeztetés ha adatvesztés lehetséges\n\nSE09/SE10 és STMS lépések az ellenőrzéshez!",
           "mcps": [
             "abap-adt"
           ],
@@ -1049,10 +1043,9 @@
             "adt"
           ],
           "vars": [
-            "TRANSZPORT_SZÁM",
-            "CÉLRENDSZER"
+            "TRANSZPORT_SZÁM"
           ],
-          "prompt": "Elemezd a [TRANSZPORT_SZÁM] transzport függőségeit.\n\nCélrendszer: [CÉLRENDSZER]\n\nKeresd meg:\n1. A transzportban lévő objektumokat\n2. Minden objektum közvetlen függőségeit\n3. Ha megállapítható, hogy ezek melyik transzportokban vannak\n\nKészíts függőségi fát:\n[TRANSZPORT]\n  └── ZCL_OSZTÁLY\n      ├── ZIF_INTERFACE → TR másik\n      ├── ZTABLE → TR harmadik\n      └── ZCX_EXCEPTION → TR negyedik\n\nKRITIKUS:\n- Jelöld, ha egy függőségről nem bizonyítható, hogy importálva van a célrendszerben\n- Ha az import queue vagy a célrendszer állapota nem látható közvetlenül az MCP-ből, ezt írd le külön, és ne találgass\n\nAdj javasolt STMS import sorrendet.\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Elemezd a [TRANSZPORT_SZÁM] transzport függőségeit.\n\nKeresd meg (a megfelelő MCP):\n1. Transzportban lévő objektumok\n2. Minden objektum függőségei\n3. Ezek melyik transzportban vannak\n\nKészíts függőségi fát:\n[TRANSZPORT]\n  └── ZCL_OSZTÁLY\n      ├── ZIF_INTERFACE → TR másik\n      ├── ZTABLE → TR harmadik\n      └── ZCX_EXCEPTION → TR negyedik\n\nKRITIKUS: Jelöld ha függőség NINCS IMPORTÁLVA a célrendszerben!\nAdj STMS import queue sorrendet.",
           "mcps": [
             "abap-adt"
           ],
@@ -1071,7 +1064,7 @@
           "vars": [
             "OBJEKTUM_NÉV"
           ],
-          "prompt": "Ellenőrizd a(z) [OBJEKTUM_NÉV] objektum zárolási állapotát.\n\nKeresendő információk:\n☐ Melyik transzportban van jelenleg?\n☐ Ki a transzport tulajdonosa?\n☐ Mikor volt utoljára módosítva?\n☐ Van-e más nyitott transzport ugyanerre?\n☐ Történt-e változás ami nincs release-elve?\n\nSE09/SE10 ellenőrzés:\n- E070: Transzport header\n- E071: Objektumok a transzportban\n- TADIR: Objektum - csomag hozzárendelés\n\nJavaslat ha ütközés van!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Ellenőrizd a(z) [OBJEKTUM_NÉV] objektum zárolási állapotát.\n\nKeresendő információk:\n☐ Melyik transzportban van jelenleg?\n☐ Ki a transzport tulajdonosa?\n☐ Mikor volt utoljára módosítva?\n☐ Van-e más nyitott transzport ugyanerre?\n☐ Történt-e változás ami nincs release-elve?\n\nSE09/SE10 ellenőrzés:\n- E070: Transzport header\n- E071: Objektumok a transzportban\n- TADIR: Objektum - csomag hozzárendelés\n\nJavaslat ha ütközés van!",
           "mcps": [
             "abap-adt"
           ],
@@ -1092,7 +1085,7 @@
             "RENDSZER_1",
             "RENDSZER_2"
           ],
-          "prompt": "Hasonlítsd össze a(z) [OBJEKTUM_NÉV] objektumot:\n- [RENDSZER_1] rendszerben\n- [RENDSZER_2] rendszerben\n\nEllenőrizd:\n☐ Verzió különbségek\n☐ Forráskód eltérések\n☐ Aktiválási dátumok\n☐ Utolsó módosító user\n\nHa eltérés van:\n1. Mi a különbség pontosan? (diff)\n2. Melyik verzió az \"igazi\"?\n3. Van-e transzport úton ami megoldja?\n4. Kell-e visszaszállítás (retrofit)?\n\nSE39 / SE95 program összehasonlítás lépések!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Hasonlítsd össze a(z) [OBJEKTUM_NÉV] objektumot:\n- [RENDSZER_1] rendszerben\n- [RENDSZER_2] rendszerben\n\nEllenőrizd:\n☐ Verzió különbségek\n☐ Forráskód eltérések\n☐ Aktiválási dátumok\n☐ Utolsó módosító user\n\nHa eltérés van:\n1. Mi a különbség pontosan? (diff)\n2. Melyik verzió az \"igazi\"?\n3. Van-e transzport úton ami megoldja?\n4. Kell-e visszaszállítás (retrofit)?\n\nSE39 / SE95 program összehasonlítás lépések!",
           "mcps": [
             "abap-adt"
           ],
@@ -1111,7 +1104,7 @@
           "vars": [
             "TRANSZPORT_SZÁM"
           ],
-          "prompt": "Végezz release előtti ellenőrzést: [TRANSZPORT_SZÁM]\n\nSZINTAXIS ÉS AKTIVÁLÁS:\n☐ Minden objektum aktív?\n☐ Nincs szintaxis hiba?\n☐ DDIC objektumok aktiválva?\n☐ Generált objektumok renderelve?\n\nTESZTELÉS:\n☐ Unit tesztek lefutottak?\n☐ Integrációs teszt OK?\n☐ Regresszió teszt elvégezve?\n\nDOKUMENTÁCIÓ:\n☐ Transzport leírás kitöltve?\n☐ Change request hivatkozás?\n☐ Rollback terv készült?\n\nFÜGGŐSÉGEK:\n☐ Előfeltétel TR-ek release-elve?\n☐ Nincs körkörös függőség?\n\nRelease STMS lépések és SE09 útmutató!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Végezz release előtti ellenőrzést: [TRANSZPORT_SZÁM]\n\nSZINTAXIS ÉS AKTIVÁLÁS:\n☐ Minden objektum aktív?\n☐ Nincs szintaxis hiba?\n☐ DDIC objektumok aktiválva?\n☐ Generált objektumok renderelve?\n\nTESZTELÉS:\n☐ Unit tesztek lefutottak?\n☐ Integrációs teszt OK?\n☐ Regresszió teszt elvégezve?\n\nDOKUMENTÁCIÓ:\n☐ Transzport leírás kitöltve?\n☐ Change request hivatkozás?\n☐ Rollback terv készült?\n\nFÜGGŐSÉGEK:\n☐ Előfeltétel TR-ek release-elve?\n☐ Nincs körkörös függőség?\n\nRelease STMS lépések és SE09 útmutató!",
           "mcps": [
             "abap-adt"
           ],
@@ -1131,7 +1124,7 @@
             "HIBA_LEÍRÁS",
             "ÉRINTETT_OBJEKTUMOK"
           ],
-          "prompt": "Sürgős hotfix szükséges!\n\nHiba: [HIBA_LEÍRÁS]\nÉrintett objektumok: [ÉRINTETT_OBJEKTUMOK]\n\nHotfix folyamat:\n1. Új transzport létrehozása (emergency prefix)\n2. Minimális változtatás azonosítása\n3. Fejlesztés közvetlenül PROD-ban? (ha engedélyezett)\n\nEllenőrzőlista:\n☐ Csak a javításhoz szükséges objektumok\n☐ Nincs \"ráadás\" módosítás\n☐ Azonnali teszt PROD-ban\n☐ Retrofit terv DEV felé\n☐ Dokumentáció (incident szám)\n\nFIGYELEM:\n- Downgrade kockázat ha DEV-ben más verzió!\n- Retrofit KÖTELEZŐ a konzisztenciához!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Sürgős hotfix szükséges!\n\nHiba: [HIBA_LEÍRÁS]\nÉrintett objektumok: [ÉRINTETT_OBJEKTUMOK]\n\nHotfix folyamat:\n1. Új transzport létrehozása (emergency prefix)\n2. Minimális változtatás azonosítása\n3. Fejlesztés közvetlenül PROD-ban? (ha engedélyezett)\n\nEllenőrzőlista:\n☐ Csak a javításhoz szükséges objektumok\n☐ Nincs \"ráadás\" módosítás\n☐ Azonnali teszt PROD-ban\n☐ Retrofit terv DEV felé\n☐ Dokumentáció (incident szám)\n\nFIGYELEM:\n- Downgrade kockázat ha DEV-ben más verzió!\n- Retrofit KÖTELEZŐ a konzisztenciához!",
           "mcps": [
             "abap-adt"
           ],
@@ -1151,7 +1144,7 @@
             "PROD_TRANSZPORT",
             "DEV_VÁLTOZÁSOK"
           ],
-          "prompt": "Retrofit szükséges:\nPROD transzport: [PROD_TRANSZPORT]\nDEV-ben történt változások: [DEV_VÁLTOZÁSOK]\n\nElemzés:\n1. Mi van PROD-ban ami nincs DEV-ben?\n2. Mi van DEV-ben ami nincs PROD-ban?\n3. Van-e konfliktus a kettő között?\n\nRetrofit stratégia:\n☐ Transport of Copies (ToC) használata\n☐ Manuális merge szükséges?\n☐ Melyik verzió a \"master\"?\n\nLépések:\n1. SE09 → Transport of Copies létrehozása\n2. Objektumok másolása PROD-ról\n3. Merge DEV változásokkal\n4. Teszt és aktiválás DEV-ben\n\nKRITIKUS: Dokumentáld mi lett merge-ölve!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Retrofit szükséges:\nPROD transzport: [PROD_TRANSZPORT]\nDEV-ben történt változások: [DEV_VÁLTOZÁSOK]\n\nElemzés:\n1. Mi van PROD-ban ami nincs DEV-ben?\n2. Mi van DEV-ben ami nincs PROD-ban?\n3. Van-e konfliktus a kettő között?\n\nRetrofit stratégia:\n☐ Transport of Copies (ToC) használata\n☐ Manuális merge szükséges?\n☐ Melyik verzió a \"master\"?\n\nLépések:\n1. SE09 → Transport of Copies létrehozása\n2. Objektumok másolása PROD-ról\n3. Merge DEV változásokkal\n4. Teszt és aktiválás DEV-ben\n\nKRITIKUS: Dokumentáld mi lett merge-ölve!",
           "mcps": [
             "abap-adt"
           ],
@@ -1171,7 +1164,7 @@
             "CÉLRENDSZER",
             "TRANSZPORT_LISTA"
           ],
-          "prompt": "Rendezd az import queue-t:\nCélrendszer: [CÉLRENDSZER]\nTranszportok: [TRANSZPORT_LISTA]\n\nElemzés minden transzportra:\n1. Tartalmazott objektumok\n2. Függőségek más TR-ekre\n3. DDIC változások (elsőbbség!)\n\nOptimális sorrend meghatározása:\n☐ DDIC objektumok először\n☐ Interfészek az implementáció előtt\n☐ Alap osztályok az örököltek előtt\n☐ Nincs körkörös függőség\n\nSTMS lépések:\n1. Import queue megnyitása\n2. Sorrend módosítása\n3. Előzetes import ellenőrzés\n4. Import indítása megfelelő opciókal\n\nImport opciók javaslat (Overwrite, Ignore)!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Rendezd az import queue-t:\nCélrendszer: [CÉLRENDSZER]\nTranszportok: [TRANSZPORT_LISTA]\n\nElemzés minden transzportra:\n1. Tartalmazott objektumok\n2. Függőségek más TR-ekre\n3. DDIC változások (elsőbbség!)\n\nOptimális sorrend meghatározása:\n☐ DDIC objektumok először\n☐ Interfészek az implementáció előtt\n☐ Alap osztályok az örököltek előtt\n☐ Nincs körkörös függőség\n\nSTMS lépések:\n1. Import queue megnyitása\n2. Sorrend módosítása\n3. Előzetes import ellenőrzés\n4. Import indítása megfelelő opciókal\n\nImport opciók javaslat (Overwrite, Ignore)!",
           "mcps": [
             "abap-adt"
           ],
@@ -1190,7 +1183,7 @@
           "vars": [
             "OBJEKTUM_NÉV"
           ],
-          "prompt": "Elemezd a(z) [OBJEKTUM_NÉV] verzió történetét (a megfelelő MCP).\n\nGyűjtsd össze:\n☐ Összes verzió az VRSD táblából\n☐ Minden verzióhoz: dátum, user, transzport\n☐ Változások típusa (új/módosított/törölt sorok)\n\nKészíts idővonalat:\n| Dátum | User | Transzport | Változás típusa |\n|-------|------|------------|-----------------|\n| ...   | ...  | ...        | ...             |\n\nAzonosítsd:\n- Leggyakrabban módosító user\n- Legnagyobb változás mikor volt\n- Van-e gyanús módosítás (pl. hétvégén)\n\nSE39 verzió összehasonlítás lépések!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Elemezd a(z) [OBJEKTUM_NÉV] verzió történetét (a megfelelő MCP).\n\nGyűjtsd össze:\n☐ Összes verzió az VRSD táblából\n☐ Minden verzióhoz: dátum, user, transzport\n☐ Változások típusa (új/módosított/törölt sorok)\n\nKészíts idővonalat:\n| Dátum | User | Transzport | Változás típusa |\n|-------|------|------------|-----------------|\n| ...   | ...  | ...        | ...             |\n\nAzonosítsd:\n- Leggyakrabban módosító user\n- Legnagyobb változás mikor volt\n- Van-e gyanús módosítás (pl. hétvégén)\n\nSE39 verzió összehasonlítás lépések!",
           "mcps": [
             "abap-adt"
           ],
@@ -1211,7 +1204,7 @@
             "HIBAÜZENET",
             "TRANSZPORT_SZÁM"
           ],
-          "prompt": "Import után aktiválási hiba:\nHibaüzenet: [HIBAÜZENET]\nTranszport: [TRANSZPORT_SZÁM]\n\nDiagnosztika:\n1. Mi az aktiválási hiba pontos oka?\n2. Melyik objektum hiányzik?\n3. Melyik transzportban kellene lennie?\n4. Importálva van-e a célrendszerben?\n\nEllenőrizd:\n☐ E070/E071 - Transzport tartalom\n☐ TADIR - Objektum létezik-e\n☐ SMODILOG - Módosítási napló\n☐ Aktiválási protokoll (SM21)\n\nMegoldási javaslatok:\n1. Hiányzó TR pót-importálása\n2. Objektum újragenerálása\n3. Kézi aktiválás sorrendje\n\nSE11 / SE80 hibakeresési lépések!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Import után aktiválási hiba:\nHibaüzenet: [HIBAÜZENET]\nTranszport: [TRANSZPORT_SZÁM]\n\nDiagnosztika:\n1. Mi az aktiválási hiba pontos oka?\n2. Melyik objektum hiányzik?\n3. Melyik transzportban kellene lennie?\n4. Importálva van-e a célrendszerben?\n\nEllenőrizd:\n☐ E070/E071 - Transzport tartalom\n☐ TADIR - Objektum létezik-e\n☐ SMODILOG - Módosítási napló\n☐ Aktiválási protokoll (SM21)\n\nMegoldási javaslatok:\n1. Hiányzó TR pót-importálása\n2. Objektum újragenerálása\n3. Kézi aktiválás sorrendje\n\nSE11 / SE80 hibakeresési lépések!",
           "mcps": [
             "abap-adt",
             "sap-docs"
@@ -1232,7 +1225,7 @@
             "TRANSZPORT_SZÁM",
             "ÉRINTETT_OBJEKTUMOK"
           ],
-          "prompt": "Készíts rollback tervet:\nTranszport: [TRANSZPORT_SZÁM]\nObjektumok: [ÉRINTETT_OBJEKTUMOK]\n\nRollback előkészítés IMPORT ELŐTT:\n☐ Jelenlegi verziók mentése\n☐ Érintett táblák backup (ha van adatváltozás)\n☐ Customizing értékek dokumentálása\n\nRollback stratégiák:\n1. Transport of Copies a régi verzióról\n2. ABAP verziókezelésből visszaállítás (SE39)\n3. Teljes rendszer visszaállítás (utolsó lehetőség)\n\nRollback lépések:\n1. Probléma azonosítása\n2. Döntés a rollback típusról\n3. Végrehajtás\n4. Verifikáció\n5. Root cause elemzés\n\nFIGYELEM: DDIC változások rollback-je kritikus!\n\nBizonytalansági szabály:\n- Ha a szükséges transzport-, queue-, verzió- vagy rendszeradat nem érhető el közvetlenül az MCP-ből, ezt egyértelműen jelezd.\n- Sorold fel pontosan, milyen további input, export vagy rendszeradat kell a biztos válaszhoz.\n- Ilyenkor ne találgass, és ne állíts olyat, amit nem tudsz ellenőrizni.",
+          "prompt": "Készíts rollback tervet:\nTranszport: [TRANSZPORT_SZÁM]\nObjektumok: [ÉRINTETT_OBJEKTUMOK]\n\nRollback előkészítés IMPORT ELŐTT:\n☐ Jelenlegi verziók mentése\n☐ Érintett táblák backup (ha van adatváltozás)\n☐ Customizing értékek dokumentálása\n\nRollback stratégiák:\n1. Transport of Copies a régi verzióról\n2. ABAP verziókezelésből visszaállítás (SE39)\n3. Teljes rendszer visszaállítás (utolsó lehetőség)\n\nRollback lépések:\n1. Probléma azonosítása\n2. Döntés a rollback típusról\n3. Végrehajtás\n4. Verifikáció\n5. Root cause elemzés\n\nFIGYELEM: DDIC változások rollback-je kritikus!",
           "mcps": [
             "abap-adt"
           ],

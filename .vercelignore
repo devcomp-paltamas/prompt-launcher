@@ -1,12 +1,9 @@
 node_modules
 dist
-.env
-.env.local
+.git
 .DS_Store
-.vercel
 .vite
 .vscode
 playwright-report
 test-results
 coverage
-.env*.local
